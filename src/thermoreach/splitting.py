@@ -35,14 +35,22 @@ def mixture_enthalpy(c: CSTR, T: float, Y: np.ndarray) -> float:
 
 
 def temperature_from_enthalpy(c: CSTR, h_target: float, Y: np.ndarray,
-                              lo: float = 200.0, hi: float = 6000.0) -> float:
-    """Unique T with h(T, Y) = h_target (h is strictly increasing in T)."""
+                              lo: float = 300.0, hi: float = 3500.0) -> tuple[float, str]:
+    """Unique T with h(T, Y) = h_target (h is strictly increasing in T).
+
+    Returns (T, status). status is "ok" when the root lies strictly inside the
+    bracket. If the target enthalpy is outside the interval the function returns
+    the appropriate bracket ENDPOINT together with a status string, instead of
+    silently returning an endpoint as if it were the root (audit A14): the exact
+    exchange map is only exact while the state stays inside the valid
+    thermodynamic domain, and leaving it must be visible to the caller.
+    """
     f = lambda T: mixture_enthalpy(c, T, Y) - h_target
     if f(lo) > 0.0:
-        return lo
+        return lo, "below_valid_range"
     if f(hi) < 0.0:
-        return hi
-    return float(brentq(f, lo, hi, xtol=1e-10, rtol=1e-12))
+        return hi, "above_valid_range"
+    return float(brentq(f, lo, hi, xtol=1e-10, rtol=1e-12)), "ok"
 
 
 def exchange_step(c: CSTR, q: np.ndarray, gamma: float, dt: float) -> np.ndarray:
@@ -52,7 +60,12 @@ def exchange_step(c: CSTR, q: np.ndarray, gamma: float, dt: float) -> np.ndarray
     Y_new = c.Y_in + dec * (Y_old - c.Y_in)
     h_old = mixture_enthalpy(c, T_old, Y_old)
     h_new = c.h_in + dec * (h_old - c.h_in)
-    T_new = temperature_from_enthalpy(c, h_new, Y_new)
+    T_new, status = temperature_from_enthalpy(c, h_new, Y_new)
+    if status != "ok":
+        # Visible, recorded failure: the exchange map left the valid domain.
+        raise ValueError(f"exchange_step left the valid thermodynamic domain "
+                         f"(status={status}, h_target={h_new:.6g}, "
+                         f"T bracket endpoint={T_new:.1f} K)")
     return np.concatenate([[T_new], Y_new])
 
 

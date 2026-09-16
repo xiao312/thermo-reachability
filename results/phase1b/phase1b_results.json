@@ -1,0 +1,222 @@
+{
+  "timestamp_utc": "2026-09-16T08:42:22.691107+00:00",
+  "initial_state": [
+    1.0,
+    0.0
+  ],
+  "horizon": 5.0,
+  "seed": 20260916,
+  "witness": {
+    "gamma_history": [
+      0.0,
+      10.0
+    ],
+    "durations": [
+      4.0,
+      0.0707413427911034
+    ],
+    "endpoint_exact": [
+      0.5,
+      0.04939624612802243
+    ],
+    "endpoint_dense_integration": [
+      0.5,
+      0.04939624612802243
+    ],
+    "t_final": 4.070741342791103,
+    "closed_form_delta": 0.0707413427911034
+  },
+  "exclusion": {
+    "G=0.1": {
+      "G": 0.1,
+      "x_G": 0.09090909090909091,
+      "min_dW_dt_on_boundary_for_x_ge_xG": 0.0,
+      "barrier_applies_to_witness": true,
+      "required_y_at_x_0.5": 0.25,
+      "witness_y": 0.04939624612802243,
+      "witness_excluded": true
+    },
+    "G=1": {
+      "G": 1.0,
+      "x_G": 0.5,
+      "min_dW_dt_on_boundary_for_x_ge_xG": 0.0,
+      "barrier_applies_to_witness": true,
+      "required_y_at_x_0.5": 0.25,
+      "witness_y": 0.04939624612802243,
+      "witness_excluded": true
+    },
+    "G=10": {
+      "G": 10.0,
+      "x_G": 0.9090909090909091,
+      "min_dW_dt_on_boundary_for_x_ge_xG": 0.0,
+      "barrier_applies_to_witness": false,
+      "required_y_at_x_0.5": 0.25,
+      "witness_y": 0.04939624612802243,
+      "witness_excluded": false
+    }
+  },
+  "hull_degeneracy": {
+    "cases": [
+      {
+        "horizon": 1.0,
+        "batch_curve_hull_area_fraction": 0.1289058344196004,
+        "closed_form": 0.12890583442050263,
+        "value_reported_in_report_01": 0.129
+      },
+      {
+        "horizon": 5.0,
+        "batch_curve_hull_area_fraction": 0.9325751300533112,
+        "closed_form": 0.9325751300793829,
+        "value_reported_in_report_01": 0.933
+      },
+      {
+        "horizon": 20.0,
+        "batch_curve_hull_area_fraction": 0.9999999171371861,
+        "closed_form": 0.9999999175538551,
+        "value_reported_in_report_01": 1.0
+      }
+    ],
+    "note": "a single 1-D curve; its own two-dimensional area is zero"
+  },
+  "bounds": {
+    "G=0.1": {
+      "n_states": 644808,
+      "interior_coverage": {
+        "n_grid_points": 3721,
+        "covered_fraction": 0.08492340768610589,
+        "fill_distance": 0.33983877384501066,
+        "mean_distance": 0.09074358837720442,
+        "grid_tolerance": 0.002,
+        "envelope_area": 0.25
+      },
+      "hull_area_fraction_DEPRECATED": 0.9325241122659947,
+      "terminal_y_max": 0.3678794411714424,
+      "terminal_states_sample": [
+        {
+          "label": "rand_000",
+          "values": [
+            0.0,
+            0.005434115811399655,
+            5.378151586282569e-05,
+            0.0022900350430550497,
+            0.0,
+            0.004137755539376373,
+            0.0,
+            0.0014710329046416447
+          ],
+          "terminal": [
+            0.008062069456051884,
+            0.034925049299767405
+          ]
+        },
+        {
+          "label": "rand_001",
+          "values": [
+            0.00813479269872658,
+            3.314982860086684e-05,
+            0.0017032647806281738,
+            0.0,
+            0.00021217511274692816,
+            0.006044934094322198,
+            0.0,
+            0.0
+          ],
+          "terminal": [
+            0.007571185343111115,
+            0.03495294772250428
+          ]
+        },
+        {
+          "label": "rand_002",
+          "values": [
+            2.158112768721419e-05,
+            1.7135739164551735e-05,
+            0.000338805121421882,
+            0.0013307288495347613,
+            0.0,
+            0.004322254370184076,
+            0.000452646915517989,
+            0.062217209485916816
+          ],
+          "terminal": [
+            0.0355882304796549,
+            0.04128148044741543
+          ]
+        }
+      ]
+    },
+    "G=10": {
+      "n_states": 644808,
+      "interior_coverage": {
+        "n_grid_points": 3721,
+        "covered_fraction": 0.6651437785541521,
+        "fill_distance": 0.07273050886991937,
+        "mean_distance": 0.008526552003004737,
+        "grid_tolerance": 0.002,
+        "envelope_area": 0.25
+      },
+      "hull_area_fraction_DEPRECATED": 0.9260080581847678,
+      "terminal_y_max": 0.3678794411714424,
+      "terminal_states_sample": [
+        {
+          "label": "rand_000",
+          "values": [
+            0.00649999746117636,
+            0.0,
+            0.0041189957064033025,
+            2.1410599343787324,
+            0.0,
+            0.0012685824304617007,
+            0.18058934111337813,
+            5.749752186032292
+          ],
+          "terminal": [
+            0.8417113580730091,
+            0.12099802232352791
+          ]
+        },
+        {
+          "label": "rand_001",
+          "values": [
+            0.31463811709880574,
+            0.0,
+            0.005950807378440658,
+            0.0,
+            0.0,
+            1.2832889305773996,
+            5.841583708555369,
+            0.06377053791764087
+          ],
+          "terminal": [
+            0.46531307000329303,
+            0.3431981517468468
+          ]
+        },
+        {
+          "label": "rand_002",
+          "values": [
+            2.2688982411124283,
+            7.773237112715446,
+            0.09842412369731449,
+            0.04755641735493851,
+            0.2808727489590817,
+            0.0,
+            0.042653079701838,
+            0.008496748198599741
+          ],
+          "terminal": [
+            0.050753616525560104,
+            0.11800910009864832
+          ]
+        }
+      ]
+    }
+  },
+  "witness_membership": {
+    "reachable_with_G10_before_t5": true,
+    "excluded_for_G0.1_at_every_time": true
+  },
+  "conclusion": "The reachable visited set depends on the control bound G (claim C7 of report_01.md is refuted). The earlier G-insensitivity was an artifact of the convex-hull area diagnostic, which a single one-dimensional curve can fill. The corrected diagnostic (one-sided fill distance) is G-sensitive.",
+  "figure_error": "\nx\\ge x_G\n ^\nParseFatalException: Unknown symbol: \\ge, found '\\'  (at char 1), (line:1, col:2)",
+  "wall_seconds": 142.25797007791698
+}

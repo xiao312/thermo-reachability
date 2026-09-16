@@ -11,6 +11,29 @@ is replayable.
 
 from __future__ import annotations
 
+import numpy as np
+
+
+def gamma_integral_of(values, durations, times) -> np.ndarray:
+    """Gamma(t) = int_0^t gamma(s) ds for a piecewise-constant control.
+
+    Correct form: Gamma(t) = sum_j gamma_j * clip(t - t_j, 0, dt_j), where t_j is
+    the (immutable) start of segment j. Per segment we ASSIGN rather than
+    accumulate, because entries already hold the preceding segments'
+    contributions. Cantera-free so the switched-exposure bookkeeping is directly
+    unit-testable (audit A03).
+    """
+    times = np.asarray(times, dtype=float)
+    out = np.zeros_like(times)
+    t_acc, g_acc = 0.0, 0.0
+    for val, dur in zip(values, durations):
+        dur = float(dur)
+        mask = times > t_acc
+        out[mask] = g_acc + float(val) * np.minimum(times[mask] - t_acc, dur)
+        g_acc += float(val) * dur
+        t_acc += dur
+    return out
+
 from dataclasses import dataclass
 
 import numpy as np

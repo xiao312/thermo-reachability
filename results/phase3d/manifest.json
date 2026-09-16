@@ -1,0 +1,17 @@
+{
+  "run_id": "phase3d",
+  "timestamp_utc": "2026-09-16T09:21:19.666331+00:00",
+  "host": "server40902",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:ab3447142b8fc69f",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "inlet_temperature": 1200.0,
+    "seed": 20260916,
+    "horizon": 0.1,
+    "gamma_bounds": [
+      10.0,
+      100000.0
+    ]
+  }
+}

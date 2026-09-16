@@ -44,27 +44,34 @@ def compare(c: CSTR, history: History, q0: np.ndarray, label: str,
     ref = c.integrate(history, q0, method="Radau", samples_per_segment=2001,
                       rtol=1e-12, atol_T=1e-10, atol_Y=1e-18)
     if not ref["success"]:
-        return {"label": label, "passed": False, "message": ref["message"]}
+        return {"label": label, "passed": False, "regime": "integration_failed",
+                "message": ref["message"]}
+    # Evaluate the reference EXACTLY at comparison times via dense output
+    # instead of linearly interpolating the stored uniform grid (audit A14).
+    eval_ref = ref["evaluate_dense"]
     t_ref, s_ref = ref["times"], ref["states"]
-    out = {"label": label, "reference": {"n_times": t_ref.size,
-                                        "T_final": float(s_ref[0, -1])},
+    out = {"label": label,
+           "reference": {"n_times": t_ref.size, "T_final": float(s_ref[0, -1]),
+                          "rtol": 1e-12, "atol_T": 1e-10, "atol_Y": 1e-18,
+                          "samples_per_segment": 2001},
            "levels": []}
     prev = None
     for lvl in levels:
         sp = strang_integrate(c, history, q0, steps_per_segment=lvl)
         ts, ss = sp["times"], sp["states"]
-        err_T = float(np.max(np.abs(np.interp(ts, t_ref, s_ref[0]) - ss[0])))
-        err_Y = float(np.max(np.abs(
-            np.stack([np.interp(ts, t_ref, s_ref[1 + k]) - ss[1 + k]
-                      for k in range(c.gas.n_species)], axis=0))))
-        # chemistry-substep input error: pre-R states vs unsplit at substep times
+        s_ref_at_ts = eval_ref(ts)
+        err_T = float(np.max(np.abs(s_ref_at_ts[0] - ss[0])))
+        err_Y = float(np.max(np.abs(s_ref_at_ts[1:] - ss[1:])))
+        # Chemistry-substep input error: pre-R states vs the unsplit solution at
+        # the SAME absolute times. Note the interpretation (audit A14 / part D):
+        # a first-order stage displacement is *expected* for Strang and is not
+        # by itself a convergence failure (q_preR - q(t+dt/2) = -(dt/2) f + O(dt^2)).
         pre = sp["pre_R_states"]
         if pre is not None and pre.size:
             tsub = sp["substep_times"]
-            pre_err_T = float(np.max(np.abs(np.interp(tsub, t_ref, s_ref[0]) - pre[0])))
-            pre_err_Y = float(np.max(np.abs(
-                np.stack([np.interp(tsub, t_ref, s_ref[1 + k]) - pre[1 + k]
-                          for k in range(c.gas.n_species)], axis=0))))
+            s_ref_at_sub = eval_ref(tsub)
+            pre_err_T = float(np.max(np.abs(s_ref_at_sub[0] - pre[0])))
+            pre_err_Y = float(np.max(np.abs(s_ref_at_sub[1:] - pre[1:])))
         else:
             pre_err_T = pre_err_Y = None
         order = None
@@ -72,20 +79,26 @@ def compare(c: CSTR, history: History, q0: np.ndarray, label: str,
             order = float(np.log(prev["err_T"] / err_T) / np.log(2.0))
         rec = {"steps_per_segment": lvl, "dt": float(history.durations[0] / lvl),
                "err_T": err_T, "err_Y": err_Y,
-               "err_T_vs_unsplit": err_T, "err_Y_vs_unsplit": err_Y,
                "pre_R_err_T": pre_err_T, "pre_R_err_Y": pre_err_Y,
                "observed_order_T": order,
                "final_T_split": float(ss[0, -1]),
                "final_T_unsplit": float(s_ref[0, -1])}
         out["levels"].append(rec)
         prev = rec
-    # Pass criterion: errors decrease with refinement, the finest level is
-    # substantially accurate, and the asymptotic order is at least ~1.5
-    # (formal Strang order is 2; stiff ignition keeps early levels pre-asymptotic).
+    # Regime classification (audit A02). This is not a pass/fail of the
+    # physics: it distinguishes
+    #   reference_precision : error already at the reference-solution precision
+    #                        floor, so the observed "order" is meaningless noise;
+    #   asymptotic_order2   : asymptotic regime reached (order approaching 2);
+    #   pre_asymptotic      : at the finest tested dt the order is still climbing
+    #                        toward the formal value of 2 (an honest negative).
     errs = [r["err_T"] for r in out["levels"]]
     orders = [r["observed_order_T"] for r in out["levels"] if r["observed_order_T"]]
-    out["passed"] = bool(errs[-1] < 0.25 * errs[0] and errs[-1] < 50.0
-                         and max(orders[-2:]) >= 1.5)
+    ref_floor = 1e-2  # K; see reference_uncertainty below
+    out["regime"] = ("reference_precision" if errs[-1] < ref_floor
+                     else "asymptotic_order2" if orders and max(orders[-2:]) >= 1.5
+                     else "pre_asymptotic")
+    out["passed"] = out["regime"] != "pre_asymptotic"
     return out
 
 

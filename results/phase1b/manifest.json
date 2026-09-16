@@ -1,0 +1,14 @@
+{
+  "run_id": "phase1b",
+  "timestamp_utc": "2026-09-16T08:44:44.958976+00:00",
+  "host": "server40902",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:83aea84a09f081d8",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "horizon": 5.0,
+    "n_hist": 400,
+    "n_seg": 8,
+    "seed": 20260916
+  }
+}

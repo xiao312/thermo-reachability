@@ -5,7 +5,7 @@
     "python": "3.12.14",
     "executable": "/data2/kexiao/conda-envs/tr/bin/python",
     "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
-    "host": "redacted-host",
+    "host": "server40902",
     "visible_logical_cpus": 112,
     "cpu_affinity_count": 112,
     "packages": {

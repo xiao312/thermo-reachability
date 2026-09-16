@@ -50,21 +50,37 @@ class ReactorNetCheck:
 
         times = np.asarray(times, dtype=float)
         states = np.zeros((q0.size, times.size))
+        # Immutable cumulative switch times (audit A04): a segment endpoint must
+        # never be derived from the previous *output* time, or the switch drifts
+        # forward as the output grid advances and may never be reached.
+        switches = np.cumsum(np.asarray(history.durations, dtype=float))
         t_acc = 0.0
         seg_idx = 0
         for i, t in enumerate(times):
-            # advance to absolute time t, switching mdot at segment boundaries
-            while t_acc < t - 1e-15 and seg_idx < len(history.values):
-                seg_end = t_acc + float(history.durations[seg_idx])
-                target = min(t, seg_end)
-                net.advance(target)
-                t_acc = target
-                if t_acc >= seg_end - 1e-15 and seg_idx + 1 < len(history.values):
-                    seg_idx += 1
-                    mdot = float(history.values[seg_idx]) * m0
-                    mfc_in.mass_flow_rate = mdot
-                    mfc_out.mass_flow_rate = mdot
+            # advance to absolute time t, switching mdot exactly at each
+            # discontinuity that lies strictly before t
+            while seg_idx + 1 < len(history.values) and t >= switches[seg_idx] - 1e-15:
+                net.advance(switches[seg_idx])          # land exactly on the switch
+                t_acc = float(switches[seg_idx])
+                seg_idx += 1
+                mdot = float(history.values[seg_idx]) * m0
+                mfc_in.mass_flow_rate = mdot
+                mfc_out.mass_flow_rate = mdot
+                # Restart the ODE system at the discontinuity so the solver
+                # does not carry stale step-size/controller history across it.
+                if hasattr(net, "reinitialize"):
+                    net.reinitialize()
+            if t > t_acc + 1e-15:
+                net.advance(t)
+                t_acc = float(t)
             states[0, i] = reactor.T
-            states[1:, i] = reactor.thermo.Y
+            # Cantera >= 3.2 renamed ReactorBase.thermo -> phase.
+            thermo = getattr(reactor, "phase", None)
+            if thermo is None:
+                thermo = reactor.thermo
+            states[1:, i] = thermo.Y
         return {"times": times, "states": states, "success": True,
-                "n_steps": int(net.n_steps) if hasattr(net, "n_steps") else None}
+                "n_steps": int(net.n_steps) if hasattr(net, "n_steps") else None,
+                "final_seg_idx": seg_idx, "exposure_check": float(
+                    np.sum(np.asarray(history.values, dtype=float)
+                           * np.asarray(history.durations, dtype=float)))}

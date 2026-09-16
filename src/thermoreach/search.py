@@ -75,6 +75,64 @@ def support_analytical_envelope(c: np.ndarray, n_grid: int = 200001) -> float:
 
 
 # ---------------------------------------------------------------------------
+# Interior-coverage diagnostics
+# ---------------------------------------------------------------------------
+
+
+def interior_coverage(cloud: np.ndarray, n_grid: int = 101, tol: float = 1e-3,
+                      envelope_area: float = 0.25) -> dict:
+    """Coverage of the interior of the unrestricted envelope by a state cloud.
+
+    Replaces the convex-hull area fraction, which is degenerate: the single
+    zero-control batch curve alone produces hull fractions 0.129 / 0.933 / 1.000
+    at horizons 1 / 5 / 20 while the curve itself has zero two-dimensional area
+    (audit section 5, claim C7 refuted).
+
+    This instead measures, for a grid of points strictly inside the envelope
+    {0 < x < 1, 0 < y < -x log x}, the distance to the NEAREST cloud point - a
+    one-sided fill distance. A curve has a large fill distance no matter how
+    long it is, because it cannot cover area.
+    """
+    xs = np.linspace(1.0 / n_grid, 1.0 - 1.0 / n_grid, n_grid)
+    pts = []
+    for x in xs:
+        ymax = -x * np.log(x)
+        ys = np.linspace(1.0 / n_grid * ymax, ymax * (1 - 1.0 / n_grid), n_grid)
+        pts.append(np.stack([np.full_like(ys, x), ys], axis=1))
+    grid = np.concatenate(pts, axis=0)              # (M, 2)
+    cloud = np.asarray(cloud, dtype=float)
+    if cloud.size == 0 or cloud.shape[0] != 2:
+        return {"n_grid_points": grid.shape[0], "covered_fraction": 0.0,
+                "fill_distance": float("inf"), "mean_distance": float("inf")}
+    from scipy.spatial.distance import cdist
+    d = cdist(grid, cloud.T).min(axis=1)          # (M,) nearest-cloud distance
+    return {"n_grid_points": int(grid.shape[0]),
+            "covered_fraction": float(np.mean(d < tol)),
+            "fill_distance": float(d.max()),
+            "mean_distance": float(d.mean()),
+            "grid_tolerance": tol,
+            "envelope_area": envelope_area}
+
+
+def projected_area(states: np.ndarray) -> float:
+    """Projected area of the witnessed point cloud in (x,y) via the convex hull.
+
+    DEPRECATED as a coverage diagnostic (audit section 5): a single
+    one-dimensional curve has zero area yet yields hull fractions 0.129 / 0.933 /
+    1.000 over horizons 1 / 5 / 20. Retained for continuity; use
+    ``interior_coverage`` instead.
+    """
+    from scipy.spatial import ConvexHull
+    pts = np.unique(np.asarray(states, dtype=float).T, axis=0)
+    if pts.shape[0] < 3:
+        return 0.0
+    try:
+        return float(ConvexHull(pts).volume)
+    except Exception:
+        return 0.0
+
+
+# ---------------------------------------------------------------------------
 # Direct shooting optimization of a selected extremum
 # ---------------------------------------------------------------------------
 

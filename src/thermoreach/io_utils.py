@@ -33,31 +33,58 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def source_tree_hash(cwd: Path, patterns: tuple[str, ...] = ("src", "scripts")) -> str:
+    """sha256 of all Python sources under the given subdirectories.
+
+    Fallback code identity when the working tree is not a git repository (the
+    compute server receives a synced copy without .git), so a manifest never
+    carries an empty code identity (audit A12).
+    """
+    h = hashlib.sha256()
+    found = 0
+    for pat in patterns:
+        base = cwd / pat
+        if not base.is_dir():
+            continue
+        for p in sorted(base.rglob("*.py")):
+            h.update(p.relative_to(cwd).as_posix().encode())
+            h.update(p.read_bytes())
+            found += 1
+    return f"src-sha256:{h.hexdigest()[:16]}" if found else "<no-sources>"
+
+
 def git_revision(cwd: Path) -> str:
     try:
         rev = subprocess.run(["git", "rev-parse", "HEAD"], cwd=cwd, capture_output=True,
                              text=True, timeout=15).stdout.strip()
         dirty = subprocess.run(["git", "status", "--porcelain"], cwd=cwd, capture_output=True,
                                text=True, timeout=15).stdout.strip()
-        return f"{rev}{' (dirty)' if dirty else ''}"
-    except Exception as exc:  # pragma: no cover - environment-dependent
-        return f"<git-unavailable: {exc}>"
+        if rev:
+            return f"{rev}{' (dirty)' if dirty else ''}"
+    except Exception:
+        pass
+    # Not a git repo, or git unavailable: fall back to a source-tree hash.
+    return source_tree_hash(cwd)
 
 
-def manifest(run_id: str, out_dir: Path, config: dict, *, cwd: Path, extra: dict | None = None) -> dict:
+def manifest(run_id: str, out_dir: Path, config: dict, *, cwd: Path,
+               extra: dict | None = None, manifest_name: str = "manifest.json") -> dict:
     """Write and return a run manifest. Collects no credentials."""
+    code_id = git_revision(cwd)
     m = {
         "run_id": run_id,
         "timestamp_utc": utc_now(),
         "host": socket.gethostname(),
         "platform": platform.platform(),
-        "git_revision": git_revision(cwd),
+        "git_revision": code_id,
+        "code_identity_note": ("git revision when available, otherwise a sha256 "
+                                "over all Python sources under src/ and scripts/"),
         "config": config,
     }
     if extra:
         m.update(extra)
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "manifest.json").write_text(json.dumps(m, indent=2) + "\n")
+    (out_dir / manifest_name).write_text(json.dumps(m, indent=2) + "\n")
     return m
 
 

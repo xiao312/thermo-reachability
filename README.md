@@ -8,19 +8,22 @@ every history?
 
 Research specification: `thermochemical_reachability_handoff/LOCAL_AGENT_PROMPT.md`.
 
-**First tranche (Phases 0–3) is complete.** See `reports/report_01.md` and
-`claims.md`. Phases 4–6 (counterflow flamelet continuation, reduced flamelet
-transients, reaction-invariant enclosures) are deferred by design.
+**First tranche (Phases 0–3) is complete.** See `reports/report_01.md` (original)
+and `reports/report_02.md` (audit revision). `claims.md` is the claim ledger,
+including every claim retracted or narrowed after audit. Phases 4–6 (counterflow
+flamelet continuation, reduced flamelet transients, reaction-invariant
+enclosures) are deferred by design.
 
 ## What is here
 
 | Path | Contents |
 |------|----------|
 | `src/thermoreach/` | Package: toy reactor + exact propagator, control histories, detailed-chemistry CSTR, Cantera cross-check, envelopes/metrics, Strang splitting |
-| `scripts/` | Executable experiments, Phases 0–3C (the reproducible source of truth) |
-| `tests/` | pytest suite (13 tests, all passing) |
+| `scripts/` | Executable experiments, Phases 0–3D (the reproducible source of truth) |
+| `tests/` | pytest suite: `test_toy.py` (Cantera-free), `test_reactor.py` (Cantera), `test_cli_smoke.py` (end-to-end CLIs) — 39 tests, all passing |
 | `results/<phase>/` | Raw results, manifests, figures |
 | `reports/report_01.md` | First report |
+| `reports/report_02.md` | Audit revision report (read this first for current claims) |
 | `claims.md` | Claim ledger with assumptions, status and evidence pointers |
 | `sources.md` | Sources, versions, access dates |
 | `research_log.md` | Chronological log, including bugs found and fixed |

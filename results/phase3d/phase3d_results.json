@@ -1,0 +1,2227 @@
+{
+  "timestamp_utc": "2026-09-16T09:06:12.144376+00:00",
+  "mechanism": {
+    "mechanism": "h2o2.yaml",
+    "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+    "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+    "phase": "ohmech",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "elements": [
+      "O",
+      "H",
+      "Ar",
+      "N"
+    ],
+    "n_reactions": 29,
+    "input_header": {
+      "description": "Hydrogen-Oxygen submechanism extracted from GRI-Mech 3.0.\nModified from the original to include N2.\n\nRedlich-Kwong coefficients are based on tabulated critical properties or\nestimated according to the method of Joback and Reid, \"Estimation of pure-\ncomponent properties from group-contributions,\" Chem. Eng. Comm. 57 (1987)\n233-243",
+      "generator": "ck2yaml",
+      "input-files": [
+        "h2o2.inp",
+        "gri30_tran.dat"
+      ],
+      "cantera-version": "2.5.0",
+      "date": "Wed, 11 Dec 2019 16:59:04 -0500"
+    }
+  },
+  "config": {
+    "mechanism": "h2o2.yaml",
+    "pressure": 101325.0,
+    "inlet_temperature": 1200.0,
+    "fuel": "H2",
+    "oxidizer": "O2:1,N2:3.76",
+    "equivalence_ratio": 1.0,
+    "reactor_mass": 1.0,
+    "rtol": 1e-08,
+    "atol_T": 1e-06,
+    "atol_Y": 1e-14,
+    "phase": null
+  },
+  "admissible_class": {
+    "gamma_lo": 10.0,
+    "gamma_hi": 100000.0,
+    "horizon": 0.1
+  },
+  "question": "(replacing the refuted coverage framing):\n\n    Do admissible switching histories generate independent thermochemical\n    directions not represented by the constant-control transient family, and\n    how large are those directions relative to a declared application tolerance?",
+  "fresh": [
+    {
+      "label": "fresh/m3_equal",
+      "theta": [
+        30.0,
+        1000.0,
+        33333.333333333336
+      ],
+      "durations": [
+        0.03333333333333333,
+        0.03333333333333333,
+        0.03333333333333333
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662638,
+        0.005833585638401093,
+        0.003299735286075508,
+        0.014835395365861034,
+        0.049289131608475624,
+        0.017731754208120728,
+        0.1638627099811389,
+        2.2942274589864547e-05,
+        1.140135912044236e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 114.54444444444445,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858791937739838,
+            4.066330404837808e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765343090274,
+            8.85171969090454e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858791937739839,
+              "sin_angle_to_const_ctrl_family": 3.8521886362345475e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.9444042541480377
+          ],
+          "max_sin_angle": 3.8521886362345475e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 11.454444444444446,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858763075135404,
+            1.4682215988158895e-17,
+            3.094333000714677e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765343090274,
+            8.85171969090454e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858763075135405,
+              "sin_angle_to_const_ctrl_family": 3.142569460976854e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.8431646181909228
+          ],
+          "max_sin_angle": 3.142569460976854e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.1454444444444445,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762786939435,
+            4.763738518738298e-17,
+            1.974299369631051e-17
+          ],
+          "singular_values_V_projected": [
+            0.006858765343090274,
+            8.85171969090454e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762786939435,
+              "sin_angle_to_const_ctrl_family": 3.576720881981837e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.1073424255447017e-08,
+            0.7368681683252494
+          ],
+          "max_sin_angle": 3.576720881981837e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m3_varied_dwell",
+      "theta": [
+        30.0,
+        1000.0,
+        33333.333333333336
+      ],
+      "durations": [
+        0.021234187643480718,
+        0.03362829411236311,
+        0.045137518244156176
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662632,
+        0.005833585638401112,
+        0.0032997352860755008,
+        0.01483539536586098,
+        0.04928913160847565,
+        0.017731754208120856,
+        0.16386270998113872,
+        2.2942274589864564e-05,
+        1.1401359120442491e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 114.54444444444445,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858791937735868,
+            6.333739173274093e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765780015113,
+            1.9662287938951223e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.00685879193773587,
+              "sin_angle_to_const_ctrl_family": 6.925145139185476e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.580956827951785e-08,
+            0.4976104104712197
+          ],
+          "max_sin_angle": 6.925145139185476e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 11.454444444444446,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858763075214806,
+            7.969924128130485e-18,
+            1.7623926016333436e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765780015113,
+            1.9662287938951223e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858763075214806,
+              "sin_angle_to_const_ctrl_family": 5.651533984923249e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.509866451904695
+          ],
+          "max_sin_angle": 5.651533984923249e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.1454444444444445,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762786343931,
+            1.9469114826629512e-16,
+            6.015888046649109e-17
+          ],
+          "singular_values_V_projected": [
+            0.006858765780015113,
+            1.9662287938951223e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762786343931,
+              "sin_angle_to_const_ctrl_family": 6.4190099180567325e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.3235359353173274
+          ],
+          "max_sin_angle": 6.4190099180567325e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m3_pulse_hold",
+      "theta": [
+        33333.333333333336,
+        3000.0,
+        3000.0
+      ],
+      "durations": [
+        0.004,
+        0.02,
+        0.02
+      ],
+      "horizon": 0.044,
+      "endpoint": [
+        2511.988092790253,
+        0.004603475075814632,
+        0.0012902229643478877,
+        0.0074190040800036165,
+        0.02933149969804876,
+        0.02129307581732583,
+        0.19093013075730808,
+        8.595074355225242e-06,
+        3.9103137073422496e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 131.11111111111111,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06285191735469121,
+            1.807580259792517e-18,
+            1.5938046291727313e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169593814197,
+            2.08019743307893e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06285191735469123,
+              "sin_angle_to_const_ctrl_family": 2.5120716634340187e-09
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.7456730356722805
+          ],
+          "max_sin_angle": 2.5120716634340187e-09
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 13.11111111111111,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284179282829318,
+            9.534065753841824e-18,
+            1.9659993416400437e-18
+          ],
+          "singular_values_V_projected": [
+            0.06284169593814197,
+            2.08019743307893e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284179282829316,
+              "sin_angle_to_const_ctrl_family": 2.3808179349819995e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.6784451556921054
+          ],
+          "max_sin_angle": 2.3808179349819995e-11
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.3111111111111111,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628416915246492,
+            3.2263962656828495e-17,
+            7.49432342646456e-18
+          ],
+          "singular_values_V_projected": [
+            0.06284169593814197,
+            2.08019743307893e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0628416915246492,
+              "sin_angle_to_const_ctrl_family": 1.0638095875983233e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.8044364900493228
+          ],
+          "max_sin_angle": 1.0638095875983233e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m4_equal",
+      "theta": [
+        30.0,
+        310.7232505953858,
+        3218.2979486854297,
+        33333.333333333336
+      ],
+      "durations": [
+        0.025,
+        0.025,
+        0.025,
+        0.025
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662634,
+        0.005833585638401108,
+        0.003299735286075505,
+        0.014835395365860983,
+        0.049289131608475756,
+        0.017731754208120752,
+        0.16386270998113875,
+        2.2942274589864594e-05,
+        1.1401359120442409e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 92.23088633153539,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858781685440962,
+            1.6894236611747738e-18,
+            6.761168233941721e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765525077108,
+            1.356013870071057e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858781685440962,
+              "sin_angle_to_const_ctrl_family": 4.5068207414202056e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.16082759393862034
+          ],
+          "max_sin_angle": 4.5068207414202056e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 9.223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762972587308,
+            2.2974578453918034e-17,
+            1.31520547055813e-17,
+            8.629780373111392e-19
+          ],
+          "singular_values_V_projected": [
+            0.006858765525077108,
+            1.356013870071057e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587629725873085,
+              "sin_angle_to_const_ctrl_family": 6.25388520366899e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.035087532800854124
+          ],
+          "max_sin_angle": 6.25388520366899e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.9223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762785103825,
+            1.8883538088146972e-16,
+            6.330677149736204e-17,
+            1.4561865935444433e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765525077108,
+            1.356013870071057e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762785103825,
+              "sin_angle_to_const_ctrl_family": 6.780149144166137e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.580956827951785e-08,
+            0.13556929111090968
+          ],
+          "max_sin_angle": 6.780149144166137e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m4_varied_dwell",
+      "theta": [
+        30.0,
+        310.7232505953858,
+        3218.2979486854297,
+        33333.333333333336
+      ],
+      "durations": [
+        0.024723585151739422,
+        0.016780909159180873,
+        0.04167274708941812,
+        0.016822758599661602
+      ],
+      "horizon": 0.10000000000000002,
+      "endpoint": [
+        1967.6487102662636,
+        0.00583358563840108,
+        0.0032997352860755147,
+        0.01483539536586099,
+        0.04928913160847567,
+        0.017731754208120617,
+        0.16386270998113894,
+        2.2942274589864587e-05,
+        1.1401359120442318e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 92.23088633153539,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.00685878168543973,
+            1.2859603581197622e-18,
+            5.505197593687785e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765505267192,
+            1.2102695839147462e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.00685878168543973,
+              "sin_angle_to_const_ctrl_family": 4.781633347512254e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.33999663322417195
+          ],
+          "max_sin_angle": 4.781633347512254e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 9.223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762972648941,
+            1.877477864057331e-17,
+            8.893182950260267e-18,
+            1.0247049891231291e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765505267192,
+            1.2102695839147462e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762972648941,
+              "sin_angle_to_const_ctrl_family": 6.634412254522658e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.0650348845221403
+          ],
+          "max_sin_angle": 6.634412254522658e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.9223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762785596875,
+            1.5355678669185656e-16,
+            9.20683528356529e-17,
+            1.6411230235664244e-17
+          ],
+          "singular_values_V_projected": [
+            0.006858765505267192,
+            1.2102695839147462e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762785596876,
+              "sin_angle_to_const_ctrl_family": 7.183610090809868e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.04885230806588587
+          ],
+          "max_sin_angle": 7.183610090809868e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m4_pulse_hold",
+      "theta": [
+        33333.333333333336,
+        3000.0,
+        3000.0,
+        3000.0
+      ],
+      "durations": [
+        0.004,
+        0.02,
+        0.02,
+        0.02
+      ],
+      "horizon": 0.064,
+      "endpoint": [
+        2511.988092790253,
+        0.0046034750758146325,
+        0.001290222964347888,
+        0.007419004080003611,
+        0.029331499698048737,
+        0.021293075817325823,
+        0.19093013075730814,
+        8.59507435522524e-06,
+        3.9103137073422475e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 105.83333333333334,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628483554194488,
+            2.2968060232936983e-18,
+            8.586999116371936e-19,
+            3.904539210241356e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169594414935,
+            2.1591895437697548e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284835541944882,
+              "sin_angle_to_const_ctrl_family": 1.63247247296411e-09
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            3.332000937312528e-08,
+            0.19673604047984333
+          ],
+          "max_sin_angle": 1.63247247296411e-09
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 10.583333333333334,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284175717551127,
+            1.4365768948974276e-17,
+            1.6069587473449235e-18,
+            5.899896513730126e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169594414935,
+            2.1591895437697548e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284175717551127,
+              "sin_angle_to_const_ctrl_family": 1.5021512558266057e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.7097008418677835
+          ],
+          "max_sin_angle": 1.5021512558266057e-11
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.0583333333333333,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284169116817381,
+            1.3560346394173695e-16,
+            3.386352541550593e-17,
+            7.174250344577858e-18
+          ],
+          "singular_values_V_projected": [
+            0.06284169594414935,
+            2.1591895437697548e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284169116817383,
+              "sin_angle_to_const_ctrl_family": 1.1498541802318358e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.8608133459239877
+          ],
+          "max_sin_angle": 1.1498541802318358e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m6_equal",
+      "theta": [
+        30.0,
+        121.97554094669347,
+        495.934419641283,
+        2016.3956369943337,
+        8198.364952831202,
+        33333.333333333336
+      ],
+      "durations": [
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666
+      ],
+      "horizon": 0.09999999999999999,
+      "endpoint": [
+        1967.6487102662634,
+        0.0058335856384011155,
+        0.003299735286075504,
+        0.014835395365860968,
+        0.04928913160847579,
+        0.01773175420812075,
+        0.16386270998113872,
+        2.2942274589864618e-05,
+        1.140135912044243e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 73.6600064729114,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858774839907685,
+            1.1759051722634362e-18,
+            6.887847316091451e-19,
+            6.0496732372271005e-19,
+            2.856710903712856e-20,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765566943391,
+            1.4473904681133374e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858774839907686,
+              "sin_angle_to_const_ctrl_family": 2.7144085261253825e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0011138610547499711
+          ],
+          "max_sin_angle": 2.7144085261253825e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 7.366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762904125796,
+            2.838101127156121e-17,
+            8.725293446109843e-18,
+            1.8074492574661543e-18,
+            9.969366042469848e-19,
+            1.0208197442644278e-20
+          ],
+          "singular_values_V_projected": [
+            0.006858765566943391,
+            1.4473904681133374e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762904125797,
+              "sin_angle_to_const_ctrl_family": 6.649611110473859e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 6.649611110473859e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.7366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0068587627850988046,
+            1.9116489527547845e-16,
+            1.3652419838970808e-16,
+            3.82727290124287e-17,
+            2.0606478325634303e-17,
+            1.7109475110397416e-19
+          ],
+          "singular_values_V_projected": [
+            0.006858765566943391,
+            1.4473904681133374e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762785098804,
+              "sin_angle_to_const_ctrl_family": 6.9907867639882705e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            2.580956827951785e-08
+          ],
+          "max_sin_angle": 6.9907867639882705e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m6_varied_dwell",
+      "theta": [
+        30.0,
+        121.97554094669347,
+        495.934419641283,
+        2016.3956369943337,
+        8198.364952831202,
+        33333.333333333336
+      ],
+      "durations": [
+        0.014881794407354848,
+        0.01563423667342664,
+        0.019401077534672035,
+        0.007969062066384392,
+        0.01726074680631309,
+        0.024853082511849006
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662636,
+        0.005833585638401082,
+        0.0032997352860755134,
+        0.014835395365861048,
+        0.04928913160847558,
+        0.017731754208120645,
+        0.16386270998113894,
+        2.2942274589864554e-05,
+        1.140135912044234e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 73.6600064729114,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858774839907685,
+            2.2615601652218147e-18,
+            1.867010893587143e-18,
+            2.902970705716917e-19,
+            2.305205934313733e-20,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765359002671,
+            1.0465344210236802e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858774839907686,
+              "sin_angle_to_const_ctrl_family": 2.995840193210584e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0033574047920188143
+          ],
+          "max_sin_angle": 2.995840193210584e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 7.366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0068587629041566645,
+            2.0520798359483194e-17,
+            1.0957992533690694e-17,
+            4.4884885571761375e-18,
+            2.3711091424926986e-18,
+            1.232246271006127e-21
+          ],
+          "singular_values_V_projected": [
+            0.006858765359002671,
+            1.0465344210236802e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587629041566645,
+              "sin_angle_to_const_ctrl_family": 7.338926332615103e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 7.338926332615103e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.7366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762784790126,
+            3.4313317540698856e-16,
+            1.4661423593057445e-16,
+            5.3234673577756203e-17,
+            1.355066947609077e-17,
+            6.042747635161888e-20
+          ],
+          "singular_values_V_projected": [
+            0.006858765359002671,
+            1.0465344210236802e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762784790127,
+              "sin_angle_to_const_ctrl_family": 7.717083258475982e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 7.717083258475982e-12
+        }
+      ]
+    },
+    {
+      "label": "fresh/m6_pulse_hold",
+      "theta": [
+        33333.333333333336,
+        3000.0,
+        3000.0,
+        3000.0,
+        3000.0,
+        3000.0
+      ],
+      "durations": [
+        0.003846153846153846,
+        0.019230769230769232,
+        0.019230769230769232,
+        0.019230769230769232,
+        0.019230769230769232,
+        0.019230769230769232
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        2511.988092790253,
+        0.004603475075814628,
+        0.0012902229643478866,
+        0.007419004080003613,
+        0.029331499698048765,
+        0.02129307581732583,
+        0.1909301307573081,
+        8.595074355225244e-06,
+        3.9103137073422496e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 80.55555555555556,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284555247333125,
+            8.52289144187156e-19,
+            4.504813643215702e-19,
+            1.4331772449704482e-19,
+            8.504280179864902e-20,
+            3.053502917854049e-22
+          ],
+          "singular_values_V_projected": [
+            0.06284169593668806,
+            2.052156299391898e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284555247333126,
+              "sin_angle_to_const_ctrl_family": 9.3957451813725e-10
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            1.4901161193847656e-08
+          ],
+          "max_sin_angle": 9.3957451813725e-10
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 8.055555555555555,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628417291296335,
+            1.4031610995642324e-17,
+            2.9683447198612844e-18,
+            2.391051364148299e-18,
+            1.0193690494297303e-18,
+            1.3232273431253632e-21
+          ],
+          "singular_values_V_projected": [
+            0.06284169593668806,
+            2.052156299391898e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0628417291296335,
+              "sin_angle_to_const_ctrl_family": 8.102149612826057e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 8.102149612826057e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.8055555555555556,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284169088801861,
+            3.071219786843724e-16,
+            7.475279052286806e-17,
+            1.9704225647182203e-17,
+            7.610942030762278e-18,
+            1.8351205783605556e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169593668806,
+            2.052156299391898e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284169088801861,
+              "sin_angle_to_const_ctrl_family": 1.21241712775849e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 1.21241712775849e-12
+        }
+      ]
+    }
+  ],
+  "hot": [
+    {
+      "label": "hot/m3_equal",
+      "theta": [
+        30.0,
+        1000.0,
+        33333.333333333336
+      ],
+      "durations": [
+        0.03333333333333333,
+        0.03333333333333333,
+        0.03333333333333333
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662636,
+        0.0058335856384010955,
+        0.0032997352860755047,
+        0.014835395365860923,
+        0.049289131608475735,
+        0.01773175420812079,
+        0.16386270998113878,
+        2.29422745898646e-05,
+        1.1401359120442405e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 114.54444444444445,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.0068587919377368625,
+            7.301664611112277e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765403017529,
+            1.438134685633459e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587919377368625,
+              "sin_angle_to_const_ctrl_family": 7.403830078218127e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.8113712688695373
+          ],
+          "max_sin_angle": 7.403830078218127e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 11.454444444444446,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.00685876307514533,
+            7.606352327547798e-18,
+            2.7872553779249046e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765403017529,
+            1.438134685633459e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858763075145332,
+              "sin_angle_to_const_ctrl_family": 6.041316698880299e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.7998395871860512
+          ],
+          "max_sin_angle": 6.041316698880299e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.1454444444444445,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762786641685,
+            7.809962706084225e-17,
+            2.2999961284653734e-17
+          ],
+          "singular_values_V_projected": [
+            0.006858765403017529,
+            1.438134685633459e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762786641685,
+              "sin_angle_to_const_ctrl_family": 6.844460637062095e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.05141317593118152
+          ],
+          "max_sin_angle": 6.844460637062095e-12
+        }
+      ]
+    },
+    {
+      "label": "hot/m3_varied_dwell",
+      "theta": [
+        30.0,
+        1000.0,
+        33333.333333333336
+      ],
+      "durations": [
+        0.021234187643480718,
+        0.03362829411236311,
+        0.045137518244156176
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662634,
+        0.005833585638401099,
+        0.00329973528607551,
+        0.014835395365861008,
+        0.049289131608475735,
+        0.017731754208120676,
+        0.16386270998113883,
+        2.2942274589864604e-05,
+        1.140135912044237e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 114.54444444444445,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858791937737853,
+            3.155814427907313e-18,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.0068587652649000205,
+            2.5383774098835266e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858791937737854,
+              "sin_angle_to_const_ctrl_family": 7.250159852615007e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            1.254195884270025
+          ],
+          "max_sin_angle": 7.250159852615007e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 11.454444444444446,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0068587630751155565,
+            7.700107316634737e-18,
+            4.3336373017826214e-18
+          ],
+          "singular_values_V_projected": [
+            0.0068587652649000205,
+            2.5383774098835266e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858763075115556,
+              "sin_angle_to_const_ctrl_family": 5.9135797314148355e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.24105098240763442
+          ],
+          "max_sin_angle": 5.9135797314148355e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.1454444444444445,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762786343928,
+            7.15287715089807e-17,
+            5.2187817146431195e-17
+          ],
+          "singular_values_V_projected": [
+            0.0068587652649000205,
+            2.5383774098835266e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762786343928,
+              "sin_angle_to_const_ctrl_family": 6.693363463678725e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.8988076395042502
+          ],
+          "max_sin_angle": 6.693363463678725e-12
+        }
+      ]
+    },
+    {
+      "label": "hot/m3_pulse_hold",
+      "theta": [
+        33333.333333333336,
+        3000.0,
+        3000.0
+      ],
+      "durations": [
+        0.004,
+        0.02,
+        0.02
+      ],
+      "horizon": 0.044,
+      "endpoint": [
+        2511.9880927902536,
+        0.004603475075814631,
+        0.0012902229643478877,
+        0.007419004080003612,
+        0.02933149969804874,
+        0.021293075817325827,
+        0.19093013075730808,
+        8.595074355225239e-06,
+        3.910313707342248e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 131.11111111111111,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06285191735469296,
+            8.545291587935131e-19,
+            8.161175553985374e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169589748853,
+            1.7080640512299932e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06285191735469296,
+              "sin_angle_to_const_ctrl_family": 1.7773786011963897e-09
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.1073424255447017e-08,
+            0.10244108543114956
+          ],
+          "max_sin_angle": 1.7773786011963897e-09
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 13.11111111111111,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284179282827583,
+            1.1590363974789244e-17,
+            5.497622098464599e-18
+          ],
+          "singular_values_V_projected": [
+            0.06284169589748853,
+            1.7080640512299932e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284179282827583,
+              "sin_angle_to_const_ctrl_family": 1.6845534119082742e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.580956827951785e-08,
+            0.20082969161311506
+          ],
+          "max_sin_angle": 1.6845534119082742e-11
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.3111111111111111,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628416915246492,
+            1.1329218626504108e-16,
+            3.4837582711987226e-17
+          ],
+          "singular_values_V_projected": [
+            0.06284169589748853,
+            1.7080640512299932e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284169152464922,
+              "sin_angle_to_const_ctrl_family": 7.527549036743988e-13
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.3781790497247912
+          ],
+          "max_sin_angle": 7.527549036743988e-13
+        }
+      ]
+    },
+    {
+      "label": "hot/m4_equal",
+      "theta": [
+        30.0,
+        310.7232505953858,
+        3218.2979486854297,
+        33333.333333333336
+      ],
+      "durations": [
+        0.025,
+        0.025,
+        0.025,
+        0.025
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662634,
+        0.005833585638401083,
+        0.0032997352860755125,
+        0.014835395365861075,
+        0.049289131608475575,
+        0.017731754208120672,
+        0.163862709981139,
+        2.2942274589864547e-05,
+        1.1401359120442383e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 92.23088633153539,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858781685438497,
+            1.0653995411075672e-18,
+            5.089152020136529e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765252746922,
+            5.095781330541103e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858781685438497,
+              "sin_angle_to_const_ctrl_family": 3.674947954104143e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.3079149126263972
+          ],
+          "max_sin_angle": 3.674947954104143e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 9.223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.00685876297255033,
+            1.922992682501409e-17,
+            9.25834011604812e-18,
+            7.633732764061124e-19
+          ],
+          "singular_values_V_projected": [
+            0.006858765252746922,
+            5.095781330541103e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762972550329,
+              "sin_angle_to_const_ctrl_family": 5.098775060159917e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.580956827951785e-08,
+            0.9031891375760142
+          ],
+          "max_sin_angle": 5.098775060159917e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.9223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.00685876278547361,
+            1.283988291280787e-16,
+            1.4738418668501173e-17,
+            1.9284390915598046e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765252746922,
+            5.095781330541103e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587627854736115,
+              "sin_angle_to_const_ctrl_family": 5.515591963909777e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            3.332000937312528e-08,
+            0.8202077814371938
+          ],
+          "max_sin_angle": 5.515591963909777e-12
+        }
+      ]
+    },
+    {
+      "label": "hot/m4_varied_dwell",
+      "theta": [
+        30.0,
+        310.7232505953858,
+        3218.2979486854297,
+        33333.333333333336
+      ],
+      "durations": [
+        0.024723585151739422,
+        0.016780909159180873,
+        0.04167274708941812,
+        0.016822758599661602
+      ],
+      "horizon": 0.10000000000000002,
+      "endpoint": [
+        1967.6487102662636,
+        0.005833585638401097,
+        0.003299735286075504,
+        0.014835395365860992,
+        0.049289131608475596,
+        0.017731754208120846,
+        0.16386270998113875,
+        2.2942274589864537e-05,
+        1.1401359120442458e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 92.23088633153539,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.0068587816854348,
+            1.8629443274858558e-18,
+            6.735818681012494e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765707234777,
+            2.02723992477505e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587816854348,
+              "sin_angle_to_const_ctrl_family": 3.7334879010045974e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.08983854782044609
+          ],
+          "max_sin_angle": 3.7334879010045974e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 9.223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762972611961,
+            2.5267987252882324e-17,
+            1.327641595658495e-17,
+            1.6800934595774456e-18
+          ],
+          "singular_values_V_projected": [
+            0.006858765707234777,
+            2.02723992477505e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587629726119615,
+              "sin_angle_to_const_ctrl_family": 5.181188673437964e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.1073424255447017e-08,
+            0.028681303399691827
+          ],
+          "max_sin_angle": 5.181188673437964e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.9223088633153539,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762785350349,
+            1.9372166310155692e-16,
+            1.2819774932964494e-16,
+            2.987580494640604e-17
+          ],
+          "singular_values_V_projected": [
+            0.006858765707234777,
+            2.02723992477505e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.00685876278535035,
+              "sin_angle_to_const_ctrl_family": 5.598468973638713e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.008548909732655938
+          ],
+          "max_sin_angle": 5.598468973638713e-12
+        }
+      ]
+    },
+    {
+      "label": "hot/m4_pulse_hold",
+      "theta": [
+        33333.333333333336,
+        3000.0,
+        3000.0,
+        3000.0
+      ],
+      "durations": [
+        0.004,
+        0.02,
+        0.02,
+        0.02
+      ],
+      "horizon": 0.064,
+      "endpoint": [
+        2511.988092790253,
+        0.004603475075814632,
+        0.0012902229643478851,
+        0.007419004080003657,
+        0.029331499698048723,
+        0.021293075817325827,
+        0.19093013075730803,
+        8.595074355225256e-06,
+        3.910313707342257e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 105.83333333333334,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284835541944879,
+            1.2486628105186823e-18,
+            3.2020896512597073e-19,
+            1.2111484941884628e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169593107772,
+            2.266017874074223e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284835541944879,
+              "sin_angle_to_const_ctrl_family": 1.2553093729121745e-09
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.3111725424156475
+          ],
+          "max_sin_angle": 1.2553093729121745e-09
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 10.583333333333334,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628417571754683,
+            1.0245482918092567e-17,
+            4.367079962910649e-18,
+            9.915105162778283e-19
+          ],
+          "singular_values_V_projected": [
+            0.06284169593107772,
+            2.266017874074223e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0628417571754683,
+              "sin_angle_to_const_ctrl_family": 1.1550290532079807e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.08415702204721996
+          ],
+          "max_sin_angle": 1.1550290532079807e-11
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 1.0583333333333333,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628416911681738,
+            1.862581541460192e-16,
+            3.526395160028242e-17,
+            1.8855410782567386e-17
+          ],
+          "singular_values_V_projected": [
+            0.06284169593107772,
+            2.266017874074223e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284169116817381,
+              "sin_angle_to_const_ctrl_family": 8.841997891019533e-13
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.6704234826656711
+          ],
+          "max_sin_angle": 8.841997891019533e-13
+        }
+      ]
+    },
+    {
+      "label": "hot/m6_equal",
+      "theta": [
+        30.0,
+        121.97554094669347,
+        495.934419641283,
+        2016.3956369943337,
+        8198.364952831202,
+        33333.333333333336
+      ],
+      "durations": [
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666,
+        0.016666666666666666
+      ],
+      "horizon": 0.09999999999999999,
+      "endpoint": [
+        1967.6487102662622,
+        0.005833585638401109,
+        0.0032997352860755047,
+        0.014835395365861054,
+        0.04928913160847571,
+        0.017731754208120707,
+        0.16386270998113875,
+        2.2942274589864618e-05,
+        1.1401359120442439e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 73.6600064729114,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858774839909228,
+            1.8596273454959096e-18,
+            1.1893422043493546e-18,
+            4.806191448844775e-19,
+            1.0452036439032367e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765362975158,
+            7.357079372399178e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.00685877483990923,
+              "sin_angle_to_const_ctrl_family": 2.6773096924746707e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            2.1073424255447017e-08,
+            0.004667025281579833
+          ],
+          "max_sin_angle": 2.6773096924746707e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 7.366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762904094927,
+            5.2603818789687404e-17,
+            1.0064939123418651e-17,
+            3.298327624282744e-18,
+            1.5827259429349957e-18,
+            1.8389987724420073e-21
+          ],
+          "singular_values_V_projected": [
+            0.006858765362975158,
+            7.357079372399178e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762904094928,
+              "sin_angle_to_const_ctrl_family": 6.555753382251242e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            2.580956827951785e-08
+          ],
+          "max_sin_angle": 6.555753382251242e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.7366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0068587627852531455,
+            3.265461514047965e-16,
+            1.8743426519087428e-16,
+            6.607223777136138e-17,
+            7.673772582824989e-18,
+            1.7961350675136326e-19
+          ],
+          "singular_values_V_projected": [
+            0.006858765362975158,
+            7.357079372399178e-10
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762785253145,
+              "sin_angle_to_const_ctrl_family": 6.9036049514807e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            2.580956827951785e-08
+          ],
+          "max_sin_angle": 6.9036049514807e-12
+        }
+      ]
+    },
+    {
+      "label": "hot/m6_varied_dwell",
+      "theta": [
+        30.0,
+        121.97554094669347,
+        495.934419641283,
+        2016.3956369943337,
+        8198.364952831202,
+        33333.333333333336
+      ],
+      "durations": [
+        0.014881794407354848,
+        0.01563423667342664,
+        0.019401077534672035,
+        0.007969062066384392,
+        0.01726074680631309,
+        0.024853082511849006
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        1967.6487102662634,
+        0.00583358563840109,
+        0.0032997352860755125,
+        0.014835395365861006,
+        0.04928913160847569,
+        0.017731754208120662,
+        0.1638627099811389,
+        2.294227458986459e-05,
+        1.1401359120442354e-06,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 73.6600064729114,
+          "all_perturbations_admissible": false,
+          "singular_values_J_projected": [
+            0.006858774839913858,
+            2.009062292166594e-18,
+            8.273100379517889e-19,
+            2.221649625799182e-19,
+            1.5726249184884876e-19,
+            0.0
+          ],
+          "singular_values_V_projected": [
+            0.006858765252625243,
+            2.0260944699074306e-11
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858774839913859,
+              "sin_angle_to_const_ctrl_family": 2.6466521601286355e-11
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            0.004639279686372361
+          ],
+          "max_sin_angle": 2.6466521601286355e-11
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 7.366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0068587629042029695,
+            4.072233051091302e-17,
+            6.848510372325086e-18,
+            2.66425743616951e-18,
+            2.751245098070727e-19,
+            1.2812877279859127e-21
+          ],
+          "singular_values_V_projected": [
+            0.006858765252625243,
+            2.0260944699074306e-11
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0068587629042029695,
+              "sin_angle_to_const_ctrl_family": 6.485779964761752e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            1.4901161193847656e-08
+          ],
+          "max_sin_angle": 6.485779964761752e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.7366000647291141,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.006858762786333525,
+            4.905698248052325e-16,
+            9.482366408455527e-17,
+            4.0753269318657144e-17,
+            5.164712580195358e-18,
+            1.7123445836015179e-19
+          ],
+          "singular_values_V_projected": [
+            0.006858765252625243,
+            2.0260944699074306e-11
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.006858762786333524,
+              "sin_angle_to_const_ctrl_family": 6.827975651143861e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            1.4901161193847656e-08,
+            2.1073424255447017e-08
+          ],
+          "max_sin_angle": 6.827975651143861e-12
+        }
+      ]
+    },
+    {
+      "label": "hot/m6_pulse_hold",
+      "theta": [
+        33333.333333333336,
+        3000.0,
+        3000.0,
+        3000.0,
+        3000.0,
+        3000.0
+      ],
+      "durations": [
+        0.003846153846153846,
+        0.019230769230769232,
+        0.019230769230769232,
+        0.019230769230769232,
+        0.019230769230769232,
+        0.019230769230769232
+      ],
+      "horizon": 0.1,
+      "endpoint": [
+        2511.988092790253,
+        0.004603475075814625,
+        0.0012902229643478866,
+        0.007419004080003655,
+        0.029331499698048626,
+        0.021293075817325858,
+        0.19093013075730814,
+        8.595074355225236e-06,
+        3.910313707342224e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "steps": [
+        {
+          "relative_step": 0.01,
+          "absolute_step": 80.55555555555556,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.0628455524733369,
+            2.714055633422817e-18,
+            1.0146579283048664e-18,
+            2.2393336037006765e-19,
+            6.385751493329454e-20,
+            6.46064968390286e-22
+          ],
+          "singular_values_V_projected": [
+            0.06284169593391206,
+            2.2099794844788877e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.0628455524733369,
+              "sin_angle_to_const_ctrl_family": 5.09544240616146e-10
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 5.09544240616146e-10
+        },
+        {
+          "relative_step": 0.001,
+          "absolute_step": 8.055555555555555,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284172912968991,
+            2.1708484161144848e-17,
+            8.828410187781585e-18,
+            3.4013484676688108e-18,
+            1.0978354775217186e-18,
+            9.822454426713193e-21
+          ],
+          "singular_values_V_projected": [
+            0.06284169593391206,
+            2.2099794844788877e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284172912968991,
+              "sin_angle_to_const_ctrl_family": 4.393657134015866e-12
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 4.393657134015866e-12
+        },
+        {
+          "relative_step": 0.0001,
+          "absolute_step": 0.8055555555555556,
+          "all_perturbations_admissible": true,
+          "singular_values_J_projected": [
+            0.06284169088745407,
+            2.9981029827018317e-16,
+            7.653511834316548e-17,
+            1.5513343018956076e-17,
+            6.755183409363826e-18,
+            8.10826942399083e-20
+          ],
+          "singular_values_V_projected": [
+            0.06284169593391206,
+            2.2099794844788877e-09
+          ],
+          "n_real_directions": 1,
+          "real_direction_alignment": [
+            {
+              "index": 0,
+              "singular_value": 0.06284169088745406,
+              "sin_angle_to_const_ctrl_family": 6.58089825754392e-13
+            }
+          ],
+          "rank_threshold_relative": 1e-08,
+          "principal_angles_rad_DEPRECATED_UNRELIABLE_IF_RANK_DEFICIENT": [
+            0.0,
+            0.0
+          ],
+          "max_sin_angle": 6.58089825754392e-13
+        }
+      ]
+    }
+  ],
+  "robustness": {
+    "fresh": {
+      "n_cases": 9,
+      "n_with_stable_third_direction": 0
+    },
+    "hot": {
+      "n_cases": 9,
+      "n_with_stable_third_direction": 0
+    }
+  },
+  "interpretation_note": "A stable third singular direction transverse to the constant-control tangent span would support a local history-generated image of dimension > 2. Small values instead indicate a thin, nearly two-dimensional reachable region. No formal rank claim is made from the SVD alone; the step-size and tolerance refinement is the actual evidence.",
+  "wall_seconds": 907.5208790609613
+}

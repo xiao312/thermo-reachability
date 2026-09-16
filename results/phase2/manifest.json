@@ -1,9 +1,10 @@
 {
   "run_id": "phase2",
-  "timestamp_utc": "2026-09-16T04:34:52.562612+00:00",
-  "host": "redacted-host",
+  "timestamp_utc": "2026-09-16T08:28:53.202677+00:00",
+  "host": "server40902",
   "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
-  "git_revision": "",
+  "git_revision": "src-sha256:ef76024aaae9d39f",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
   "config": {
     "horizon": 0.1,
     "quick": false

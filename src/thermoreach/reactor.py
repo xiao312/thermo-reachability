@@ -39,8 +39,10 @@ from scipy.integrate import solve_ivp
 
 import cantera as ct
 
-from .controls import History
-from .io_utils import sha256_file
+from .controls import History, gamma_integral_of  # noqa: E402
+from .io_utils import sha256_file  # noqa: E402
+
+__all__ = ["gamma_integral_of"]
 
 
 @dataclass
@@ -132,7 +134,12 @@ class CSTR:
         self.W = self.gas.molecular_weights
         self.mech = mechanism_record(cfg.mechanism, self.gas)
         self._set_calls = 0
-        self._max_y_renorm = 0.0  # state-setter audit: largest Y renormalization
+        # Raw-state instrumentation (audit A05): the RHS sets gas.TPY directly,
+        # so these counters must be updated on that path, not only in state().
+        self._max_y_renorm = 0.0       # largest |sum(Y_raw) - 1| seen by the setter
+        self._max_clip = 0.0           # largest negative raw component clipped
+        self._min_raw_y = 0.0          # smallest raw component seen (<=0)
+        self._n_rhs_evals = 0
 
     # ------------------------------------------------------------------
     # thermodynamic helpers
@@ -142,14 +149,27 @@ class CSTR:
         self.gas.TP = T, self.p
         return self.gas.partial_molar_enthalpies / self.gas.molecular_weights
 
-    def state(self, T: float, Y: np.ndarray) -> tuple[float, np.ndarray, float]:
-        """Set an (T, p, Y) state. Records the renormalization applied by the
-        setter so the numerical policy is auditable; the raw accepted state is
-        preserved by the caller."""
+    def _set_thermo(self, T: float, Y: np.ndarray) -> None:
+        """The state-setting path actually used by the RHS.
+
+        Records (i) the raw composition's deviation from sum(Y)=1, (ii) the
+        largest negative component that is clipped before thermochemical
+        evaluation, and (iii) the smallest raw component. These are the
+        quantities that a reported zero must actually measure.
+        """
         Y = np.asarray(Y, dtype=float)
-        s = Y.sum()
-        self._max_y_renorm = max(self._max_y_renorm, float(abs(s - 1.0)))
+        self._n_rhs_evals += 1
+        self._max_y_renorm = max(self._max_y_renorm, float(abs(Y.sum() - 1.0)))
+        neg = Y[Y < 0.0]
+        if neg.size:
+            self._max_clip = max(self._max_clip, float(-neg.min()))
+        self._min_raw_y = min(self._min_raw_y, float(Y.min()))
         self.gas.TPY = T, self.p, np.maximum(Y, 0.0)
+
+    def state(self, T: float, Y: np.ndarray) -> tuple[float, np.ndarray, float]:
+        """Set an (T, p, Y) state through the same instrumented path; the raw
+        accepted state is preserved by the caller."""
+        self._set_thermo(T, Y)
         return float(self.gas.T), self.gas.Y.copy(), float(self.gas.density)
 
     # ------------------------------------------------------------------
@@ -160,7 +180,7 @@ class CSTR:
         is checked numerically by ``check_energy_forms``."""
         T = float(q[0])
         Y = np.asarray(q[1:])
-        self.gas.TPY = T, self.p, np.maximum(Y, 0.0)
+        self._set_thermo(T, Y)
         rho = float(self.gas.density)
         omega = self.gas.net_production_rates            # kmol/m^3/s
         r = self.W * omega / rho                          # 1/s
@@ -175,7 +195,7 @@ class CSTR:
         """Alternative energy form: cp dT/dt = gamma (h_in - h) - sum h_k dY_k/dt."""
         T = float(q[0])
         Y = np.asarray(q[1:])
-        self.gas.TPY = T, self.p, np.maximum(Y, 0.0)
+        self._set_thermo(T, Y)
         rho = float(self.gas.density)
         omega = self.gas.net_production_rates
         r = self.W * omega / rho
@@ -190,17 +210,13 @@ class CSTR:
     # exact balances
     # ------------------------------------------------------------------
     def gamma_integral(self, history: History, times: np.ndarray) -> np.ndarray:
-        """Gamma(t) = int_0^t gamma(s) ds for a piecewise-constant history."""
-        times = np.asarray(times, dtype=float)
-        out = np.zeros_like(times)
-        t_acc, g_acc = 0.0, 0.0
-        for val, dur in zip(history.values, history.durations):
-            seg_end = t_acc + dur
-            mask = times > t_acc
-            out[mask] += g_acc + float(val) * np.minimum(times[mask] - t_acc, dur)
-            g_acc += float(val) * dur
-            t_acc = seg_end
-        return out
+        """Gamma(t) = int_0^t gamma(s) ds for a piecewise-constant history.
+
+        Correct form: Gamma(t) = sum_j gamma_j * clip(t - t_j, 0, dt_j) with the
+        segment start t_j immutable. Uses assignment per segment, not
+        accumulation: entries already hold the preceding segments' contributions.
+        """
+        return gamma_integral_of(history.values, history.durations, times)
 
     def exact_balances(self, q0: np.ndarray, history: History, times: np.ndarray) -> dict:
         """Predicted b(t), h(t), and T(t) from the exponential mixing law."""
@@ -233,19 +249,29 @@ class CSTR:
         the exchange timescale 1/gamma, so narrow peaks (e.g. a rapid cooling dip
         at large gamma) are captured even when the stored trajectory grid is
         coarser. Extremal states are returned separately from the grid states."""
+        # Reset raw-state instrumentation per run (audit A05).
+        self._max_y_renorm = 0.0
+        self._max_clip = 0.0
+        self._min_raw_y = 0.0
+        self._n_rhs_evals = 0
         rtol = rtol or self.cfg.rtol
         atol_T = atol_T or self.cfg.atol_T
         atol_Y = atol_Y or self.cfg.atol_Y
         atol = np.concatenate([[atol_T], np.full(self.gas.n_species, atol_Y)])
         q = np.asarray(q0, dtype=float).copy()
         ts, ys, stats, extrema = [], [], [], []
+        dense = []   # per-segment OdeSolution callables over LOCAL segment time
         t_accum = 0.0
         for val, dur in zip(history.values, history.durations):
             g = float(val)
             local = np.linspace(0.0, dur, samples_per_segment)
+            # dense_output is always requested: it costs little and lets callers
+            # evaluate the reference exactly at comparison times instead of
+            # linearly interpolating a stored uniform grid (audit A14).
             sol = solve_ivp(self.rhs, (0.0, dur), q, method=method, args=(g,),
                             t_eval=local, rtol=rtol, atol=atol, jac=None,
-                            dense_output=record_extrema)
+                            dense_output=True)
+            dense.append(sol.sol)
             if not sol.success:
                 return {"success": False, "message": sol.message,
                         "partial_times": np.concatenate(ts) if ts else np.array([]),
@@ -279,12 +305,34 @@ class CSTR:
         times = np.concatenate(ts)
         states = np.concatenate(ys, axis=1)
         ext_states = np.array([e["state"] for e in extrema]).T if extrema else np.zeros((q.size, 0))
+
+        def evaluate(times_abs: np.ndarray) -> np.ndarray:
+            """Exact dense evaluation of the integrated solution at absolute
+            times. Uses the per-segment OdeSolution callables rather than linear
+            interpolation of the stored grid (audit A14)."""
+            ta = np.asarray(times_abs, dtype=float)
+            out = np.full((q0.size, ta.size), np.nan)
+            seg_start = np.concatenate([[0.0], np.cumsum(
+                np.asarray(history.durations, dtype=float))])
+            for j in range(len(dense)):
+                lo, hi = seg_start[j], seg_start[j + 1]
+                m = (ta >= lo - 1e-15) & (ta <= hi + 1e-15)
+                if m.any():
+                    out[:, m] = dense[j](np.clip(ta[m] - lo, 0.0, hi - lo))
+            return out
         return {
             "success": True, "message": "ok", "times": times, "states": states,
             "terminal_state": states[:, -1], "solver_stats": stats,
-            "max_state_renorm": self._max_y_renorm, "method": method,
+            "raw_state_diagnostics": {
+                "max_sum_y_deviation": self._max_y_renorm,
+                "max_clipped_negative": self._max_clip,
+                "min_raw_component": self._min_raw_y,
+                "n_thermo_evaluations": self._n_rhs_evals,
+            },
+            "method": method,
             "rtol": rtol, "atol": atol.tolist(),
             "extrema": extrema, "extrema_states": ext_states,
+            "evaluate_dense": evaluate,
         }
 
     # ------------------------------------------------------------------

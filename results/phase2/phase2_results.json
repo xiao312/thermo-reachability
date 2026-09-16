@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-16T04:34:49.003418+00:00",
+  "timestamp_utc": "2026-09-16T08:28:48.571567+00:00",
   "mechanism": {
     "mechanism": "h2o2.yaml",
     "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
@@ -122,8 +122,21 @@
     "elemental_source_Er_max_abs": 2.2351741790771484e-08,
     "source_scale_max_abs": 90643637.7735158,
     "elemental_source_Er_relative": 2.4658919632749116e-16,
-    "left_nullspace_dim": 0,
-    "note": "The all-ones vector spans the trivial total-mass invariant; inert species appear as additional left-nullspace directions. E.r is a roundoff-level residual relative to the source magnitude.",
+    "left_nullspace_dim_DEPRECATED": 6,
+    "chemical_invariants": {
+      "n_species": 10,
+      "n_reactions": 29,
+      "rank_B": 6,
+      "rank_nu": 6,
+      "chemical_invariant_dim": 4,
+      "elemental_rank": 4,
+      "invariants_annihilate_source_relative": 1.6824575374427785e-16,
+      "elemental_rows_are_invariants": true,
+      "rows_of_E_span_invariant_space": true,
+      "note": "Chemical invariants are ker(B^T) with B = diag(W)*nu, dimension n_species - rank(B). They are spanned by the rows of the elemental matrix E (elemental mass-fraction vectors), NOT by the left nullspace of E, which is trivial here.",
+      "passed": true
+    },
+    "note": "Chemical invariants are ker(B^T) with B = diag(W)*nu, reported under `chemical_invariants`; they are spanned by the rows of E (elemental mass fractions). The old `left_nullspace_dim` field measured the left nullspace of E itself and is deprecated: it is 0 here for a mechanism with 4 true invariants.",
     "passed": true
   },
   "closed_energy": {
@@ -151,7 +164,12 @@
         900.0,
         900.0000126477138
       ],
-      "max_state_renorm": 0.0,
+      "raw_state_diagnostics": {
+        "max_sum_y_deviation": 1.110320702046863e-08,
+        "max_clipped_negative": 1.7972898422347481e-12,
+        "min_raw_component": -1.7972898422347481e-12,
+        "n_thermo_evaluations": 344
+      },
       "terminal_state": [
         900.0000126477138,
         0.028522387111258898,
@@ -181,7 +199,12 @@
         1100.0,
         3511.465774912618
       ],
-      "max_state_renorm": 0.0,
+      "raw_state_diagnostics": {
+        "max_sum_y_deviation": 1.1103206798424026e-08,
+        "max_clipped_negative": 2.9890983567059546e-13,
+        "min_raw_component": -2.9890983567059546e-13,
+        "n_thermo_evaluations": 12575
+      },
       "terminal_state": [
         2624.932468444114,
         0.0033674660740688777,
@@ -211,7 +234,12 @@
         2653.3703333371022,
         2655.080272126141
       ],
-      "max_state_renorm": 0.0,
+      "raw_state_diagnostics": {
+        "max_sum_y_deviation": 1.110320702046863e-08,
+        "max_clipped_negative": 0.0,
+        "min_raw_component": 0.0,
+        "n_thermo_evaluations": 471
+      },
       "terminal_state": [
         2653.3703333459057,
         0.0027358080448547013,
@@ -241,7 +269,12 @@
         2507.829594470422,
         2655.080272126141
       ],
-      "max_state_renorm": 0.0,
+      "raw_state_diagnostics": {
+        "max_sum_y_deviation": 1.1103206798424026e-08,
+        "max_clipped_negative": 0.0,
+        "min_raw_component": 0.0,
+        "n_thermo_evaluations": 1574
+      },
       "terminal_state": [
         2507.8295944746214,
         0.003505329236965597,
@@ -271,7 +304,12 @@
         1550.280662881961,
         2655.080272126141
       ],
-      "max_state_renorm": 0.0,
+      "raw_state_diagnostics": {
+        "max_sum_y_deviation": 1.110320746455784e-08,
+        "max_clipped_negative": 0.0,
+        "min_raw_component": 0.0,
+        "n_thermo_evaluations": 3478
+      },
       "terminal_state": [
         1550.2806628819828,
         0.007449359314503628,
@@ -439,6 +477,6 @@
       "passed": true
     }
   ],
-  "wall_seconds": 3.5673995409160852,
+  "wall_seconds": 4.626673766411841,
   "all_passed": true
 }

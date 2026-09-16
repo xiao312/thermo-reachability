@@ -34,12 +34,87 @@ from thermoreach.reactornet_check import ReactorNetCheck  # noqa: E402
 
 
 def nullspace(E: np.ndarray, tol: float = 1e-10) -> np.ndarray:
-    """Orthonormal basis of the left nullspace of E (in consistent mass
-    coordinates): vectors v with v.E = 0, i.e. linear invariants of the
-    chemical source in mass-fraction space."""
+    """Orthonormal basis of the (right) nullspace of E."""
     u, s, vh = np.linalg.svd(E)
     rank = int(np.sum(s > tol * s[0]))
-    return u[:, rank:]
+    return vh[rank:].T
+
+
+def net_stoich(gas: ct.Solution) -> np.ndarray:
+    """Net stoichiometry nu[k, j] = products - reactants (molar) for reaction j.
+
+    With the mass source r = diag(W) nu xi_dot / rho, the chemical invariants in
+    mass-fraction space are the row vectors l with l^T diag(W) nu = 0, i.e.
+    l in ker(B^T) for B = diag(W) nu (audit A06).
+    """
+    n_sp, n_rxn = gas.n_species, gas.n_reactions
+    nu = np.zeros((n_sp, n_rxn))
+    for j in range(n_rxn):
+        rxn = gas.reaction(j)
+        for k, coeff in rxn.products.items():
+            nu[gas.species_index(k), j] += float(coeff)
+        for k, coeff in rxn.reactants.items():
+            nu[gas.species_index(k), j] -= float(coeff)
+    return nu
+
+
+def chemical_invariants(c: CSTR, tol: float = 1e-9) -> dict:
+    """Independent conservation directions of the chemical source.
+
+    A vector l (mass-fraction-space row) is a chemical invariant iff
+    l^T r = 0 for every admissible reaction rate, i.e. l^T B = 0 with
+    B = diag(W) nu.  The invariant space is therefore ker(B^T), whose dimension
+    is n_species - rank(B).  This is NOT the left nullspace of the elemental
+    matrix E: E has full row rank for this mechanism, so its left nullspace is
+    trivial, while the true invariant space is spanned by the ROWS of E
+    (elemental mass-fraction vectors) and has dimension 4 for the pinned
+    10-species, 29-reaction h2o2 mechanism.
+    """
+    gas = c.gas
+    E = c.E
+    nu = net_stoich(gas)
+    B = c.W[:, None] * nu                    # diag(W) nu, n_sp x n_rxn
+    u, s, vh = np.linalg.svd(B)
+    rank_B = int(np.sum(s > tol * s[0]))
+    s_nu = np.linalg.svd(nu, compute_uv=False)
+    rank_nu = int(np.sum(s_nu > tol * s_nu[0]))
+    # ker(B^T): left singular vectors of B with negligible singular values
+    invariants = u[:, rank_B:]               # n_sp x (n_sp - rank_B)
+    n_inv = int(invariants.shape[1])
+    # cross-check: the rows of E must BE chemical invariants (E.B = 0) and must
+    # span the same space, so each unit row of E projects onto the invariant
+    # basis with norm 1, and rank(E) == n_inv.
+    Er = E / np.maximum(np.linalg.norm(E, axis=1, keepdims=True), 1e-300)
+    proj_norm = np.linalg.norm(Er @ invariants, axis=1)
+    same_span = bool(np.allclose(proj_norm, 1.0, atol=1e-8)
+                     and n_inv == int(np.linalg.matrix_rank(E)))
+    # empirical check: annihilate the actual source at random states
+    rng = np.random.default_rng(11)
+    worst = 0.0
+    scale = 0.0
+    for _ in range(5):
+        T = float(rng.uniform(700.0, 2500.0))
+        Y = np.maximum(rng.random(gas.n_species), 0.0)
+        Y /= Y.sum()
+        gas.TPY = T, c.p, Y
+        r = c.W * gas.net_production_rates / float(gas.density)
+        worst = max(worst, float(np.max(np.abs(invariants.T @ r))))
+        scale = max(scale, float(np.max(np.abs(r))))
+    return {
+        "n_species": gas.n_species, "n_reactions": gas.n_reactions,
+        "rank_B": rank_B, "rank_nu": rank_nu,
+        "chemical_invariant_dim": n_inv,
+        "elemental_rank": int(np.linalg.matrix_rank(E)),
+        "invariants_annihilate_source_relative": worst / max(scale, 1.0),
+        "elemental_rows_are_invariants": bool(np.allclose(E @ B, 0.0, atol=1e-8)),
+        "rows_of_E_span_invariant_space": same_span,
+        "note": ("Chemical invariants are ker(B^T) with B = diag(W)*nu, dimension "
+                 "n_species - rank(B). They are spanned by the rows of the "
+                 "elemental matrix E (elemental mass-fraction vectors), NOT by "
+                 "the left nullspace of E, which is trivial here."),
+        "passed": bool(n_inv == int(np.linalg.matrix_rank(E))
+                       and worst / max(scale, 1.0) < 1e-9),
+    }
 
 
 def check_energy_forms(c: CSTR, n_states: int = 5, seed: int = 7) -> dict:
@@ -82,18 +157,25 @@ def check_elemental(c: CSTR) -> dict:
         r = c.W * c.gas.net_production_rates / float(c.gas.density)
         max_Er = max(max_Er, float(np.max(np.abs(E @ r))))
         max_scale = max(max_scale, float(np.max(np.abs(r))))
-    ns = nullspace(E)
+    ns = nullspace(E)          # nullspace of E: unused for invariants
+    inv = chemical_invariants(c)
     return {
         "n_elements": n_el, "n_species": n_sp,
         "column_sum_max_dev": float(np.max(np.abs(col_sums - 1.0))),
         "elemental_source_Er_max_abs": max_Er, "source_scale_max_abs": max_scale,
         "elemental_source_Er_relative": max_Er / max(max_scale, 1.0),
-        "left_nullspace_dim": int(ns.shape[1]),
-        "note": ("The all-ones vector spans the trivial total-mass invariant; "
-                 "inert species appear as additional left-nullspace directions. "
-                 "E.r is a roundoff-level residual relative to the source magnitude."),
+        # Deprecated field (audit A06): the nullspace of the elemental matrix E
+        # measures compositions mapped to zero element content; it is NOT the
+        # chemical invariant space. It is retained for continuity only.
+        "nullspace_of_E_dim_DEPRECATED": int(ns.shape[1]),
+        "chemical_invariants": inv,
+        "note": ("Chemical invariants are ker(B^T) with B = diag(W)*nu, reported "
+                 "under `chemical_invariants`; they are spanned by the rows of E "
+                 "(elemental mass fractions). The old nullspace-of-E field measured "
+                 "a different, chemically irrelevant space and is deprecated."),
         "passed": bool(np.max(np.abs(col_sums - 1.0)) < 1e-10
-                       and max_Er / max(max_scale, 1.0) < 1e-9),
+                       and max_Er / max(max_scale, 1.0) < 1e-9
+                       and inv["passed"]),
     }
 
 
@@ -152,7 +234,7 @@ def run_balance_case(c: CSTR, q0: np.ndarray, history: History, label: str,
         "enthalpy_balance_relative": rel_enth,
         "min_Y": resid["min_Y"], "min_Y_species": resid["min_Y_species"],
         "T_range": [resid["min_T"], resid["max_T"]],
-        "max_state_renorm": res["max_state_renorm"],
+        "raw_state_diagnostics": res["raw_state_diagnostics"],
         "terminal_state": res["terminal_state"].tolist(),
     }
 

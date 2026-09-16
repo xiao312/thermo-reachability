@@ -42,7 +42,8 @@ from thermoreach import toy  # noqa: E402
 from thermoreach.controls import (History, bang_bang, constant, pulse, ramp,  # noqa: E402
                                   random_dwell, random_history, from_record)
 from thermoreach.io_utils import manifest, save_trajectory, utc_now, write_json  # noqa: E402
-from thermoreach.search import (propagate_exact, support,  # noqa: E402
+from thermoreach.search import (interior_coverage, projected_area,  # noqa: E402
+                               propagate_exact, support,
                                 support_analytical_envelope, shoot_optimize, constant_grid)
 
 Q0 = np.array([1.0, 0.0])
@@ -93,23 +94,6 @@ def collect_states(histories, samples_per_segment: int = 33):
                      "terminal_state": ys[:, -1].tolist()})
     return (np.concatenate(all_states, axis=1),
             np.concatenate(term_states, axis=1), recs)
-
-
-def projected_area(states: np.ndarray) -> float:
-    """Projected area of the witnessed point cloud in (x,y) via the convex hull.
-
-    Toy-problem-only diagnostic: in two dimensions the convex-hull area is a
-    well-defined scalar summary. It is NOT a certified outer bound and does not
-    generalize to high-dimensional reachable volume.
-    """
-    from scipy.spatial import ConvexHull
-    pts = np.unique(states.T, axis=0)
-    if pts.shape[0] < 3:
-        return 0.0
-    try:
-        return float(ConvexHull(pts).volume)
-    except Exception:
-        return 0.0
 
 
 def analytical_area(n_grid: int = 200001) -> float:
@@ -185,6 +169,17 @@ def run_case(gamma_max: float, horizon: float, n_segments: int, seed: int,
     rec["analytical_envelope_area"] = analytical_area()
     rec["envelope_area_fraction_visited"] = (rec["projected_area_search"]
                                              / rec["analytical_envelope_area"])
+    # Corrected coverage diagnostic (audit section 5): the hull fraction above is
+    # degenerate - a single 1-D curve fills it - so report the one-sided fill
+    # distance of the interior grid as well.
+    rec["interior_coverage_search"] = interior_coverage(search_states, n_grid=61,
+                                                         tol=2e-3)
+    rec["area_diagnostic_note"] = (
+        "envelope_area_fraction_visited is a convex-hull quantity and is "
+        "DEPRECATED as a coverage measure: the zero-control batch curve alone "
+        "reproduces 0.129/0.933/1.000 at horizons 1/5/20 while having zero area. "
+        "See results/phase1b and interior_coverage_search for the corrected "
+        "one-sided fill-distance diagnostic.")
     rec["max_barrier_search"] = float(np.max(toy.barrier(search_states)))
     rec["min_fraction_search"] = float(np.min(np.array([
         search_states[0].min(), search_states[1].min(),

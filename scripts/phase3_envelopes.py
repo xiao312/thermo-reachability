@@ -36,13 +36,15 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from thermoreach.admissibility import AdmissibleControls, stable_child_seed  # noqa: E402
 from thermoreach.controls import (History, bang_bang, constant, pulse,  # noqa: E402
                                   ramp, random_history)
 from thermoreach.io_utils import manifest, utc_now, write_json  # noqa: E402
 from thermoreach.reactor import CSTR, ReactorConfig, fresh_state, hot_hp_state  # noqa: E402
 from thermoreach.envelopes import (StateMetric, lp_species_bound,  # noqa: E402
                                    lp_temperature_bound, run_trajectory,
-                                   steady_family, trajectory_record, trace_steady)
+                                   steady_accepted, steady_family,
+                                   trajectory_record, trace_steady)
 
 GAMMA_LO, GAMMA_HI = 10.0, 1e5       # s^-1, i.e. residence time in [1e-5, 1e-1] s
 HORIZON = 0.1                        # s, primary finite horizon
@@ -50,7 +52,11 @@ HORIZON = 0.1                        # s, primary finite horizon
 
 def structured_histories(gamma_lo: float, gamma_hi: float, n_seg: int, horizon: float):
     out = []
-    out.append(("const_zero_seg", History(np.zeros(n_seg), np.full(n_seg, horizon / n_seg))))
+    # The zero-control history was removed (audit A07): gamma=0 is outside the
+    # declared admissible class [gamma_lo, gamma_hi]. A quench to zero exchange
+    # is not permitted under this study's control bound.
+    out.append(("const_lo_seg", History(np.full(n_seg, gamma_lo),
+                                        np.full(n_seg, horizon / n_seg))))
     out.append(("bangbang_hi_start", bang_bang(gamma_lo, gamma_hi, n_seg, horizon, start_high=True)))
     out.append(("bangbang_lo_start", bang_bang(gamma_lo, gamma_hi, n_seg, horizon, start_high=False)))
     out.append(("pulse_first", pulse(gamma_hi, n_seg, horizon, pulse_segment=0, base=gamma_lo)))
@@ -107,8 +113,14 @@ def study(c: CSTR, init_label: str, q0: np.ndarray, gammas: np.ndarray,
     fam = steady_family(c, gammas, fresh_state(c), hot_hp_state(c))
     rec["steady_family"] = fam
     rec["wall_steady"] = time.perf_counter() - t_a
-    A_states = np.array([[p["T"]] + p["Y"] for p in fam["cold"]]
-                        + [[p["T"]] + p["Y"] for p in fam["hot"]]).T
+    # Reference library A uses only residual-accepted steady points; unresolved
+    # points are retained separately and excluded from the geometry (audit A10).
+    sel = steady_accepted(fam)
+    rec["steady_selection"] = {"n_accepted": sel["n_accepted"],
+                              "n_unresolved": sel["n_unresolved"],
+                              "unresolved_gammas": [p["gamma"] for p in sel["unresolved"]]}
+    A_states = np.array([[p["T"]] + p["Y"] for p in sel["accepted"]]).T \
+        if sel["accepted"] else np.zeros((q0.size, 0))
     rec["steady_residual_max"] = float(np.nanmax(
         [p["steady_residual"] for p in fam["cold"] + fam["hot"]]))
     rec["steady_nonconverged"] = [p["gamma"] for p in fam["cold"] + fam["hot"]
@@ -130,18 +142,43 @@ def study(c: CSTR, init_label: str, q0: np.ndarray, gammas: np.ndarray,
     # --- C: switching histories ----------------------------------------------
     t_c = time.perf_counter()
     struct = structured_histories(GAMMA_LO, GAMMA_HI, n_seg, horizon)
-    rand = [(f"rand_{i:03d}", random_history(rng, GAMMA_HI, n_seg, horizon, zero_prob=0.0))
+    # Declared sampling law (audit A07/A1): log-uniform over the FULL admissible
+    # range [GAMMA_LO, GAMMA_HI], not just the top three decades.
+    log_low = float(np.log10(GAMMA_LO / GAMMA_HI))
+    rand = [(f"rand_{i:03d}",
+             random_history(rng, GAMMA_HI, n_seg, horizon, zero_prob=0.0,
+                            log_low=log_low, log_high=0.0))
             for i in range(n_random)]
     struct = struct[:n_struct]
     c_hist = struct + rand
     c_trajs, C_states, c_recs = collect(c, c_hist, q0, init_label, spp=spp)
 
     rng_ho = np.random.default_rng(seed + 999_983)
-    ho = [(f"heldout_{i:03d}", random_history(rng_ho, GAMMA_HI, n_seg, horizon, zero_prob=0.0))
+    ho = [(f"heldout_{i:03d}",
+           random_history(rng_ho, GAMMA_HI, n_seg, horizon, zero_prob=0.0,
+                          log_low=log_low, log_high=0.0))
           for i in range(n_heldout)]
     ho_trajs, HO_states, ho_recs = collect(c, ho, q0, init_label, spp=spp)
     rec["switching_transients"] = c_recs
     rec["heldout_transients"] = ho_recs
+
+    # Admissibility gate (audit A07/A1): every executed history - structured,
+    # randomized, held-out, constant - must lie in the declared class.
+    adm = AdmissibleControls(GAMMA_LO, GAMMA_HI, horizon,
+                             label=f"phase3:{init_label}")
+    all_hist = dict(b_hist + [(n, h) for n, h in c_hist] + ho)
+    report = adm.check_all(all_hist)
+    inadmissible = [k for k, v in report.items() if not v["admissible"]]
+    rec["admissible_class"] = adm.to_record()
+    rec["admissibility"] = {"n_histories": len(report),
+                            "n_inadmissible": len(inadmissible),
+                            "sampling_law": ("random segments are log-uniform over "
+                                             "[GAMMA_LO, GAMMA_HI] with zero_prob=0; "
+                                             "the earlier default sampled only "
+                                             "[100, 1e5]"),
+                            "inadmissible": inadmissible}
+    if inadmissible:
+        raise ValueError(f"inadmissible histories in study {init_label}: {inadmissible}")
     rec["wall_C"] = time.perf_counter() - t_c
     print(f"[phase3:{init_label}] switching: {len(c_hist)} + {n_heldout} heldout, "
           f"failures={sum(1 for t in c_trajs + ho_trajs if not t.success)}, "
@@ -150,11 +187,22 @@ def study(c: CSTR, init_label: str, q0: np.ndarray, gammas: np.ndarray,
     # --- geometry: extents and projections -----------------------------------
     ref = np.concatenate([B_states, A_states], axis=1)
     metric = StateMetric(c.gas.species_names, ref)
+    # Both representations are now actually evaluated (audit A08): the earlier
+    # `C_to_B_max_trace_sensitive` field was computed with kind="engineering",
+    # i.e. it repeated the first metric.
     dist_B = metric.distance(C_states, B_states) if C_states.size and B_states.size else np.array([])
+    dist_B_ts = metric.distance(C_states, B_states, kind="trace_sensitive") \
+        if C_states.size and B_states.size else np.array([])
     dist_A = metric.distance(C_states, A_states) if C_states.size and A_states.size else np.array([])
     dist_B_ho = metric.distance(HO_states, B_states) if HO_states.size and B_states.size else np.array([])
     dist_B_eng = metric.distance(C_states, B_states, kind="engineering") \
         if C_states.size and B_states.size else np.array([])
+    rec["metric_scales"] = {
+        "T_scale": metric.T_scale, "y_floor": metric.y_floor,
+        "Y_scale": {k: float(v) for k, v in zip(metric.species, metric.Y_scale)},
+        "representation": "engineering: T/T_scale, Y/Y_scale; "
+                           "trace_sensitive: T/T_scale, log10(Y/y_floor)",
+    }
 
     sp = {n: i for i, n in enumerate(c.gas.species_names)}
     rec["extents"] = {
@@ -173,7 +221,7 @@ def study(c: CSTR, init_label: str, q0: np.ndarray, gammas: np.ndarray,
         "C_to_B_mean": float(dist_B.mean()) if dist_B.size else None,
         "C_to_A_max": float(dist_A.max()) if dist_A.size else None,
         "heldout_to_B_max": float(dist_B_ho.max()) if dist_B_ho.size else None,
-        "C_to_B_max_trace_sensitive": float(dist_B_eng.max()) if dist_B_eng.size else None,
+        "C_to_B_max_trace_sensitive": float(dist_B_ts.max()) if dist_B_ts.size else None,
     }
     rec["counts"] = {
         "steady_points": int(A_states.shape[1]),
@@ -238,7 +286,7 @@ def main() -> None:
     studies = {}
     for label, cc, q0, gg in study_specs:
         studies[label] = study(cc, label, q0, gg, args.n_random, args.n_structured,
-                               args.n_heldout, args.seed + abs(hash(label)) % 1000)
+                               args.n_heldout, stable_child_seed(args.seed, label))
     out["study_labels_note"] = (
         "fresh: fresh feed at the brief's default T_in=900 K. "
         "hot: HP-equilibrium start of the same feed (a separate permitted initial "
@@ -247,6 +295,14 @@ def main() -> None:
         "because the default fresh study shows only weak reaction in 0.1 s.")
     out["studies"] = {k: {kk: vv for kk, vv in v.items() if kk != "_arrays"}
                       for k, v in studies.items()}
+    # Persist the analysis clouds (audit A13): A/B/C/HO state matrices are what
+    # the distances are computed from. Saved as compressed NPZ so the saved
+    # results are sufficient to recompute every distance without rerunning.
+    clouds = {k: {kk: np.asarray(vv) for kk, vv in v["_arrays"].items()}
+              for k, v in studies.items()}
+    np.savez_compressed(args.results_dir / f"state_clouds{suffix}.npz",
+                        **{f"{k}__{kk}": arr for k, d in clouds.items()
+                           for kk, arr in d.items()})
 
     # --- conservation-based LP outer comparison -------------------------------
     # Computed for both operating points (default and pilot-adjusted inlet T).
@@ -257,10 +313,10 @@ def main() -> None:
                         for i in range(cc.gas.n_species)},
             "temperature": lp_temperature_bound(cc),
         }
-    print(f"[phase3] LP bounds: max_T_energy(900K feed)="
-          f"{out['lp_bounds']['default_Tin900K']['temperature']['max_T_energy_conserving']}, "
+    print(f"[phase3] LP bounds: feasible-T bracket (900K feed)="
+          f"{out['lp_bounds']['default_Tin900K']['temperature']['feasible_T_bracket']}, "
           f"(1200K feed)="
-          f"{out['lp_bounds']['adjusted_Tin1200K']['temperature']['max_T_energy_conserving']}")
+          f"{out['lp_bounds']['adjusted_Tin1200K']['temperature']['feasible_T_bracket']}")
 
     # --- figures --------------------------------------------------------------
     fig_paths = []
@@ -301,8 +357,10 @@ def main() -> None:
 
     out["wall_seconds"] = time.perf_counter() - t0
     write_json(args.results_dir / f"phase3_results{suffix}.json", out)
+    # Pilot and main runs get distinct immutable manifest paths (audit A12).
     manifest(f"phase3{suffix}", args.results_dir, out["budgets"],
-             cwd=Path(__file__).resolve().parents[1], extra={"mechanism": c.mech})
+             cwd=Path(__file__).resolve().parents[1], extra={"mechanism": c.mech},
+             manifest_name=f"manifest{suffix}.json")
     print(f"[phase3] done in {out['wall_seconds']:.1f}s -> {args.results_dir}")
 
 
