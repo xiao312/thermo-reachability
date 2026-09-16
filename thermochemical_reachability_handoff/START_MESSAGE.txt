@@ -1,0 +1,5 @@
+Read `LOCAL_AGENT_PROMPT.md` completely and use it as the research specification. Work in a new `thermochemical-reachability` directory unless this workspace already contains the explicitly designated project; preserve unrelated files and changes.
+
+Execute Phases 0–3 first: audit the environment, rerun or reconstruct the provided smoke tests, investigate the bounded-control toy reachable set, validate a detailed-chemistry CSTR implementation, and run a pilot reference-versus-history comparison. The supplied `thermochemical_compute_check.zip` contains historical smoke tests, not new local results.
+
+Do not stop at a plan or scaffold. Produce executed tests, raw trajectories, exact control histories, numerical checks, a claim ledger, and a first report. Treat the mathematical assertions in the brief as claims to audit rather than conclusions to confirm. Defer Phases 4–6 until the first report. Keep the first run bounded and checkpointed, and report genuine blockers with evidence rather than fabricating completion.

@@ -1,0 +1,82 @@
+{
+  "python": "3.12.14",
+  "executable": "/data2/kexiao/conda-envs/tr/bin/python",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "host": "redacted-host",
+  "visible_logical_cpus": 112,
+  "cpu_affinity_count": 112,
+  "packages": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "sympy": "1.14.0",
+    "matplotlib": "3.11.1",
+    "pandas": "3.0.5",
+    "cantera": "3.2.0",
+    "pytest": "9.1.1",
+    "CoolProp": null,
+    "torch": null,
+    "numba": null,
+    "cvxpy": null
+  },
+  "executables": {
+    "gcc": "/usr/bin/gcc",
+    "g++": "/usr/bin/g++",
+    "cmake": "/usr/bin/cmake",
+    "git": "/usr/bin/git",
+    "mpirun": "/usr/bin/mpirun",
+    "nvidia-smi": "/usr/bin/nvidia-smi",
+    "rsync": "/usr/bin/rsync"
+  },
+  "cpu_max": null,
+  "memory_max": null,
+  "exposed_nvidia_devices": [
+    "/dev/nvidia-caps",
+    "/dev/nvidia-modeset",
+    "/dev/nvidia-uvm-tools",
+    "/dev/nvidia-uvm",
+    "/dev/nvidia5",
+    "/dev/nvidia4",
+    "/dev/nvidia3",
+    "/dev/nvidia2",
+    "/dev/nvidia1",
+    "/dev/nvidia0",
+    "/dev/nvidiactl"
+  ],
+  "working_volume_free_GiB": 2218.042224884033,
+  "cantera": {
+    "available": true,
+    "cantera_version": "3.2.0",
+    "data_directories": [
+      ".",
+      "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data",
+      "/data2/kexiao/conda-envs/tr/share/cantera/data"
+    ],
+    "h2o2_yaml": {
+      "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+      "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+      "species": [
+        "H2",
+        "H",
+        "O",
+        "O2",
+        "OH",
+        "H2O",
+        "HO2",
+        "H2O2",
+        "AR",
+        "N2"
+      ],
+      "n_reactions": 29,
+      "elements": [
+        "O",
+        "H",
+        "Ar",
+        "N"
+      ],
+      "thermo_valid_range_K": [
+        200.0,
+        5000.0
+      ]
+    }
+  }
+}

@@ -23,3 +23,9 @@ nohup.out
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Handoff bundle kept unpacked for provenance
+/thermochemical_reachability_handoff.zip
+
+# External audit feedback (not project deliverables)
+/feedback/

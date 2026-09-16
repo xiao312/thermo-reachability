@@ -1,0 +1,25 @@
+{
+  "run_id": "phase1",
+  "timestamp_utc": "2026-09-16T04:51:44.275511+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "",
+  "config": {
+    "gammas": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "horizons": [
+      1.0,
+      5.0,
+      20.0
+    ],
+    "segments": [
+      8
+    ],
+    "n_random": 32,
+    "n_heldout": 16,
+    "seed": 20260916
+  }
+}

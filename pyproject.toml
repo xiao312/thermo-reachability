@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thermoreach"
+version = "0.1.0"
+description = "Thermochemical reachability: toy bounded-control reachability, detailed-chemistry CSTR dynamics, and empirical envelope comparison"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "sympy>=1.12",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+    "cantera>=3.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

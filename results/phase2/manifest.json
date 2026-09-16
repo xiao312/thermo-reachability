@@ -1,0 +1,46 @@
+{
+  "run_id": "phase2",
+  "timestamp_utc": "2026-09-16T04:34:52.562612+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "",
+  "config": {
+    "horizon": 0.1,
+    "quick": false
+  },
+  "mechanism": {
+    "mechanism": "h2o2.yaml",
+    "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+    "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+    "phase": "ohmech",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "elements": [
+      "O",
+      "H",
+      "Ar",
+      "N"
+    ],
+    "n_reactions": 29,
+    "input_header": {
+      "description": "Hydrogen-Oxygen submechanism extracted from GRI-Mech 3.0.\nModified from the original to include N2.\n\nRedlich-Kwong coefficients are based on tabulated critical properties or\nestimated according to the method of Joback and Reid, \"Estimation of pure-\ncomponent properties from group-contributions,\" Chem. Eng. Comm. 57 (1987)\n233-243",
+      "generator": "ck2yaml",
+      "input-files": [
+        "h2o2.inp",
+        "gri30_tran.dat"
+      ],
+      "cantera-version": "2.5.0",
+      "date": "Wed, 11 Dec 2019 16:59:04 -0500"
+    }
+  }
+}

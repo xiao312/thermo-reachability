@@ -1,0 +1,444 @@
+{
+  "timestamp_utc": "2026-09-16T04:34:49.003418+00:00",
+  "mechanism": {
+    "mechanism": "h2o2.yaml",
+    "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+    "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+    "phase": "ohmech",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "elements": [
+      "O",
+      "H",
+      "Ar",
+      "N"
+    ],
+    "n_reactions": 29,
+    "input_header": {
+      "description": "Hydrogen-Oxygen submechanism extracted from GRI-Mech 3.0.\nModified from the original to include N2.\n\nRedlich-Kwong coefficients are based on tabulated critical properties or\nestimated according to the method of Joback and Reid, \"Estimation of pure-\ncomponent properties from group-contributions,\" Chem. Eng. Comm. 57 (1987)\n233-243",
+      "generator": "ck2yaml",
+      "input-files": [
+        "h2o2.inp",
+        "gri30_tran.dat"
+      ],
+      "cantera-version": "2.5.0",
+      "date": "Wed, 11 Dec 2019 16:59:04 -0500"
+    }
+  },
+  "config": {
+    "mechanism": "h2o2.yaml",
+    "pressure": 101325.0,
+    "inlet_temperature": 900.0,
+    "fuel": "H2",
+    "oxidizer": "O2:1,N2:3.76",
+    "equivalence_ratio": 1.0,
+    "reactor_mass": 1.0,
+    "rtol": 1e-08,
+    "atol_T": 1e-06,
+    "atol_Y": 1e-14,
+    "phase": null
+  },
+  "inlet": {
+    "T_in": 900.0,
+    "Y_in": {
+      "H2": 0.028522387527567396,
+      "H": 0.0,
+      "O": 0.0,
+      "O2": 0.22635400697100735,
+      "OH": 0.0,
+      "H2O": 0.0,
+      "HO2": 0.0,
+      "H2O2": 0.0,
+      "AR": 0.0,
+      "N2": 0.7451236055014253
+    },
+    "h_in_J_per_kg": 870948.8876824506,
+    "b_in": [
+      0.22635400697100735,
+      0.028522387527567396,
+      0.0,
+      0.7451236055014253
+    ]
+  },
+  "initial_conditions": {
+    "fresh": {
+      "T": 900.0,
+      "Y": {
+        "H2": 0.028522387527567396,
+        "H": 0.0,
+        "O": 0.0,
+        "O2": 0.22635400697100735,
+        "OH": 0.0,
+        "H2O": 0.0,
+        "HO2": 0.0,
+        "H2O2": 0.0,
+        "AR": 0.0,
+        "N2": 0.7451236055014253
+      }
+    },
+    "hot_hp_equilibrium": {
+      "T": 2655.080272126141,
+      "Y": {
+        "H2": 0.002725571165642554,
+        "H": 0.0003633133842135643,
+        "O": 0.0021773466975996375,
+        "O2": 0.015962668728399302,
+        "OH": 0.013540592336030341,
+        "H2O": 0.22010071390548713,
+        "HO2": 5.7481470188761295e-06,
+        "H2O2": 4.401355361363765e-07,
+        "AR": 0.0,
+        "N2": 0.7451236055000724
+      }
+    }
+  },
+  "energy_forms": {
+    "max_abs_difference": 6.103515625e-05,
+    "rhs_scale": 289653803846.6969,
+    "max_relative_difference": 2.1071760646479776e-16,
+    "n_states": 5,
+    "gammas_tested": [
+      0.0,
+      10.0,
+      1000.0,
+      10000.0
+    ],
+    "passed": true
+  },
+  "elemental": {
+    "n_elements": 4,
+    "n_species": 10,
+    "column_sum_max_dev": 1.1102230246251565e-16,
+    "elemental_source_Er_max_abs": 2.2351741790771484e-08,
+    "source_scale_max_abs": 90643637.7735158,
+    "elemental_source_Er_relative": 2.4658919632749116e-16,
+    "left_nullspace_dim": 0,
+    "note": "The all-ones vector spans the trivial total-mass invariant; inert species appear as additional left-nullspace directions. E.r is a roundoff-level residual relative to the source magnitude.",
+    "passed": true
+  },
+  "closed_energy": {
+    "initial_h": 17990026.473948885,
+    "final_h": 17990026.47395106,
+    "max_abs_h_drift": 6.708502769470215e-05,
+    "max_relative_h_drift": 3.729012171930212e-12,
+    "T0": 1200.0,
+    "T_final": 3659.0347683814716,
+    "passed": true
+  },
+  "balance_checks": [
+    {
+      "label": "fresh_const_gamma_1000",
+      "trivial_consistency_case": true,
+      "note": "b0 == b_in and h0 == h_in by construction: the expected derivatives vanish, so this case checks consistency only.",
+      "passed": true,
+      "element_balance_max_abs": 2.7755575615628914e-17,
+      "element_balance_relative": 2.7755575615628914e-17,
+      "enthalpy_balance_max_abs": 3.4924596548080444e-10,
+      "enthalpy_balance_relative": 4.009947890399512e-16,
+      "min_Y": 0.0,
+      "min_Y_species": "H",
+      "T_range": [
+        900.0,
+        900.0000126477138
+      ],
+      "max_state_renorm": 0.0,
+      "terminal_state": [
+        900.0000126477138,
+        0.028522387111258898,
+        9.946108609880185e-13,
+        1.4322392536182085e-12,
+        0.22635399804078454,
+        3.6918763341926774e-13,
+        1.436934341406411e-09,
+        7.45373716371245e-09,
+        4.5306374436949426e-10,
+        0.0,
+        0.7451236055014253
+      ]
+    },
+    {
+      "label": "nontrivial_Tin1000_T0_1100",
+      "trivial_consistency_case": false,
+      "note": "b0 != b_in or h0 != h_in: the balance law is tested nontrivially.",
+      "passed": true,
+      "element_balance_max_abs": 4.071093462343356e-10,
+      "element_balance_relative": 4.071093462343356e-10,
+      "enthalpy_balance_max_abs": 0.03496570885181427,
+      "enthalpy_balance_relative": 3.4134120080529035e-08,
+      "min_Y": -1.359821650576944e-17,
+      "min_Y_species": "AR",
+      "T_range": [
+        1100.0,
+        3511.465774912618
+      ],
+      "max_state_renorm": 0.0,
+      "terminal_state": [
+        2624.932468444114,
+        0.0033674660740688777,
+        0.0005853552258795447,
+        0.0034705615382071443,
+        0.02016742899265518,
+        0.01642668380330103,
+        0.21085172631399798,
+        6.750893766747089e-06,
+        4.216566982218504e-07,
+        1.3488483824902368e-19,
+        0.7451236055014253
+      ]
+    },
+    {
+      "label": "hot_gamma_10",
+      "trivial_consistency_case": true,
+      "note": "b0 == b_in and h0 == h_in by construction: the expected derivatives vanish, so this case checks consistency only.",
+      "passed": true,
+      "element_balance_max_abs": 3.3306690738754696e-16,
+      "element_balance_relative": 3.3306690738754696e-16,
+      "enthalpy_balance_max_abs": 3.070104867219925e-05,
+      "enthalpy_balance_relative": 3.5250115255205313e-11,
+      "min_Y": 0.0,
+      "min_Y_species": "AR",
+      "T_range": [
+        2653.3703333371022,
+        2655.080272126141
+      ],
+      "max_state_renorm": 0.0,
+      "terminal_state": [
+        2653.3703333459057,
+        0.0027358080448547013,
+        0.00036648923066923546,
+        0.0021947429206510215,
+        0.016034856606058225,
+        0.013576425624212058,
+        0.21996187782276874,
+        5.755598411613213e-06,
+        4.3865144680497774e-07,
+        0.0,
+        0.7451236055009276
+      ]
+    },
+    {
+      "label": "hot_gamma_1000",
+      "trivial_consistency_case": true,
+      "note": "b0 == b_in and h0 == h_in by construction: the expected derivatives vanish, so this case checks consistency only.",
+      "passed": true,
+      "element_balance_max_abs": 2.220446049250313e-15,
+      "element_balance_relative": 2.220446049250313e-15,
+      "enthalpy_balance_max_abs": 1.022417563945055e-05,
+      "enthalpy_balance_relative": 1.1739122449144571e-11,
+      "min_Y": 0.0,
+      "min_Y_species": "AR",
+      "T_range": [
+        2507.829594470422,
+        2655.080272126141
+      ],
+      "max_state_renorm": 0.0,
+      "terminal_state": [
+        2507.8295944746214,
+        0.003505329236965597,
+        0.0006793288999015222,
+        0.003854436767328591,
+        0.02181912725638366,
+        0.016010901442819584,
+        0.2090003141557162,
+        6.585134504970088e-06,
+        3.7160495462090225e-07,
+        0.0,
+        0.7451236055014253
+      ]
+    },
+    {
+      "label": "hot_gamma_100000",
+      "trivial_consistency_case": true,
+      "note": "b0 == b_in and h0 == h_in by construction: the expected derivatives vanish, so this case checks consistency only.",
+      "passed": true,
+      "element_balance_max_abs": 8.326672684688674e-17,
+      "element_balance_relative": 8.326672684688674e-17,
+      "enthalpy_balance_max_abs": 1.0477378964424133e-09,
+      "enthalpy_balance_relative": 1.2029843671198537e-15,
+      "min_Y": 0.0,
+      "min_Y_species": "AR",
+      "T_range": [
+        1550.280662881961,
+        2655.080272126141
+      ],
+      "max_state_renorm": 0.0,
+      "terminal_state": [
+        1550.2806628819828,
+        0.007449359314503628,
+        0.003767243296640035,
+        0.01170034512035037,
+        0.07295732230947793,
+        0.009172741801206204,
+        0.14976867145402759,
+        5.581730860642141e-05,
+        4.8938937625486265e-06,
+        0.0,
+        0.7451236055014253
+      ]
+    }
+  ],
+  "cross_integration": [
+    {
+      "label": "fresh_g10",
+      "gamma": 10.0,
+      "passed": true,
+      "radau_bdf_max_abs_T": 1.5568446087854682e-07,
+      "radau_bdf_max_abs_Y": 2.6968427491169678e-11,
+      "radau_vs_tighter_max_abs_T": 8.913048077374697e-11,
+      "nfev_radau": 847,
+      "nfev_bdf": 356
+    },
+    {
+      "label": "fresh_g1000",
+      "gamma": 1000.0,
+      "passed": true,
+      "radau_bdf_max_abs_T": 3.001332515850663e-11,
+      "radau_bdf_max_abs_Y": 2.2593038551121936e-14,
+      "radau_vs_tighter_max_abs_T": 3.183231456205249e-12,
+      "nfev_radau": 331,
+      "nfev_bdf": 200
+    },
+    {
+      "label": "fresh_g100000",
+      "gamma": 100000.0,
+      "passed": true,
+      "radau_bdf_max_abs_T": 2.2737367544323206e-13,
+      "radau_bdf_max_abs_Y": 2.9536506486297487e-20,
+      "radau_vs_tighter_max_abs_T": 2.2737367544323206e-13,
+      "nfev_radau": 135,
+      "nfev_bdf": 76
+    },
+    {
+      "label": "hot_g10",
+      "gamma": 10.0,
+      "passed": true,
+      "radau_bdf_max_abs_T": 3.2249727155431174e-07,
+      "radau_bdf_max_abs_Y": 2.598024573252644e-11,
+      "radau_vs_tighter_max_abs_T": 7.592461770400405e-09,
+      "nfev_radau": 449,
+      "nfev_bdf": 256
+    },
+    {
+      "label": "hot_g1000",
+      "gamma": 1000.0,
+      "passed": true,
+      "radau_bdf_max_abs_T": 4.050962161272764e-07,
+      "radau_bdf_max_abs_Y": 2.8756802494811495e-11,
+      "radau_vs_tighter_max_abs_T": 1.394255377817899e-09,
+      "nfev_radau": 1233,
+      "nfev_bdf": 673
+    },
+    {
+      "label": "hot_g100000",
+      "gamma": 100000.0,
+      "passed": true,
+      "radau_bdf_max_abs_T": 9.777068044058979e-12,
+      "radau_bdf_max_abs_Y": 1.2073675392798577e-15,
+      "radau_vs_tighter_max_abs_T": 8.86757334228605e-12,
+      "nfev_radau": 2246,
+      "nfev_bdf": 1100
+    }
+  ],
+  "reactornet_crosscheck": [
+    {
+      "gamma": 10.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 6.080711045797216e-08,
+      "max_abs_Y_error": 1.0561967966893349e-11,
+      "max_rel_Y_error_where_Y_gt_1e-12": 4.714754753503856e-06,
+      "custom_T_final": 900.2216982391833,
+      "net_T_final": 900.2216981783762,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 10.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 5.136507752467878e-08,
+      "max_abs_Y_error": 3.0926927685470673e-12,
+      "max_rel_Y_error_where_Y_gt_1e-12": 2.037931020208132e-10,
+      "custom_T_final": 2653.3703333459057,
+      "net_T_final": 2653.370333348453,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 100.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 2.6216184778604656e-10,
+      "max_abs_Y_error": 5.517808432387028e-14,
+      "max_rel_Y_error_where_Y_gt_1e-12": 3.6116984609062723e-06,
+      "custom_T_final": 900.0013765750805,
+      "net_T_final": 900.0013765750666,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 100.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 4.0306304072146304e-07,
+      "max_abs_Y_error": 3.1804781031041784e-11,
+      "max_rel_Y_error_where_Y_gt_1e-12": 1.9664516848687243e-09,
+      "custom_T_final": 2638.1598314043968,
+      "net_T_final": 2638.1598314042644,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 1000.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 8.469669410260394e-11,
+      "max_abs_Y_error": 7.605027718682322e-15,
+      "max_rel_Y_error_where_Y_gt_1e-12": 8.424245569670892e-06,
+      "custom_T_final": 900.0000126477138,
+      "net_T_final": 900.0000126477136,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 1000.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 9.584255167283118e-09,
+      "max_abs_Y_error": 9.980072324111688e-13,
+      "max_rel_Y_error_where_Y_gt_1e-12": 4.863444553184176e-11,
+      "custom_T_final": 2507.8295944746214,
+      "net_T_final": 2507.829594474662,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 10000.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 5.684341886080801e-13,
+      "max_abs_Y_error": 4.440892098500626e-16,
+      "max_rel_Y_error_where_Y_gt_1e-12": 4.086939577588428e-06,
+      "custom_T_final": 900.0000007402667,
+      "net_T_final": 900.0000007402668,
+      "n_reactornet_steps": null,
+      "passed": true
+    },
+    {
+      "gamma": 10000.0,
+      "horizon": 0.1,
+      "max_abs_T_error_K": 2.810338628478348e-10,
+      "max_abs_Y_error": 1.4377388168895777e-14,
+      "max_rel_Y_error_where_Y_gt_1e-12": 8.256780330556125e-13,
+      "custom_T_final": 2079.9967771318948,
+      "net_T_final": 2079.9967771318957,
+      "n_reactornet_steps": null,
+      "passed": true
+    }
+  ],
+  "wall_seconds": 3.5673995409160852,
+  "all_passed": true
+}
