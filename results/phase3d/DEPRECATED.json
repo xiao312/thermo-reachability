@@ -1,0 +1,14 @@
+{
+  "superseded_results": [
+    {
+      "path": "results/phase3d",
+      "status": "SUPERSEDED",
+      "superseded_by": "results/phase4",
+      "produced_by": "scripts/phase3d_sensitivity.py",
+      "reason": "The Phase 3D analysis pipeline has seven identified defects that invalidate its rank and tangency conclusions: (1) the reference tangent span was differentiated from the switched endpoint rather than the original initial state, so it did not differentiate B(gamma,t;q_initial); (2) a common absolute perturbation left inadmissible columns as zeros inside the Jacobian; (3) the reference matrix was QR-orthonormalized without rank filtering; (4) the 'third direction' index was n-3 rather than the fixed index 2; (5) state increments mixed kelvin with mass fractions and were differentiated with respect to raw gamma; (6) several base histories had horizons 0.044 s and 0.064 s despite the 0.1 s label; (7) only a relative SVD threshold was used, so noise-floor directions were counted as real.",
+      "consequence": "Claim C22 is withdrawn. The reported n_real=1 and sine<=1e-12 tangency are NOT established. These files are retained unmodified as the historical record of what was computed.",
+      "retained_as": "historical record only; do not cite as evidence"
+    }
+  ],
+  "note": "Raw results are never deleted or rewritten; superseded interpretations are marked explicitly. See claims.md C22 (SUPERSEDED) and C23 (NEW), and reports/report_03.md."
+}

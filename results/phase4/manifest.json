@@ -1,0 +1,19 @@
+{
+  "run_id": "phase4",
+  "timestamp_utc": "2026-09-16T13:03:29.609278+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:691d7692f35e77da",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "inlet_temperature": 1200.0,
+    "weak_temperature": 900.0,
+    "seed": 20260916,
+    "gamma_bounds": [
+      10.0,
+      100000.0
+    ],
+    "gamma_ref": 1000.0,
+    "m_prefix": 3
+  }
+}

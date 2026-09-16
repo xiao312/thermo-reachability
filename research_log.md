@@ -252,3 +252,97 @@ removed copies of local home-directory content that shared the server project
 directory (tool caches/configs such as `.codex`, `.pi`, `.lark-cli`,
 `AppData`, and two project folders). All originals are intact locally; no
 research data was affected; `--delete` is no longer used.
+
+## Revision 3 — sensitivity pipeline rebuilt; C22 withdrawn (2026-09-17)
+
+A second independent review inspected commit `96d4bf2` and established that the
+Phase 3D sensitivity pipeline could not support its own conclusions. Seven
+defects were verified in the actual source:
+
+1. `case()` passed the switched endpoint `z0` to `constant_control_tangent()`
+   as that routine's initial state, so the "reference tangent span" was
+   integrated from the wrong state and did not differentiate
+   B(gamma, t; q_initial). Tangency was therefore never established.
+2. The absolute perturbation `h = rel * mean(|theta|)` exceeded the admissible
+   interval for the smallest control (30 - 114.5 < 10); the column was skipped
+   and left as a ZERO, then included in the rank analysis as a fabricated zero
+   sensitivity.
+3. `direction_alignment()` filtered J but orthonormalized V by unfiltered QR,
+   which fills a rank-deficient span with rounding-noise directions. The reported
+   angles (0, 0.78, 0.85, 2.6e-8) were artifacts.
+4. The "third direction" index was `n-3` with `n = m`, i.e. the SMALLEST value
+   for m = 3, not the third largest.
+5. State increments mixed kelvin with mass fractions and were differentiated
+   w.r.t. raw gamma, so singular values had no single physical meaning.
+6. The pulse-hold generator appended a remaining dwell and then sliced it away,
+   producing horizons 0.044 s and 0.064 s for m = 3 and 4 despite the 0.1 s label.
+7. Only a relative SVD threshold was used, so noise-floor directions
+   (~1e-12 scaled) were counted as real, reporting "rank 3" after a hold.
+
+Consequences: claim C22 is WITHDRAWN (marked SUPERSEDED) and replaced by C23.
+The Phase 3D results are retained unmodified with a `DEPRECATED.json` manifest.
+
+The corrected pipeline is `src/thermoreach/sensitivity.py` plus
+`scripts/phase4_terminal_memory.py`, with positive controls in
+`scripts/phase3e_positive_controls.py` and regression tests in
+`tests/test_sensitivity.py` (23 tests, all passing).
+
+Corrections applied, each with a regression test:
+* Dimensionless controls `eta = log(gamma/gamma_ref)`; per-coordinate steps that
+  stay strictly interior; a column that cannot be centred is INVALID (NaN), never
+  zero, and is excluded from every rank summary. A round-trip bug that returned
+  `exp(eta)` instead of `gamma_ref * exp(eta)` - a factor-1000 scaling error -
+  was caught by the round-trip test, not by inspection.
+* Reference tangents from the ORIGINAL initial state:
+  v_t = F(q_base, gamma_star) and v_log_gamma = d phi/d log gamma, with the exact
+  identity `sum_j dE_m/d(log gamma_j) = d phi/d log gamma` at constant-control
+  base histories (verified to machine precision on the toy).
+* Rank filtering of BOTH matrices by SVD with explicit relative AND absolute
+  thresholds; zero-rank matrices yield an empty basis, never an arbitrary
+  orthonormal completion.
+* The conserved-manifold tangent space is the null space of `C W^-1` by a
+  rank-revealing SVD with `full_matrices=True` (the reduced Vt of a wide matrix
+  has only rank(A) rows and silently yields an EMPTY null space - caught by a
+  test), with conditioning recorded and conservation leakage reported BEFORE
+  projection.
+* A declared frozen state scaling (one scaled unit = 100 K or 1% mass fraction);
+  three separate rank notions: algebraic, relative-threshold, and
+  absolute-threshold application rank.
+* Exactly m durations summing to the recorded horizon; the third singular value
+  at fixed index 2 for every m.
+* An empirical differentiation-noise scale from step refinement
+  `||J(h1) - J(h2)||_2`, labelled as an estimate, not a rigorous bound.
+* `record_extrema=False` for endpoint-only work; the dense extrema grid was
+  multiplying the cost of every perturbation.
+
+Positive controls (section C of the review), all passing:
+* The three-state linear benchmark `dz_i/dt = -lam_i z_i + u(t)`,
+  `lam = (1, 2, 4)`, `T = 1`, three equal segments. Its exact endpoint control
+  Jacobian has rank 3 and singular values (0.5007801, 0.08533145, 0.006828632),
+  reproduced to 7 digits. This benchmark was reconstructed from the review's
+  stated values alone (REVIEW.md and review_checks.py were NOT delivered with
+  the handoff) and the reconstruction was confirmed by the exact match.
+* The exact toy rank-2 history, plus a terminal hold showing that algebraic
+  prefix rank is preserved by the invertible finite-time flow (2, through
+  L = 10) while the application-scale effective rank decays (2 -> 0), and that a
+  ratio-preserving relative threshold alone would keep reporting rank 2 at any
+  scale.
+* The same-initial-state identity for m = 1, 3, 5 and several gamma and T.
+* Orthogonality and rank-deficient-reference angle tests: V = [e1, 0] versus
+  J = [e2] gives sine 1, not 0.
+
+An exact closed-form tangent-linear sensitivity was derived for the toy
+(segment-map chain rule) and validated against finite differences at O(h^2);
+this is the ground truth that the detailed-chemistry finite differences are
+checked against.
+
+The main experiment (section D) separates transient geometry from
+terminal-memory erasure via
+`E(theta_prefix, gamma_hold, L) = phi^L_{gamma_hold}(q_prefix(theta_prefix))`,
+so `dE/dtheta_j = D_q phi^L . dq_prefix/dtheta_j`. See `reports/report_03.md`.
+
+Tooling note: the tangent-linear (FSA) solve for the detailed-chemistry
+reference derivative was implemented (`constant_control_fsa`, exact F_gamma in
+closed form because the CSTR RHS is affine in gamma) but is too slow for
+routine use; it is available behind `--fsa`. The default cross-integration check
+compares Radau against LSODA on the same reference derivative instead.

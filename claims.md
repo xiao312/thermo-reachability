@@ -266,35 +266,97 @@ Evidence: `results/phase3` `lp_bounds.*.temperature`,
 
 ## Phase 3d — history-generated dimensions (new, audit Part C)
 
-**C22. REVISED — local rank-1 endpoint image, tangent to the constant-control
-family.** For a feed-compatible initial state the state manifold
-M = {(T,Y) : E.Y = b_in, h_k(T).Y = h_in} has dimension 6. A constant-control
-transient family is the image of two parameters (gamma, t), so its smooth local
-dimension is at most two. Whether m-segment switched histories generate a
-higher-dimensional endpoint image was tested by the rank of the endpoint
-Jacobian dE_m/dtheta, projected onto the tangent space of M and compared with
-the constant-control tangent span.
+**C22. SUPERSEDED — the Phase 3D result is withdrawn.** The saved Phase 3D
+endpoint finite-difference matrices have one dominant singular value under the
+implemented scaling and thresholds. **These data do not establish the local
+image dimension or tangency to the original fixed-initial-state constant-control
+family**, for these reasons:
 
-*Result (18 cases: fresh and hot starts, m = 3/4/6, equal / varied-dwell /
-pulse-hold patterns, horizon 0.1 s, gamma in [10, 1e5]):* every projected
-Jacobian has exactly ONE significant singular direction, with all remaining
-singular values at machine precision (1e-16 to 1e-20) at every step size. The
-single real direction lies inside the constant-control tangent span: its sine to
-span(V) is <= 1e-12 in all 18 cases. Zero of 18 cases show a stable third
-direction under step-size refinement (steps 1e-2, 1e-3, 1e-4 agree to four
-significant figures). So at these base points switching opens no locally
-transverse direction — the local endpoint image is a curve tangent to the
-constant-control family.
+* the reference tangent span was differentiated from the *switched endpoint*
+  rather than the original initial state, so it did not differentiate the family
+  B(gamma, t; q_initial) that was being claimed about;
+* a common absolute perturbation (mean of theta) left inadmissible columns as
+  *zeros* inside the Jacobian, which then entered the rank analysis as
+  fabricated zero sensitivities;
+* the reference matrix was orthonormalized by unfiltered QR, which fills a
+  rank-deficient span with rounding-noise directions;
+* the singular-value index used for the "third direction" was n-3, which reads
+  the *smallest* value when m = 3 rather than the third largest (index 2);
+* state increments mixed kelvin with mass fractions and were differentiated
+  with respect to raw gamma, so the singular values had no single
+  application-independent meaning;
+* several base histories had horizons 0.044 s and 0.064 s despite the global
+  0.1 s label.
 
-This is a LOCAL rank statement at 18 specific admissible interior points under
-one mechanism, one condition class and one horizon; it does not bound the global
-reachable set. No formal rank claim is made from a floating-point SVD alone —
-the step-size agreement is the actual evidence. Evidence: `results/phase3d`,
-`scripts/phase3d_sensitivity.py`. A methodological corollary is recorded in
-`research_log.md`: span-vs-span principal angles are meaningless for a
-rank-deficient matrix (QR fills the basis with rounding noise) — the first
-implementation produced erratic angles (0, 0.78, 0.85, 2.6e-8) where the true
-transversality is ~1e-12.
+A singular direction must not be called "real" merely because it passes a
+relative SVD threshold. Algebraic rank, numerical rank and application-scale
+effective rank are distinct notions, and even an exact rank-one derivative at a
+single point does not prove a curve-shaped local image without further
+neighborhood assumptions (the map (a,b) -> (a,b^2) has a rank-one Jacobian at the
+origin but a two-dimensional image). Long terminal holds make loss of
+earlier-history sensitivity a specific hypothesis for the observed effective
+rank. Evidence retained as a historical record: `results/phase3d` (marked
+superseded), `scripts/phase3d_sensitivity.py`.
+
+**C23. NEW — corrected sensitivity pipeline and the terminal-memory experiment
+(Phase 4).** Replaces C22. The corrected pipeline is `thermoreach.sensitivity`
+plus `scripts/phase4_terminal_memory.py`, with positive controls in
+`scripts/phase3e_positive_controls.py` (all passing, `results/phase3e`).
+
+Corrections: dimensionless controls eta = log(gamma/gamma_ref) with
+per-coordinate interior steps (a column that cannot be centred is INVALID, never
+zero); reference tangents from the ORIGINAL initial state
+(v_t = F(q_base, gamma_star) and v_log_gamma = d phi/d log gamma); rank filtering
+of BOTH matrices by SVD with explicit relative AND absolute thresholds, never
+filling a basis with arbitrary orthogonal vectors; the conserved-manifold
+tangent space as the null space of C W^-1 by rank-revealing SVD with the
+conditioning recorded and conservation leakage reported BEFORE projection; a
+declared frozen state scaling; exactly m durations summing to the recorded
+horizon; the third singular value at fixed index 2; and three separate rank
+notions (algebraic / relative-threshold / absolute application threshold).
+
+Positive controls (all pass): the three-state linear benchmark
+(dz_i/dt = -lambda_i z_i + u, lambda = (1,2,4), T = 1, three equal segments)
+whose exact endpoint Jacobian has rank 3 and singular values
+(0.5007801, 0.08533145, 0.006828632) - reproduced to 7 digits; the exact toy
+rank-2 history with terminal hold, showing algebraic prefix rank preserved while
+the application-scale effective rank decays; the same-initial-state identity
+sum_j dE_m/d(log gamma_j) = d phi/d log gamma to machine precision; and the
+orthogonality/rank-deficient-reference angle tests (V = [e1,0] vs J = [e2]
+gives sine 1, not 0).
+
+Scientific framing: for the terminal-hold experiment,
+E(theta_prefix, gamma_hold, L) = phi^L_{gamma_hold}(q_prefix(theta_prefix)), so
+dE/dtheta_j = D_q phi^L . dq_prefix/dtheta_j — prefix sensitivity is PROPAGATED
+through the hold and can become unresolved while gamma_hold sensitivity
+approaches the steady-branch tangent. Exponentially tiny is not exact zero.
+
+Status: results in `results/phase4`; see `reports/report_03.md`.
+
+*Findings (144 cases: 2 inits x 3 anchors x 3 horizons x 2 patterns x 4 hold
+lengths, 3405 s).* Validation: the same-initial-state identity holds over all
+cases to a worst relative error of 8.0e-5 (FD truncation, not machine precision;
+the toy version with the closed-form sensitivity holds to 1.4e-17), and LSODA
+vs Radau agree on the reference derivative to 5.3e-7 / 8.5e-13 relative.
+
+The prefix endpoint rank is governed by the number of EXCHANGE TIMES gamma*T:
+at T = 1e-3 s the second singular direction is 1.16e-5 (gamma = 1e2) and 9.94e-5
+(gamma = 1e3) scaled units - 400x / 200x above the measured differentiation-noise
+scale and above the declared 1e-6 application threshold - so a REAL
+history-generated direction exists there, identical for both initial states and
+both patterns. It is largest near gamma*T ~ 1 and decays on both sides. At
+gamma = 1e4 the same direction sits AT the noise floor (1.20e-7 vs 2.0e-7) and is
+unresolved. By T = 1e-2 s it has collapsed to ~1e-12 for every anchor. Every
+terminal hold of at least one residence time reduces the prefix block to ~1e-12
+scaled units (absolute application rank 0) with the endpoint already at the
+steady reference, confirming the chain-rule propagation
+`dE/dtheta_j = D_q phi^L . dq_prefix/dtheta_j`.
+
+So: real transient history effects exist at gamma*T ~ 0.1-1 and are erased beyond
+about one exchange time. Findings are confined to the tested map, histories, time
+window and tolerance. Acceptance does not require finding a third direction - it
+requires that the experiment would DETECT one when present at its stated
+resolution, which the positive controls establish.
 
 ---
 

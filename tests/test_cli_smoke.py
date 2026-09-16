@@ -27,6 +27,8 @@ CANTERA_SCRIPTS = [
      ["phase3c_results.json", "manifest.json"]),
     ("scripts/phase3d_sensitivity.py", ["--quick"], "out",
      ["phase3d_results.json", "manifest.json"]),
+    ("scripts/phase4_terminal_memory.py", ["--quick"], "out",
+     ["phase4_results.json", "manifest.json"]),
 ]
 TOY_SCRIPTS = [
     ("scripts/phase1_reachability.py",
@@ -34,7 +36,15 @@ TOY_SCRIPTS = [
      "phase1_tiny", ["phase1_results.json", "manifest.json"]),
     ("scripts/phase1b_toy_correction.py", ["--n-hist", "6"],
      "phase1b_tiny", ["phase1b_results.json", "manifest.json"]),
+    ("scripts/phase3e_positive_controls.py", [], "phase3e_tiny",
+     ["phase3e_results.json", "manifest.json"]),
 ]
+
+
+def _load_json(path: Path) -> dict:
+    import json
+    with open(path) as fh:
+        return json.load(fh)
 
 
 def _run(script: str, args: list[str], results_dir: Path) -> subprocess.CompletedProcess:
@@ -60,3 +70,28 @@ def test_toy_scripts_serialize_results(tmp_path, script, args, subdir, expected)
     assert res.returncode == 0, f"{script} failed:\n{res.stderr[-2000:]}"
     for f in expected:
         assert (res_dir / f).is_file(), f"{script} did not write {f}"
+
+
+def test_phase3e_positive_controls_pass_semantically(tmp_path):
+    """Semantic check: the positive-control suite must actually PASS, and its
+    reported benchmark values must match the review specification."""
+    res_dir = tmp_path / "phase3e_semantic"
+    res = _run("scripts/phase3e_positive_controls.py", [], res_dir)
+    assert res.returncode == 0, res.stderr[-2000:]
+    out = _load_json(res_dir / "phase3e_results.json")
+    assert out["all_passed"] is True
+    lin = out["checks"]["linear3_rank3"]
+    # the exact benchmark singular values, to the precision stated in the review
+    assert lin["exact_singular_values"][0] == pytest.approx(0.5007801, rel=1e-6)
+    assert lin["exact_singular_values"][2] == pytest.approx(0.006828632, rel=1e-6)
+    # the third singular value is at fixed index 2 for every m
+    assert all(r["index_2_is_third"] for r in lin["third_value_index_check"])
+    assert all(r["rank_detected"] == 3 for r in lin["steps"].values())
+    # the identity control holds to machine precision
+    ident = out["checks"]["same_initial_state_identity"]
+    assert ident["worst_abs_err"] < 1e-12 * max(ident["scale"], 1.0)
+    # the terminal hold separates algebraic from application-scale rank
+    hold = out["checks"]["toy_rank2_and_terminal_hold"]
+    eff = [r["prefix_rank_effective_absolute_1e-10"]
+           for r in hold["terminal_hold"]]
+    assert eff[0] == 2 and eff[-1] < 2

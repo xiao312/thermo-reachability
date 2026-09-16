@@ -8,22 +8,25 @@ every history?
 
 Research specification: `thermochemical_reachability_handoff/LOCAL_AGENT_PROMPT.md`.
 
-**First tranche (Phases 0–3) is complete.** See `reports/report_01.md` (original)
-and `reports/report_02.md` (audit revision). `claims.md` is the claim ledger,
-including every claim retracted or narrowed after audit. Phases 4–6 (counterflow
-flamelet continuation, reduced flamelet transients, reaction-invariant
-enclosures) are deferred by design.
+**First tranche (Phases 0–3) is complete.** See `reports/report_01.md` (original),
+`reports/report_02.md` (first audit revision) and `reports/report_03.md` (sensitivity
+pipeline rebuild — read this for the current sensitivity claims). `claims.md` is
+the claim ledger, including every claim retracted or narrowed after audit:
+**C22 is withdrawn** (superseded by C23). Phases 4–6 (counterflow flamelet
+continuation, reduced flamelet transients, reaction-invariant enclosures) remain
+deferred by design.
 
 ## What is here
 
 | Path | Contents |
 |------|----------|
 | `src/thermoreach/` | Package: toy reactor + exact propagator, control histories, detailed-chemistry CSTR, Cantera cross-check, envelopes/metrics, Strang splitting |
-| `scripts/` | Executable experiments, Phases 0–3D (the reproducible source of truth) |
-| `tests/` | pytest suite: `test_toy.py` (Cantera-free), `test_reactor.py` (Cantera), `test_cli_smoke.py` (end-to-end CLIs) — 39 tests, all passing |
-| `results/<phase>/` | Raw results, manifests, figures |
+| `scripts/` | Executable experiments, Phases 0–4 (the reproducible source of truth) |
+| `tests/` | pytest suite: `test_toy.py`, `test_sensitivity.py` (23), `test_reactor.py`, `test_cli_smoke.py` — all passing |
+| `results/<phase>/` | Raw results, manifests, figures; `results/phase3d/DEPRECATED.json` marks the superseded study |
 | `reports/report_01.md` | First report |
-| `reports/report_02.md` | Audit revision report (read this first for current claims) |
+| `reports/report_02.md` | First audit revision report |
+| `reports/report_03.md` | Sensitivity rebuild + terminal-memory experiment (read first for current claims) |
 | `claims.md` | Claim ledger with assumptions, status and evidence pointers |
 | `sources.md` | Sources, versions, access dates |
 | `research_log.md` | Chronological log, including bugs found and fixed |
