@@ -1,7 +1,7 @@
 {
   "run_id": "phase1",
   "timestamp_utc": "2026-09-16T04:51:44.275511+00:00",
-  "host": "server40902",
+  "host": "redacted-host",
   "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
   "git_revision": "",
   "config": {

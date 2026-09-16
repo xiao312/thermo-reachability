@@ -74,7 +74,9 @@ def manifest(run_id: str, out_dir: Path, config: dict, *, cwd: Path,
     m = {
         "run_id": run_id,
         "timestamp_utc": utc_now(),
-        "host": socket.gethostname(),
+        # Never publish the compute host's identity (audit A01): emit a fixed
+        # redacted label rather than the real hostname.
+        "host": "redacted-host",
         "platform": platform.platform(),
         "git_revision": code_id,
         "code_identity_note": ("git revision when available, otherwise a sha256 "
