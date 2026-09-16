@@ -1,0 +1,25 @@
+# Build / cache artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+build/
+dist/
+*.egg-info/
+
+# Large or regenerable outputs — keep specific important copies in results/
+*.tmp
+*.bak
+*.swp
+
+# Local environment and secrets
+.env
+.env.*
+*.pem
+*.key
+nohup.out
+
+# OS junk
+.DS_Store
+Thumbs.db
