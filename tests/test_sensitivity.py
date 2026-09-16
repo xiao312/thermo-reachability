@@ -21,9 +21,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thermoreach.sensitivity import (  # noqa: E402
-    Basis, PerturbationPlan, StateScaling, log_control_plan, linear3_endpoint_map,
-    linear3_exact_jacobian, rhs_forcing_gamma, sin_to_span, svd_basis,
-    scaled_tangent_space, toy_constant_control_loggamma_derivative, toy_endpoint,
+    Basis, PerturbationPlan, StateScaling, classify_ranks, endpoint_jacobian_fsa_system,
+    log_control_plan, linear3_endpoint_map, linear3_exact_jacobian,
+    rhs_forcing_gamma, sin_to_span, svd_basis, scaled_tangent_space,
+    transverse_spectrum, toy_constant_control_loggamma_derivative, toy_endpoint,
     toy_endpoint_sensitivity,
 )
 
@@ -292,3 +293,209 @@ def test_linear3_fd_reproduces_the_exact_jacobian():
             J[:, j] = (linear3_endpoint_map(LAM3, 1.0, 3, up)
                        - linear3_endpoint_map(LAM3, 1.0, 3, um)) / (2 * rel)
         assert np.max(np.abs(J - G)) < 50 * rel**2 * np.max(np.abs(G))
+
+
+# --- rank classification and transverse spectrum (Revision 4) ---------------
+
+def _scaling():
+    return StateScaling(n_species=3)
+
+
+def test_classify_ranks_separates_four_notion():
+    """Machine rank, noise-resolved rank and application rank are DISTINCT.
+
+    A matrix with singular values (1, 1e-5, 1e-12) has machine rank 3, is
+    resolved only to rank 2 above a 1e-6 discrepancy, and is above the 1e-6
+    application threshold only twice.  Reporting the machine rank as the answer
+    is exactly the error that produced the withdrawn Phase 3D claim.
+    """
+    sc = _scaling()
+    # a 4x3 matrix with a deliberately tiny third singular value
+    J = np.array([[1.0, 0.0, 0.0], [0.0, 1e-5, 0.0], [0.0, 0.0, 1e-12],
+                  [0.0, 0.0, 0.0]])
+    out = classify_ranks(J, sc, noise_scale=1e-6,
+                         application_threshold=1e-6)
+    # numpy's tolerance is ~ max_sv * shape * eps ~ 1e-15, so the 1e-12 column
+    # IS counted by matrix_rank: the machine rank is 3 while the noise-resolved
+    # and application ranks are 2.  This gap is the whole point.
+    assert out["rank_machine"] == 3
+    assert out["rank_derivative_noise_resolved"] == 2   # 1e-5 > 1e-6 > 1e-12
+    assert out["rank_application_effective"] == 2
+    assert out["stencil_complete"] is True
+    # the machine rank must NOT be reported as the claimed rank
+    assert out["full_rank_claim_valid"] is False
+
+
+def test_classify_ranks_invalid_stencil_excludes_whole_matrix():
+    """A NaN column makes the matrix invalid for full-rank claims: never
+    aggregated with nansum into a rank count."""
+    sc = _scaling()
+    J = np.array([[1.0, np.nan], [0.0, 1.0]])
+    out = classify_ranks(J, sc, noise_scale=1e-9)
+    assert out["stencil_complete"] is False
+    assert out["n_valid_columns"] == 1
+    assert out["full_rank_claim_valid"] is False
+
+
+def test_classify_ranks_noise_none_is_not_zero():
+    """Without an estimated discrepancy the noise-resolved rank is None, never
+    a silently small integer."""
+    sc = _scaling()
+    J = np.eye(3)
+    out = classify_ranks(J, sc, noise_scale=None)
+    assert out["rank_derivative_noise_resolved"] is None
+
+
+def test_application_threshold_component_bound_is_not_1e_minus_6():
+    """The 1e-6 scaled threshold is 1e-4 K and 1e-8 mass fraction, NOT 1e-6 in
+    mass fraction.  The component bound must say so."""
+    sc = StateScaling(n_species=2, T_interval=100.0, Y_interval=1e-2)
+    b = sc.component_bound(1e-6)
+    assert b["temperature_K_per_unit_log_control"] == pytest.approx(1e-4)
+    assert b["mass_fraction_per_unit_log_control"] == pytest.approx(1e-8)
+
+
+def test_transverse_spectrum_reports_leakage_floor():
+    """The manifold-leakage floor must be reported next to the transverse
+    spectrum, so a tiny transverse direction cannot be hidden by projection."""
+    sc = _scaling()
+    n = 4
+    J = np.eye(n)
+    V = np.zeros((n, 2))
+    V[0, 0] = 1.0
+    V[1, 1] = 1.0
+    C = np.array([[1.0, 1.0, 0.0, 0.0]])       # one constraint
+    out = transverse_spectrum(J, V, sc, noise_scale=None, C_of_q=C)
+    assert out["singular_values_total_scaled"] is not None
+    assert out["singular_values_manifold_leakage_scaled"] is not None
+    assert out["tangent_space_dimension"] == n - 1
+    assert "transverse_above_leakage_floor" in out
+
+
+def test_transverse_floor_without_C_is_none_not_fake():
+    sc = _scaling()
+    out = transverse_spectrum(np.eye(4), np.eye(4)[:, :2], sc)
+    assert out["singular_values_manifold_leakage_scaled"] is None
+
+
+def test_scaled_tangent_space_uses_CWinverse_not_CW():
+    """The old code formed null(C W); with unequal scales that returns the wrong
+    subspace.  Test from the review: C=[1,1], W=diag(1e-2,100), dq=[1,-1]."""
+    sc = StateScaling(n_species=1, T_interval=100.0, Y_interval=1e-2)
+    C = np.array([[1.0, 1.0]])
+    ts = scaled_tangent_space(C, sc)
+    # the tangent vector dq=[1,-1] scaled is W dq = [0.01, -100]; the constraint
+    # C dq = 0 holds, so the SCALED vector must project to itself
+    dq_scaled = sc.W * np.array([1.0, -1.0])
+    proj = ts.project(dq_scaled)
+    assert np.allclose(proj, dq_scaled, atol=1e-8)
+    # and C W^-1 N must be ~0
+    N = ts.basis
+    assert np.max(np.abs(C @ np.diag(1.0 / sc.W) @ N)) < 1e-8
+    assert ts.basis.shape[1] == 1
+
+
+# --- exact tangent-linear (FSA) estimator vs a closed form ------------------
+
+class _AffineLinear:
+    """dq/dt = A q + gamma*b, EXACTLY affine in gamma.
+
+    The endpoint of a segment history and dE/d(log gamma_j) are both available in
+    closed form through matrix exponentials, so this is an exact reference for the
+    tangent-linear solver - and it needs no Cantera.
+    """
+
+    def __init__(self, A, b):
+        self.A = np.asarray(A, float)
+        self.b = np.asarray(b, float)
+        self.n = self.A.shape[0]
+
+    def rhs(self, t, q, gamma):
+        return self.A @ q + gamma * self.b
+
+    def rhs_dgamma(self, q):
+        return self.b
+
+    def state_jac(self, q, gamma):
+        return self.A
+
+    def endpoint_exact(self, gammas, durs, q0):
+        from scipy.linalg import expm
+        q = np.array(q0, float)
+        for g, tau in zip(gammas, durs):
+            Phi = expm(self.A * tau)
+            q = Phi @ (q + g * np.linalg.solve(self.A, self.b)) \
+                - g * np.linalg.solve(self.A, self.b)
+        return q
+
+    def jac_exact(self, gammas, durs, q0):
+        """Closed form:  S_j(final) = prod_{k>j} exp(A tau_k)
+                                  * gamma_j (exp(A tau_j) - I) A^-1 b.
+
+        The tangent source for the log-level of segment j is gamma_j * b, acting
+        only during segment j, and it is then carried linearly through the later
+        segments.
+        """
+        from scipy.linalg import expm
+        u = np.linalg.solve(self.A, self.b)
+        m, n = len(gammas), self.n
+        S = np.zeros((n, m))
+        for j in range(m):
+            col = gammas[j] * (expm(self.A * durs[j]) - np.eye(n)) @ u
+            for k in range(j + 1, m):
+                col = expm(self.A * durs[k]) @ col
+            S[:, j] = col
+        return self.endpoint_exact(gammas, durs, q0), S
+
+
+@pytest.mark.parametrize("m", [1, 2, 3])
+def test_fsa_matches_closed_form_affine_linear(m):
+    """The exact tangent-linear endpoint Jacobian must match the closed form to
+    integration tolerance, at every number of segments.  This is the estimator
+    that removes the finite-difference noise floor from the transverse spectrum.
+    """
+    rng = np.random.default_rng(0)
+    n = 4
+    A = -np.diag([1.0, 2.0, 4.0, 0.7]) + 0.3 * rng.standard_normal((n, n))
+    b = rng.standard_normal(n)
+    sysm = _AffineLinear(A, b)
+    q0 = rng.standard_normal(n)
+    gammas = np.array([100.0, 500.0, 250.0][:m])
+    durs = np.full(m, 1e-3)
+
+    q_ex, J_ex = sysm.jac_exact(gammas, durs, q0)
+    out = endpoint_jacobian_fsa_system(sysm.rhs, sysm.rhs_dgamma, sysm.state_jac,
+                                       gammas, durs, q0, method="Radau",
+                                       rtol=1e-12, atol=np.full(n, 1e-14))
+    assert np.allclose(out["endpoint"], q_ex, rtol=1e-9, atol=1e-12)
+    assert np.allclose(out["J"], J_ex, rtol=1e-9, atol=1e-12)
+
+
+def test_fsa_endpoint_jacobian_has_no_control_noise_floor():
+    """Against a fine finite difference in the control, FSA must agree far
+    better than a coarse-vs-fine FD pair does - i.e. it is the reference."""
+    rng = np.random.default_rng(1)
+    n = 4
+    A = -np.diag([1.0, 2.0, 4.0, 0.7]) + 0.2 * rng.standard_normal((n, n))
+    b = rng.standard_normal(n)
+    sysm = _AffineLinear(A, b)
+    q0 = rng.standard_normal(n)
+    gammas = np.array([100.0, 500.0, 250.0])
+    durs = np.array([1e-3, 2e-3, 1e-3])
+    _, J_ex = sysm.jac_exact(gammas, durs, q0)
+    out = endpoint_jacobian_fsa_system(sysm.rhs, sysm.rhs_dgamma, sysm.state_jac,
+                                       gammas, durs, q0, method="Radau",
+                                       rtol=1e-12, atol=np.full(n, 1e-14))
+    err_fsa = np.max(np.abs(out["J"] - J_ex))
+    # a central FD in the control at a coarse step, for contrast
+    eta = np.log(gammas / 1000.0)
+    J_fd = np.zeros_like(J_ex)
+    for j in range(3):
+        gp = gammas.copy(); gp[j] *= np.exp(1e-2)
+        gm = gammas.copy(); gm[j] *= np.exp(-1e-2)
+        J_fd[:, j] = (sysm.endpoint_exact(gp, durs, q0)
+                      - sysm.endpoint_exact(gm, durs, q0)) / (2e-2)
+    err_fd = np.max(np.abs(J_fd - J_ex))
+    # the tangent-linear estimator must beat a coarse control FD by many orders
+    # of magnitude: it has no control-step noise floor at all
+    assert err_fsa < 1e-7 * max(err_fd, 1e-12), (err_fsa, err_fd)

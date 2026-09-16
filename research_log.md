@@ -346,3 +346,56 @@ reference derivative was implemented (`constant_control_fsa`, exact F_gamma in
 closed form because the CSTR RHS is affine in gamma) but is too slow for
 routine use; it is available behind `--fsa`. The default cross-integration check
 compares Radau against LSODA on the same reference derivative instead.
+
+
+## Revision 4 - memory calibration (branch `memory-calibration`)
+
+Followed the review's Tasks 0-5. Task 0's `prior_handoff_verified/...` tree does
+not exist anywhere (repo, handoff zips, Downloads, desktop); the three-state
+benchmark was reconstructed from Task 1.1's explicit formula and reproduces the
+stated singular values to 7 digits.
+
+Targeted defects, each with a regression test:
+* `linear3_exact_jacobian` returned `-G_spec` (sign error) - corrected, and an
+  independently coded segment-restarted LSODA reference was added because a
+  single-shot solve steps over the middle control segment and silently returns 0.
+* `scaled_tangent_space` formed `null(C W)` instead of `null(C W^-1)`. With
+  unequal temperature/mass-fraction scales this returns the wrong subspace
+  always. Rewritten with row equilibration; conditioning 3.1e8 -> 4.5.
+* Reference anchoring: dimensionless time parameter tau = t/T_ref so the time
+  column carries the same units per unit parameter as the control columns; held
+  endpoints anchored at T+L and flagged; the sum-of-columns identity marked
+  applicable only for equal base histories.
+* Threshold wording corrected: the 1e-6 scaled threshold is 1e-4 K and 1e-8 mass
+  fraction per unit log-control step. `classify_ranks` separates machine /
+  noise-resolved / application rank and gates full-rank claims on a complete
+  stencil, and never lets a NaN column reach the SVD.
+
+Experiments (results/phase5..8):
+* Phase 5 - six unique anchors. The weak TOTAL direction is validated by replay
+  across three perturbation sizes and two integrators. Its TRANSVERSE component
+  sits between the manifold-leakage floor and the FD refinement discrepancy, so
+  the FD estimator cannot decide it. The FD discrepancy itself is a refinement
+  discrepancy, not a bound: 2.76e-6 here versus 2.8e-6... 2.8e-8 in Phase 4 from
+  a different step pair.
+* Phase 6 - matched gamma*T pairs REFUTE the Phase 4 mechanism: at fixed gamma*T
+  = 1 the second singular value spans 7.4e-12 to 8.8e-3 (1.2e9-fold). What tracks
+  it is T / t_ign: largest near 2x the ignition delay, collapsed by 200x.
+* Phase 7 - [f_a, f_b] = (gamma_a - gamma_b)[r, v] because the RHS is affine in
+  gamma. Same-level control gives exactly zero; at tau <= 1e-6 the log-log slope
+  is 2.03 and the magnitude matches the closed form to 3%. Above the ignition
+  delay the slope is ~0.9 and the effect saturates: the observable order
+  dependence at chemically relevant times is ignition, not the bracket.
+* Phase 8 - the exact tangent-linear estimator (no control-step noise floor,
+  validated to 1.2e-14 against a matrix-exponential closed form at m = 1, 2, 3)
+  resolves what the FD run could not: a transverse off-family direction in a
+  narrow window, 1.2e-4 scaled units at (hot, gamma=1e4, T=1e-5), 4e4x above the
+  leakage floor and 8e4x above the cross-integrator discrepancy. A window scan
+  shows it decaying by six orders between T=1e-6 and T=3e-5 s, and a replay along
+  the singular vector reproduces it while correctly failing to converge at the
+  unresolved anchor.
+
+The FSA is no longer too slow to use: the multi-segment `endpoint_jacobian_fsa`
+makes it tractable by integrating the (state, sensitivity) pair in one system,
+which costs one state-Jacobian FD pass per RHS evaluation regardless of segment
+count. 76 tests pass on the server (34 in test_sensitivity alone).

@@ -174,12 +174,37 @@ class StateScaling:
     def scale(self, dq: np.ndarray) -> np.ndarray:
         return self.W * np.asarray(dq, dtype=float)
 
+    def component_bound(self, sigma_scaled: float) -> dict:
+        """Per-component state magnitude of a scaled singular value.
+
+        A scaled unit is dT = T_INTERVAL K in temperature or dY = Y_INTERVAL in
+        each mass fraction. So a scaled magnitude sigma corresponds to a
+        temperature component of sigma * T_INTERVAL kelvin and a composition
+        component of sigma * Y_INTERVAL, PER UNIT Euclidean step in the
+        log-control parameter.  With the defaults T_INTERVAL = 100 K and
+        Y_INTERVAL = 1e-2, the application threshold sigma = 1e-6 means
+        1e-4 K and 1e-8 in mass fraction - NOT 1e-6 in mass fraction.
+        """
+        s = float(sigma_scaled)
+        return {"sigma_scaled": s,
+                "temperature_K_per_unit_log_control": s * self.T_interval,
+                "mass_fraction_per_unit_log_control": s * self.Y_interval}
+
     def to_record(self) -> dict:
         return {"T_interval_K": self.T_interval,
                 "Y_interval": self.Y_interval,
-                "meaning": ("an increment of dT = T_INTERVAL K is declared "
-                            "comparable to dY = Y_INTERVAL in every mass fraction; "
-                            "singular values count such increments")}
+                "meaning": ("a scaled unit is dT = T_INTERVAL K or dY = Y_INTERVAL "
+                            "in every mass fraction; singular values count such "
+                            "increments per unit Euclidean step in log control"),
+                "component_bound_at_application_threshold":
+                    self.component_bound(APPLICATION_THRESHOLD_DEFAULT)}
+
+
+# Declared application tolerance in scaled units. With the default scaling this
+# is 1e-4 K and 1e-8 in mass fraction per unit log-control step (see
+# StateScaling.component_bound).  It is a DECLARED analysis choice, not an
+# experimentally established accuracy target.
+APPLICATION_THRESHOLD_DEFAULT = 1e-6
 
 
 # --------------------------------------------------------------------------
@@ -269,19 +294,45 @@ class TangentSpace:
         raise NotImplementedError                        # set by the constructor
 
     def to_record(self) -> dict:
-        return {"n_constraints": self.n_constraints,
-                "singular_values_CWinverse": self.singular_values_CWinverse.tolist(),
-                "rank_CWinverse": self.rank_CWinverse,
-                "conditioning": self.conditioning,
-                "tangent_dimension": 0 if self.basis is None else self.basis.shape[1]}
+        out = {"n_constraints": self.n_constraints,
+               "singular_values_CWinverse": self.singular_values_CWinverse.tolist(),
+               "rank_CWinverse": self.rank_CWinverse,
+               "conditioning": self.conditioning,
+               "tangent_dimension": 0 if self.basis is None else self.basis.shape[1]}
+        if getattr(self, "conditioning_raw", None) is not None:
+            out["conditioning_CWinverse_before_equilibration"] = self.conditioning_raw
+            out["row_equilibration_scales"] = list(self.row_scales)
+        return out
 
 
 def scaled_tangent_space(C: np.ndarray, scaling: StateScaling,
-                         rel_tol: float = 1e-10) -> TangentSpace:
-    """Null space of C W^-1 by SVD; records conditioning of C W^-1."""
+                         rel_tol: float = 1e-10,
+                         equilibrate: bool = True) -> TangentSpace:
+    """Null space of ``C W^-1`` by rank-revealing SVD.
+
+    For the scaled increment dq_scaled = W dq, the constraint C dq = 0 reads
+    C W^-1 dq_scaled = 0, so the tangent space of the constraint manifold in the
+    SCALED coordinates is null(C W^-1) - NOT null(C W).  An earlier version
+    formed A = C W and therefore returned the wrong subspace whenever W is not a
+    multiple of the identity (which is always, here: temperature and mass
+    fractions carry different scales).
+
+    Row equilibration rescales each constraint row to unit infinity-norm before
+    the SVD, so that the numerical rank test is not dominated by one row with a
+    large coefficient.  Conditioning is reported both before and after, so the
+    effect of equilibration is auditable.
+    """
     C = np.atleast_2d(np.asarray(C, dtype=float))
     n = C.shape[1]
-    A = C @ np.diag(scaling.W)
+    Winv = np.diag(1.0 / scaling.W)
+    A_raw = C @ Winv
+    cond_raw = float(np.linalg.cond(A_raw)) if A_raw.size else float("inf")
+    A = A_raw
+    row_scales = np.ones(C.shape[0])
+    if equilibrate:
+        rn = np.maximum(np.abs(A_raw).max(axis=1), 1e-300)
+        row_scales = 1.0 / rn
+        A = A_raw * row_scales[:, None]
     # full_matrices=True so Vt is square: for a wide A the reduced Vt has only
     # rank(A) rows, and Vt[r:] would then be empty, silently discarding the null
     # space.
@@ -291,7 +342,9 @@ def scaled_tangent_space(C: np.ndarray, scaling: StateScaling,
     cond = float(sv[0] / sv[r - 1]) if r > 0 else float("inf")
     basis = Vt[r:].T if r < n else np.zeros((n, 0))
     ts = TangentSpace(C.shape[0], sv, r, cond, basis if basis.shape[1] else None)
-    CWinv = np.diag(1.0 / scaling.W)
+    ts.conditioning_raw = cond_raw
+    ts.row_scales = row_scales.tolist()
+    CWinv = Winv
     ts.leakage = lambda dq: float(np.linalg.norm(C @ (CWinv @ np.asarray(dq, float))))
     return ts
 
@@ -322,16 +375,59 @@ def linear3_exact_jacobian(lam: np.ndarray, T: float, m: int) -> np.ndarray:
     """Exact dz(T)/d(controls): row i, column j is the response of z_i to u_j.
 
     Independent of the control values (the system is linear) and of z0.
+    Sign convention (review 1.1):
+
+        G_ij = [exp(-lam_i (T - t_{j+1})) - exp(-lam_i (T - t_j))] / lam_i
+
+    with t_j = j*T/m.  This is the SIGNED response to a POSITIVE unit control on
+    segment j, so G has positive entries and the endpoint with all controls = 1
+    and z0 = 0 is (1 - exp(-lam_i T)) / lam_i, all positive.  An earlier version
+    of this helper returned -G; that error is invisible in the singular values
+    (they are sign-blind) and was caught only by the endpoint sign check.
     """
     lam = np.asarray(lam, dtype=float)
     d = T / m
     G = np.zeros((lam.size, m))
     for i in range(lam.size):
         for j in range(m):
-            ts, te = j * d, (j + 1) * d
-            G[i, j] = (np.exp(-lam[i] * (T - ts))
-                       - np.exp(-lam[i] * (T - te))) / lam[i]
+            tj, tjp = j * d, (j + 1) * d
+            G[i, j] = (np.exp(-lam[i] * (T - tjp))
+                       - np.exp(-lam[i] * (T - tj))) / lam[i]
     return G
+
+
+def linear3_ode_reference(lam: np.ndarray, T: float, m: int,
+                          controls: np.ndarray, z0: np.ndarray | None = None,
+                          rtol: float = 1e-12, atol: float = 1e-14) -> np.ndarray:
+    """Independently coded ODE solution of the same system, as a cross-check.
+
+    Deliberately does NOT reuse ``linear3_exact_jacobian``: it integrates
+    dz_i/dt = -lam_i z_i + u(t) with a standard ODE solver and a piecewise-
+    constant right-hand side, then evaluates at t = T.  Used to verify the
+    signed closed form and its endpoints, not only the singular values.
+    """
+    from scipy.integrate import solve_ivp
+
+    lam = np.asarray(lam, dtype=float)
+    controls = np.asarray(controls, dtype=float)
+    d = T / m
+    z0 = np.zeros(lam.size) if z0 is None else np.asarray(z0, dtype=float)
+    z = z0.copy()
+    t = 0.0
+    # Integrate segment by segment, RESTARTING the solver at each control
+    # discontinuity. A single solve across the whole horizon can step over a
+    # segment entirely when the RHS happens to vanish there, which silently
+    # drops that control's contribution.
+    for j in range(m):
+        def rhs(tt, zz, _u=controls[j]):
+            return -lam * zz + _u
+        sol = solve_ivp(rhs, (t, t + d), z, method="LSODA",
+                        rtol=rtol, atol=atol, t_eval=[t + d], dense_output=False)
+        if not sol.success:
+            raise RuntimeError(sol.message)
+        z = sol.y[:, -1]
+        t += d
+    return z
 
 
 # --------------------------------------------------------------------------
@@ -594,3 +690,211 @@ def endpoint_jacobian_fd(cstr, gamma: np.ndarray, durations: np.ndarray,
             "all_columns_valid": bool(np.isfinite(J).all()),
             "horizon": float(durations.sum()),
             "n_segments": int(m)}
+
+
+# --------------------------------------------------------------------------
+# rank classification: four distinct notions, complete-stencil gating
+# --------------------------------------------------------------------------
+
+def classify_ranks(J: np.ndarray, scaling: "StateScaling",
+                   noise_scale: float | None = None,
+                   application_threshold: float = APPLICATION_THRESHOLD_DEFAULT,
+                   rel_tol: float = 1e-8) -> dict:
+    """Separate the four rank notions the review distinguishes.
+
+    1. ``rank_machine`` - np.linalg.matrix_rank of the scaled matrix. This is a
+       MACHINE-RANK ESTIMATE at the solver's working precision; it is NOT the
+       exact algebraic rank (available only for the closed-form benchmarks).
+    2. ``rank_derivative_noise_resolved`` - directions above the estimated
+       differentiation noise scale ||J(h) - J(h')||.  When ``noise_scale`` is
+       None this is reported as None, never as zero.
+    3. ``rank_application_effective`` - directions above the DECLARED
+       application tolerance.  A direction above this threshold is resolved AND
+       above tolerance; it is NOT an example of 'resolved but below application
+       tolerance'.
+    4. ``stencil_complete`` - whether every column of J is a valid centred
+       stencil. An invalid stencil EXCLUDES THE WHOLE MATRIX from any full-rank
+       claim; it is never aggregated with nansum into a rank count.
+
+    ``noise_scale`` is a refinement DISCREPANCY ||J(h) - J(h/10)||, NOT a
+    certified noise bound; it is stored and labelled as such.
+    """
+    J = np.asarray(J, dtype=float)
+    valid = np.isfinite(J).all(axis=0)
+    # A failed integration yields NaN columns.  numpy's SVD does not converge on
+    # such a matrix, so the singular values are computed from the VALID columns
+    # only, and the incomplete stencil is recorded: it excludes the matrix from
+    # any full-rank claim and is never aggregated with nansum.
+    Jv = J[:, valid] if J.ndim == 2 and valid.any() else J
+    Js = scaling.W[:, None] * Jv if (Jv.ndim == 2 and Jv.shape[0] == scaling.W.size
+                                     and Jv.size) else Jv
+    sv = np.linalg.svd(Js, compute_uv=False) if (Js.ndim == 2 and Js.size) else np.array([])
+    if sv.size == 0 or sv[0] <= 0:
+        return {"stencil_complete": bool(valid.all()), "n_valid_columns": int(valid.sum()),
+                "singular_values_scaled": sv.tolist(),
+                "rank_machine": 0,
+                "rank_derivative_noise_resolved": None if noise_scale is None else 0,
+                "rank_application_effective": 0,
+                "noise_scale_refinement_discrepancy": noise_scale,
+                "noise_scale_is_certified_bound": False,
+                "application_threshold": application_threshold,
+                "component_bound_at_threshold": scaling.component_bound(application_threshold),
+                "full_rank_claim_valid": False}
+    rank_machine = int(np.linalg.matrix_rank(Js))
+    r_noise = int((sv > noise_scale).sum()) if noise_scale is not None else None
+    r_app = int((sv > application_threshold).sum())
+    return {"stencil_complete": bool(valid.all()), "n_valid_columns": int(valid.sum()),
+            "singular_values_scaled": sv.tolist(),
+            "rank_machine": rank_machine,
+            "rank_derivative_noise_resolved": r_noise,
+            "rank_application_effective": r_app,
+            "noise_scale_refinement_discrepancy": noise_scale,
+            "noise_scale_is_certified_bound": False,
+            "application_threshold": application_threshold,
+            "component_bound_at_threshold": scaling.component_bound(application_threshold),
+            # a full-rank claim requires a complete stencil AND noise resolution
+            "full_rank_claim_valid": bool(valid.all()
+                                          and (r_noise is not None and r_noise >= sv.size))}
+
+
+def transverse_spectrum(J: np.ndarray, V: np.ndarray, scaling: "StateScaling",
+                        noise_scale: float | None = None,
+                        rel_tol: float = 1e-8,
+                        C_of_q: np.ndarray | None = None) -> dict:
+    """Total and transverse spectra of the scaled Jacobian W J.
+
+    ``V`` is a correctly anchored, noise-filtered basis of the constant-control
+    family tangent span at the SAME endpoint (columns are orthonormal).  The
+    transverse part is (I - Q Q^T) W J.  A second TOTAL singular value is NOT
+    automatically a direction outside the two-parameter constant family: only
+    the transverse spectrum can support that, and only above the noise scale.
+
+    Both raw and projected spectra are returned and labelled, so a disagreement
+    between them can be compared against the physical conservation error rather
+    than hidden by projection.
+    """
+    J = np.asarray(J, dtype=float)
+    V = np.asarray(V, dtype=float)
+    W = scaling.W
+    # NaN columns must not reach the SVD; they are recorded as an incomplete
+    # stencil in classify_ranks and excluded here.
+    valid = np.isfinite(J).all(axis=0)
+    J = J[:, valid] if (J.ndim == 2 and valid.any()) else J
+    WJ = W[:, None] * J
+    WV = W[:, None] * V
+    sv_total = np.linalg.svd(WJ, compute_uv=False)
+    Q, _ = np.linalg.qr(WV)
+    # Manifold-leakage floor: the scaled distance of the derivative columns from
+    # the conserved-manifold tangent space null(C W^-1).  A transverse direction
+    # BELOW this floor is indistinguishable from conservation/ integration error
+    # and must not be reported as off-family state generation.  Projection must
+    # not hide this error, so the floor is reported alongside the transverse
+    # spectrum rather than subtracted from it.
+    ts = scaled_tangent_space(C_of_q, scaling) if C_of_q is not None else None
+    sv_leak = None
+    tangent_dim = None
+    if ts is not None and ts.basis is not None:
+        N = ts.basis
+        J_leak = (np.eye(N.shape[0]) - N @ N.T) @ WJ
+        sv_leak = np.linalg.svd(J_leak, compute_uv=False)
+        tangent_dim = int(N.shape[1])
+    J_perp = (np.eye(Q.shape[0]) - Q @ Q.T) @ WJ
+    sv_perp = np.linalg.svd(J_perp, compute_uv=False)
+    out = {"singular_values_total_scaled": sv_total.tolist(),
+           "singular_values_transverse_scaled": sv_perp.tolist(),
+           "singular_values_manifold_leakage_scaled": (sv_leak.tolist()
+                                                        if sv_leak is not None else None),
+           "tangent_space_dimension": tangent_dim,
+           "rank_V_basis": int(Q.shape[1]),
+           "noise_scale_refinement_discrepancy": noise_scale,
+           "note": ("total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with "
+                    "Q an orthonormal basis of the scaled constant-control tangent "
+                    "span at the SAME endpoint; manifold leakage = SVD of "
+                    "(I - N N^T) W J with N the conserved-manifold tangent space "
+                    "null(C W^-1). A transverse direction below the leakage floor "
+                    "or below the noise discrepancy is NOT evidence of off-family "
+                    "state generation.")}
+    if sv_leak is not None and sv_perp.size:
+        out["transverse_above_leakage_floor"] = bool(
+            sv_perp[0] > (sv_leak[0] if sv_leak.size else 0.0))
+    return out
+
+
+def endpoint_jacobian_fsa_system(rhs, rhs_dgamma, state_jac,
+                                 gamma_segments: np.ndarray,
+                                 durations: np.ndarray, q0: np.ndarray,
+                                 method: str = "Radau", rtol: float = 1e-11,
+                                 atol: np.ndarray | None = None) -> dict:
+    """Exact tangent-linear endpoint Jacobian d E / d eta for a segment history
+    of a system AFFINE in the control:  F(q, gamma) = gamma * d(q) + r(q).
+
+    Arguments:
+      rhs(t, q, gamma)            - the base right-hand side
+      rhs_dgamma(q)               - d F/d gamma, exact by the affine structure
+      state_jac(q, gamma)         - d F/d q
+
+    Forward-sensitivity equations (exact inhomogeneity, no FD in the control):
+
+        dq/dt   = F(q, gamma_k)                     (t in segment k)
+        dS_j/dt = F_q(q) S_j + gamma_j F_gamma(q)   (t in segment j ONLY)
+
+    Column j of the endpoint Jacobian is S_j at the final time.  Because no step
+    in the control is differenced, this estimator has NO control-step noise floor
+    and is the reference against which the FD estimator's refinement discrepancy
+    is judged.  Switching times are parameters of the history but not of this map,
+    so no time-shift terms appear: this is the Jacobian with respect to LEVELS.
+    """
+    from scipy.integrate import solve_ivp
+
+    gamma_segments = np.asarray(gamma_segments, dtype=float)
+    durations = np.asarray(durations, dtype=float)
+    n = q0.size
+    m = gamma_segments.size
+    edges = np.concatenate([[0.0], np.cumsum(durations)])
+    if atol is None:
+        atol = np.full(n, 1e-12)
+
+    def aug(t, y):
+        q = y[:n]
+        S = y[n:].reshape(n, m)
+        k = int(np.searchsorted(edges, t, side="right")) - 1
+        k = min(max(k, 0), m - 1)
+        Fq = np.asarray(state_jac(q, gamma_segments[k]), dtype=float)
+        dS = Fq @ S
+        dS[:, k] += gamma_segments[k] * np.asarray(rhs_dgamma(q), dtype=float)
+        return np.concatenate([rhs(t, q, gamma_segments[k]), dS.ravel()])
+
+    y0 = np.concatenate([q0, np.zeros(n * m)])
+    res = solve_ivp(aug, (0.0, float(durations.sum())), y0, method=method,
+                    t_eval=[float(durations.sum())], rtol=rtol,
+                    atol=np.concatenate([atol, np.full(n * m, atol.min())]),
+                    dense_output=False)
+    if not res.success:
+        raise RuntimeError(f"FSA integration failed: {res.message}")
+    return {"J": res.y[n:, -1].reshape(n, m).copy(),
+            "endpoint": res.y[:n, -1].copy(),
+            "success": bool(res.success),
+            "n_rhs_evaluations": int(res.nfev),
+            "method": method, "rtol": rtol}
+
+
+def endpoint_jacobian_fsa(cstr, gamma_segments: np.ndarray, durations: np.ndarray,
+                          q0: np.ndarray, method: str = "Radau",
+                          rtol: float = 1e-11, atol_T: float = 1e-10,
+                          atol_Y: float = 1e-17, eps: float = 1e-6) -> dict:
+    """CSTR wrapper around :func:`endpoint_jacobian_fsa_system`.
+
+    F_gamma is exact because the CSTR right-hand side is affine in the control
+    (see :func:`rhs_forcing_gamma`); F_q is differenced numerically in STATE since
+    Cantera exposes no Jacobian, which costs one FD pass per RHS evaluation
+    independent of the number of segments.
+    """
+    atol = np.concatenate([[atol_T], np.full(cstr.gas.n_species, atol_Y)])
+    out = endpoint_jacobian_fsa_system(
+        lambda t, q, g: cstr.rhs(t, q, g),
+        lambda q: rhs_forcing_gamma(cstr, q),
+        lambda q, g: rhs_jacobian_fd(cstr, q, g, eps),
+        gamma_segments, durations, q0, method=method, rtol=rtol, atol=atol)
+    out["atol"] = {"T": atol_T, "Y": atol_Y}
+    out["state_jacobian_eps"] = eps
+    return out

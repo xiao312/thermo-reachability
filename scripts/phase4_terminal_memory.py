@@ -276,7 +276,12 @@ def prefix_case(c: CSTR, gamma_star: float, T: float, q0: np.ndarray,
 
     ref = ref_cache[(gamma_star, T, init_label)] if ref_cache is not None \
         else reference_tangents(c, gamma_star, T, q0, rtol, atol_T, atol_Y)
-    V = np.vstack([ref["v_t"], ref["v_log_gamma"]]).T
+    # Dimensionless reference TIME parameter tau = t / T_ref with T_ref = the
+    # prefix horizon T (documented per case). Then dE/dtau = T * F, so the time
+    # column carries the same state units per unit dimensionless parameter as
+    # the control columns of J (state per unit log-gamma).
+    v_t_dimless = T * ref["v_t"]
+    V = np.vstack([v_t_dimless, ref["v_log_gamma"]]).T
     q_base = np.array(fd["endpoint"])
     Cmat = constraint_jacobian(c, q_base)
     scaling = StateScaling(n_species=c.gas.n_species)
@@ -284,9 +289,22 @@ def prefix_case(c: CSTR, gamma_star: float, T: float, q0: np.ndarray,
                                 abs_tol=ABS_APPLICATION_THRESHOLD,
                                 J_alt=fd_alt["J"])
 
-    # identity control: sum of prefix columns equals the constant-control deriv.
-    colsum = np.nansum(fd["J"], axis=1)
-    identity_err = float(np.max(np.abs(colsum - ref["v_log_gamma"])))
+    # Identity control. ONLY valid at an EQUAL constant-control base history:
+    # there, a common multiplicative scaling of every segment level IS the
+    # constant-control trajectory, so sum_j dE/d(eta_j) = d phi/d log gamma
+    # exactly.  For a NONCONSTANT base history the same column sum differentiates
+    # a common scaling of the ACTUAL history, a different curve; it is NOT the
+    # derivative of the constant-control family.  Marked N/A, never reported as
+    # a passed or failed identity.
+    if prefix_pattern == "equal":
+        valid = np.isfinite(fd["J"]).all(axis=0)
+        colsum = np.sum(fd["J"], axis=1) if valid.all() else None
+        identity_err = (float(np.max(np.abs(colsum - ref["v_log_gamma"])))
+                        if colsum is not None else None)
+        identity_applicable = True
+    else:
+        identity_err = None
+        identity_applicable = False
 
     hold = {}
     if hold_L > 0 and J_full is not None:
@@ -295,26 +313,49 @@ def prefix_case(c: CSTR, gamma_star: float, T: float, q0: np.ndarray,
         q_ss = steady_cache.get((gamma_hold, init_label)) if steady_cache \
             else None
         C2 = constraint_jacobian(c, q_end)
+        # For a HELD endpoint the reference family must be anchored at TOTAL time
+        # T + L, not at the prefix time T.  Equal prefix levels and the same hold
+        # gamma stay on the original constant-control family through T + L, so
+        # tangents at T + L from the same q0 remain valid; otherwise the
+        # reference is flagged unanchored and no angle claim is made from it.
+        total_time = T + hold_L
+        same_control = abs(gamma_hold - gamma_star) < 1e-12
+        if prefix_pattern == "equal" and same_control:
+            key = (gamma_star, total_time, init_label)
+            ref_hold = ref_cache[key] if (ref_cache is not None and key in ref_cache) \
+                else reference_tangents(c, gamma_star, total_time, q0,
+                                        rtol, atol_T, atol_Y)
+            v_t_hold = total_time * ref_hold["v_t"]
+            V_hold = np.vstack([v_t_hold, ref_hold["v_log_gamma"]]).T
+            ref_anchored = True
+        else:
+            V_hold = V
+            ref_anchored = False
         hold = {"hold_L": hold_L, "gamma_hold": gamma_hold,
+                "total_time": total_time,
+                "reference_anchored_at_T_plus_L": ref_anchored,
                 "endpoint": q_end.tolist(),
                 "endpoint_rhs_norm": float(np.linalg.norm(
                     c.rhs(0.0, q_end, gamma_hold))),
                 "hold_exposure_gamma_times_L": float(gamma_hold * hold_L),
                 "prefix_block_analysis": analyze_jacobian(
-                    J_full[:, :m], V, scaling, C2,
+                    J_full[:, :m], V_hold, scaling, C2,
                     abs_tol=ABS_APPLICATION_THRESHOLD, J_alt=J_full_alt[:, :m]),
                 "full_analysis": analyze_jacobian(
-                    J_full, V, scaling, C2,
+                    J_full, V_hold, scaling, C2,
                     abs_tol=ABS_APPLICATION_THRESHOLD, J_alt=J_full_alt),
                 "distance_to_steady": (float(np.linalg.norm(q_end - q_ss))
                                        if q_ss is not None else None)}
     return {"gamma_star": gamma_star, "T": T, "prefix_pattern": prefix_pattern,
             "theta": theta.tolist(), "durations": durs.tolist(),
             "horizon": float(durs.sum()),
+            "time_reference": {"parameter": "tau = t / T_ref", "T_ref": T,
+                               "note": "time column is T_ref * F(q_base, gamma_star)"},
             "fd": {k: v for k, v in fd.items() if k != "perturbed_endpoints"},
             "perturbed_endpoints": fd["perturbed_endpoints"],
             "reference": {k: v for k, v in ref.items() if k != "v_log_gamma_fd"},
             "reference_fd_check": ref["v_log_gamma_fd"],
+            "identity_applicable": identity_applicable,
             "identity_max_abs_err": identity_err,
             "identity_scale": float(np.max(np.abs(ref["v_log_gamma"]))),
             "analysis": analysis, "hold": hold}

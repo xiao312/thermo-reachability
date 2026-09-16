@@ -352,13 +352,102 @@ scaled units (absolute application rank 0) with the endpoint already at the
 steady reference, confirming the chain-rule propagation
 `dE/dtheta_j = D_q phi^L . dq_prefix/dtheta_j`.
 
-So: real transient history effects exist at gamma*T ~ 0.1-1 and are erased beyond
-about one exchange time. Findings are confined to the tested map, histories, time
-window and tolerance. Acceptance does not require finding a third direction - it
-requires that the experiment would DETECT one when present at its stated
-resolution, which the positive controls establish.
+**C23. SUPERSEDED IN PART (Revision 4) - the mechanism is refuted, the
+existence claim survives only in a narrower form.** The Phase 4 statement above,
+that the weak history direction is "largest near gamma*T ~ 1", is REFUTED by the
+matched-pair experiment of Phase 6 (see C25): at FIXED gamma*T = 1 the second
+scaled singular value spans a 1.2e9-fold range (7.4e-12 at gamma=100, T=1e-2
+versus 8.8e-3 at gamma=1e4, T=1e-4). Exchange exposure does NOT control the
+direction. What the data support instead is that it is largest when the horizon
+is comparable to the chemical relaxation time (a few times the ignition delay)
+and collapses once the trajectory has relaxed. The existence of a resolved
+second TOTAL direction at short horizons, and its erasure by any hold beyond
+about one residence time, are unaffected.
+
 
 ---
+
+---
+
+## Revision 4 claims (memory-calibration branch)
+
+**C24. NEW - four rank notions must be reported separately, and the machine rank
+is not the answer.** `classify_ranks` reports (i) `rank_machine`,
+numpy's `matrix_rank`, which counts a direction at 1e-12 because numpy's
+tolerance is ~max_sv * shape * eps ~ 1e-15; (ii) `rank_derivative_noise_resolved`,
+directions above the measured refinement discrepancy ||J(h) - J(h')||, which is a
+REFINEMENT DISCREPANCY and not a certified noise bound - Phase 5 measured
+2.76e-6 between the two largest FD steps where Phase 4 had reported 2.8e-8 from a
+different step pair, so the number depends on which pair is used and is stored
+and labelled as such; (iii) `rank_application_effective`, directions above the
+DECLARED 1e-6 scaled threshold, which with the frozen scaling
+(1 unit = 100 K or 1e-2 mass fraction) means **1e-4 K and 1e-8 mass fraction per
+unit log-control step, not 1e-6 mass fraction**; (iv) `stencil_complete`, which
+gates every full-rank claim: an invalid stencil EXCLUDES THE WHOLE MATRIX, it is
+never aggregated with nansum into a rank count, and a NaN column must not reach
+the SVD (numpy does not converge on it).
+
+The withdrawn Phase 3D claim reported the machine rank as though it were (ii)
+and (iii). At the Phase 5 anchor (gamma=100, T=1e-3) the three notions give
+rank_machine = 3, rank_noise_resolved = 2, rank_application = 2 on singular
+values (1.28e-1, 1.16e-5, 1.08e-12).
+
+**C25. NEW - exchange exposure does not control the weak history direction
+(matched pairs).** Nine (gamma, T) pairs at three fixed exchange exposures
+gamma*T in {0.1, 1, 10} for two initial states (Phase 6). At FIXED gamma*T = 1
+the second scaled singular value spans 7.4e-12 to 8.8e-3, a factor of 1.2e9.
+The same held exposure can give a resolved direction or an erased one. What
+tracks the direction instead is the ratio of the horizon to the chemical
+relaxation time: for the fresh 1200 K feed the declared ignition delay is
+t_ign ~ 4.3e-5 s, and the direction is largest at T ~ 2 t_ign (8.8e-3) and has
+collapsed by T ~ 200 t_ign (7.4e-12). This refutes the mechanism stated in C23
+and replaces it.
+
+**C26. NEW - a resolved transverse (off-family) direction exists in a narrow
+window (Phase 8).** Phase 5 could not decide whether the second TOTAL direction
+lies outside the two-parameter constant-control family: its transverse
+component (1e-8 to 1e-5 scaled) sat between the conserved-manifold leakage
+floor (1e-10 to 1e-7) and the finite-difference refinement discrepancy
+(1e-6 to 1e-5), so the FD estimator was not resolving it - a direction below
+its own noise floor is not a negative result, it is an unresolved one. Because
+the CSTR right-hand side is affine in the control, the forward-sensitivity
+equations are exact with a closed-form inhomogeneity
+dS_j/dt = F_q S_j + gamma_j F_gamma(q) and NO control-step noise floor
+(`endpoint_jacobian_fsa_system`, validated against a matrix-exponential closed
+form to 1.2e-14 in the test suite, at m = 1, 2, 3 segments). With that estimator
+the hot initial state at gamma = 1e4, T = 1e-5 s gives
+
+    total spectrum       (9.5e-1, 1.2e-1, 6.0e-5)
+    transverse spectrum  (1.2e-4, 2.0e-11, 9.2e-13)
+    manifold leakage     (2.8e-12, 4.7e-13, 5.0e-14)
+    Radau vs LSODA       1.5e-9
+
+so the transverse direction is 4e4 times above the conservation leakage floor,
+8e4 times above the independent-integrator discrepancy, and 120 times above the
+declared application threshold: `rank_application_effective = 3`. This is a
+genuine history-generated direction outside the constant-control family, but
+only in this narrow window (short horizon, fast chemistry); at the longer
+horizons the transverse component returns to the 1e-11..1e-12 floor. Scope: the
+h2o2 mechanism, the two declared initial states, the tested (gamma, T) grid and
+the declared scaling and threshold.
+
+**C27. NEW - the Lie bracket is exactly as the affine structure predicts
+(Phase 7).** The CSTR right-hand side is affine in the control,
+F(q, gamma) = gamma v(q) + r(q) (verified to 0.0 against two levels), so
+[f_a, f_b] = (gamma_a - gamma_b) [r, v] independently of the absolute levels.
+Tested by direct endpoint differencing of the two-segment histories (a,b) and
+(b,a): (i) the SAME-LEVEL control returns exactly zero, so the order dependence
+is entirely due to the level difference; (ii) at tau <= 1e-6 s the log-log slope
+of the endpoint difference versus tau is 2.03 against the predicted 2, and the
+magnitude reproduces tau^2 (gamma_a - gamma_b)[r, v] to within 4%
+(6.55e-14 observed versus 6.35e-14 predicted), with the (gamma_a - gamma_b)
+proportionality holding across the three level pairs; (iii) at tau above the
+ignition delay the slope is 0.9-1.5 rather than 2 and the difference is ~1e5
+times the bracket prediction, because the trajectories have ignited and
+saturated out of the asymptotic regime. The bracket is real and exactly
+modelled, but at chemically relevant segment times its observable magnitude is
+set by ignition, not by the small-tau bracket. Phase 4's claim of order
+dependence at 0.7 scaled units is an ignition effect, not a bracket effect.
 
 ## Not tested / deferred
 

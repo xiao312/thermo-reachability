@@ -9,12 +9,15 @@ every history?
 Research specification: `thermochemical_reachability_handoff/LOCAL_AGENT_PROMPT.md`.
 
 **First tranche (Phases 0–3) is complete.** See `reports/report_01.md` (original),
-`reports/report_02.md` (first audit revision) and `reports/report_03.md` (sensitivity
-pipeline rebuild — read this for the current sensitivity claims). `claims.md` is
-the claim ledger, including every claim retracted or narrowed after audit:
-**C22 is withdrawn** (superseded by C23). Phases 4–6 (counterflow flamelet
-continuation, reduced flamelet transients, reaction-invariant enclosures) remain
-deferred by design.
+`reports/report_02.md` (first audit revision), `reports/report_03.md` (sensitivity
+pipeline rebuild) and **`reports/report_04.md` (memory calibration — read this for
+the current sensitivity claims)**. `claims.md` is the claim ledger, including every
+claim retracted or narrowed after audit: **C22 is withdrawn** (superseded by C23),
+and **C23's mechanism is refuted in Revision 4** (C25: exchange exposure does not
+control the weak direction; C26 reports a resolved off-family direction found with
+the exact tangent-linear estimator; C27 confirms the closed-form Lie bracket).
+Phases 4–6 (counterflow flamelet continuation, reduced flamelet transients,
+reaction-invariant enclosures) remain deferred by design.
 
 ## What is here
 
@@ -22,11 +25,12 @@ deferred by design.
 |------|----------|
 | `src/thermoreach/` | Package: toy reactor + exact propagator, control histories, detailed-chemistry CSTR, Cantera cross-check, envelopes/metrics, Strang splitting |
 | `scripts/` | Executable experiments, Phases 0–4 (the reproducible source of truth) |
-| `tests/` | pytest suite: `test_toy.py`, `test_sensitivity.py` (23), `test_reactor.py`, `test_cli_smoke.py` — all passing |
+| `tests/` | pytest suite: `test_toy.py`, `test_sensitivity.py` (34), `test_reactor.py`, `test_cli_smoke.py` — 76 passing on the server |
 | `results/<phase>/` | Raw results, manifests, figures; `results/phase3d/DEPRECATED.json` marks the superseded study |
 | `reports/report_01.md` | First report |
 | `reports/report_02.md` | First audit revision report |
-| `reports/report_03.md` | Sensitivity rebuild + terminal-memory experiment (read first for current claims) |
+| `reports/report_03.md` | Sensitivity rebuild + terminal-memory experiment |
+| `reports/report_04.md` | **Memory calibration: matched exchange exposure, pulse-order bracket, exact tangent-linear transverse spectrum (read first for current claims)** |
 | `claims.md` | Claim ledger with assumptions, status and evidence pointers |
 | `sources.md` | Sources, versions, access dates |
 | `research_log.md` | Chronological log, including bugs found and fixed |
