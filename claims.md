@@ -427,9 +427,23 @@ so the transverse direction is 4e4 times above the conservation leakage floor,
 declared application threshold: `rank_application_effective = 3`. This is a
 genuine history-generated direction outside the constant-control family, but
 only in this narrow window (short horizon, fast chemistry); at the longer
-horizons the transverse component returns to the 1e-11..1e-12 floor. Scope: the
-h2o2 mechanism, the two declared initial states, the tested (gamma, T) grid and
-the declared scaling and threshold.
+horizons the transverse component returns to the 1e-11..1e-12 floor.
+
+The same estimator separates three outcomes that the FD run could not
+distinguish. At (gamma=1000, T=1e-3), for BOTH initial states, a transverse
+direction is RESOLVED - 4.5e-7 and 1.8e-8 scaled units, 225x and 2.9x above the
+independent-integrator discrepancy - and is independently reproduced by replay
+along the singular vector to ~30%; yet both lie BELOW the declared 1e-6
+application threshold, so `rank_application_effective = 2`. These are real
+off-family directions judged insignificant by the declared tolerance, not failed
+detections. Reporting them as zero would repeat the error of the withdrawn
+Phase 3D claim in the opposite direction. The remaining anchors are unresolved
+(transverse below the cross-integrator check, and the replay fails to converge to
+the SVD value). Scope: the h2o2 mechanism, the two declared initial states, the
+tested (gamma, T) grid and the declared scaling and threshold. The fully
+igniting-and-relaxing anchor (fresh, gamma=100, T=1e-2) did not complete within
+the compute budget and is excluded rather than extrapolated; Phase 6 had already
+established it as the memory-erased control.
 
 **C27. NEW - the Lie bracket is exactly as the affine structure predicts
 (Phase 7).** The CSTR right-hand side is affine in the control,

@@ -143,21 +143,42 @@ evaluation regardless of segment count and does not limit the control
 sensitivity.
 
 With the reference span also exact (`v_τ` closed form, `v_η` a one-segment
-tangent-linear derivative), the transverse question becomes decidable:
+tangent-linear derivative), the transverse question becomes decidable. The table
+below separates three outcomes: **above threshold** (resolved *and* significant),
+**resolved but below threshold** (the cross-integrator check and the replay both
+confirm the direction, but its magnitude is below the declared application
+tolerance — these are NOT failed detections), and **unresolved** (below the
+cross-integrator check, and the replay fails to converge to the SVD value).
 
-| anchor | total spectrum | transverse | manifold leak | Radau vs LSODA | rank_app |
-|---|---|---|---|---|---|
-| **hot 1e4, 1e-5** | 9.5e-1, 1.2e-1, 6.0e-5 | **1.2e-4**, 2.0e-11, 9.2e-13 | 2.8e-12, 4.7e-13, 5.0e-14 | 1.5e-9 | **3** |
-| hot 1e4, 1e-4 | 2.3, 3.3e-2, 3.1e-11 | 4.8e-10, 5.6e-11, 2.7e-11 | 1.8e-11, 1.2e-11, 1.8e-12 | 1.5e-7 | 2 |
-| fresh 1e4, 1e-4 | 1.7, 8.8e-3, 1.1e-11 | 1.1e-10, 1.1e-11, 2.2e-12 | 8.4e-12, 2.9e-13, 2.4e-13 | 3.6e-8 | 2 |
+| anchor | total spectrum | transverse | manifold leak | Radau vs LSODA | replay | outcome |
+|---|---|---|---|---|---|---|
+| **hot 1e4, 1e-5** | 9.5e-1, 1.2e-1, 6.0e-5 | **1.2e-4**, 2.0e-11, 9.2e-13 | 2.8e-12, 4.7e-13, 5.0e-14 | 1.5e-9 | 1.08e-4 vs 1.23e-4 | **above threshold**, rank 3 |
+| hot 1e4, 1e-4 | 2.3, 3.3e-2, 3.1e-11 | 4.8e-10, 5.6e-11, 2.7e-11 | 1.8e-11, 1.2e-11, 1.8e-12 | 1.5e-7 | 3.6e-8 vs 4.8e-10 | unresolved |
+| fresh 1e4, 1e-4 | 1.7, 8.8e-3, 1.1e-11 | 1.1e-10, 1.1e-11, 2.2e-12 | 8.4e-12, 2.9e-13, 2.4e-13 | 3.6e-8 | 3.3e-9 vs 1.1e-10 | unresolved |
+| hot 1e3, 1e-3 | 1.2, 9.9e-5, 3.6e-11 | **4.5e-7**, 4.0e-11, 2.6e-11 | 1.5e-11, 1.1e-11, 1.2e-12 | 2.0e-9 | 3.2e-7 vs 4.5e-7 | resolved, below threshold |
+| fresh 1e3, 1e-3 | 1.2, 9.9e-5, 1.5e-12 | **1.8e-8**, 3.1e-11, 3.5e-13 | 1.2e-12, 7.6e-13, 1.2e-13 | 6.2e-9 | 1.3e-8 vs 1.8e-8 | resolved, below threshold |
 
 In the hot, short-horizon case the transverse direction is **4×10⁴ times above
 the conservation leakage floor and 8×10⁴ times above the independent-integrator
 discrepancy, and 120 times above the declared application threshold**. That is a
 genuine history-generated direction outside the two-parameter constant-control
-family — `rank_application_effective = 3`. It exists only in this narrow window:
-at every longer horizon the transverse component returns to the 1e-10…1e-11
-floor, below the cross-integrator check.
+family — `rank_application_effective = 3`.
+
+The two γ = 1000, T = 1e-3 anchors demonstrate why the resolved/threshold
+distinction matters: both have a transverse direction confirmed independently by
+the cross-integrator check (225× and 2.9× above it) **and** by replay
+(reproducing the SVD value to ~30 %), yet both lie below the 1e-6 threshold.
+These are real off-family directions that the declared tolerance judges
+insignificant — not failures of the method. The replay consistently reads ~30 %
+below the SVD value because it measures the transverse component of the *second*
+singular vector, which is bounded by the largest transverse singular value.
+
+The sixth intended anchor (fresh, γ = 100, T = 1e-2 — the fully
+igniting-and-relaxing case) did not complete within the compute budget: it is the
+most expensive trajectory for the tangent-linear solver and Phase 6 had already
+established it as the memory-erased control (second singular value 7.4e-12). It
+is excluded rather than extrapolated. `phase8` now writes its manifest after every
+case so a slow final anchor cannot lose completed results.
 
 ### 5a. Where the off-family direction lives (window scan, `results/phase8b`)
 

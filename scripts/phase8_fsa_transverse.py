@@ -229,6 +229,11 @@ def main() -> None:
         rec["init"] = init
         rec["wall_seconds"] = time.perf_counter() - t1
         out["cases"].append(rec)
+        # write after every case: a slow or failing final anchor must not lose
+        # the results already obtained
+        out["wall_seconds"] = time.perf_counter() - t0
+        out["complete"] = False
+        write_json(args.results_dir / "phase8_results.json", out)
         sp = rec["spectra"]
         cl = rec["classification"]
         cr = cl["noise_scale_refinement_discrepancy"]
@@ -242,6 +247,7 @@ def main() -> None:
               f"xcheck={rec['fsa']['cross_check_available']}")
 
     out["wall_seconds"] = time.perf_counter() - t0
+    out["complete"] = True
     write_json(args.results_dir / "phase8_results.json", out)
     print(f"[phase8] {len(anchors)} anchors in {out['wall_seconds']:.1f}s")
 

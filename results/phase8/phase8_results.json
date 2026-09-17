@@ -1,0 +1,781 @@
+{
+  "timestamp_utc": "2026-09-17T01:42:05.988174+00:00",
+  "mechanism": {
+    "mechanism": "h2o2.yaml",
+    "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+    "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+    "phase": "ohmech",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "elements": [
+      "O",
+      "H",
+      "Ar",
+      "N"
+    ],
+    "n_reactions": 29,
+    "input_header": {
+      "description": "Hydrogen-Oxygen submechanism extracted from GRI-Mech 3.0.\nModified from the original to include N2.\n\nRedlich-Kwong coefficients are based on tabulated critical properties or\nestimated according to the method of Joback and Reid, \"Estimation of pure-\ncomponent properties from group-contributions,\" Chem. Eng. Comm. 57 (1987)\n233-243",
+      "generator": "ck2yaml",
+      "input-files": [
+        "h2o2.inp",
+        "gri30_tran.dat"
+      ],
+      "cantera-version": "2.5.0",
+      "date": "Wed, 11 Dec 2019 16:59:04 -0500"
+    }
+  },
+  "inlet_temperature": 1200.0,
+  "application_threshold": 1e-06,
+  "gamma_bounds": [
+    10.0,
+    100000.0
+  ],
+  "gamma_ref": 1000.0,
+  "m_prefix": 3,
+  "estimator": "exact tangent-linear (FSA); no control-step noise floor",
+  "cases": [
+    {
+      "label": "hot_g1e+04_T1e-05",
+      "gamma": 10000.0,
+      "T": 1e-05,
+      "m": 3,
+      "theta": [
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "durations": [
+        3.3333333333333337e-06,
+        3.3333333333333337e-06,
+        3.3333333333333337e-06
+      ],
+      "q0": [
+        2763.3197351403796,
+        0.003564257635288794,
+        0.0006278060227178588,
+        0.003917047688526132,
+        0.020536341631516505,
+        0.018726720094245666,
+        0.2074951058759479,
+        8.544967284126894e-06,
+        5.705835645227245e-07,
+        0.0,
+        0.7451236055009086
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 1e-05
+      },
+      "fsa": {
+        "n_rhs_evaluations": 12798,
+        "rtol": 1e-08,
+        "method": "Radau",
+        "pathways": [
+          {
+            "method": "Radau",
+            "rtol": 1e-08,
+            "status": "ok"
+          },
+          {
+            "method": "Radau",
+            "rtol": 1e-07,
+            "status": "ok"
+          },
+          {
+            "method": "LSODA",
+            "rtol": 1e-08,
+            "status": "ok"
+          }
+        ],
+        "cross_check_available": true
+      },
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          0.9484054527702432,
+          0.11890151834238832,
+          5.963305716807079e-05
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 3,
+        "rank_application_effective": 3,
+        "noise_scale_refinement_discrepancy": 1.5194110703719e-09,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": true
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          0.9484054527702432,
+          0.11890151834238832,
+          5.963305716807079e-05
+        ],
+        "singular_values_transverse_scaled": [
+          0.00012338293859241265,
+          1.999711559055053e-11,
+          9.243997944117583e-13
+        ],
+        "singular_values_manifold_leakage_scaled": [
+          2.8334201455779615e-12,
+          4.679717402849043e-13,
+          4.9666899697509867e-14
+        ],
+        "tangent_space_dimension": 6,
+        "rank_V_basis": 2,
+        "noise_scale_refinement_discrepancy": 1.5194110703719e-09,
+        "note": "total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with Q an orthonormal basis of the scaled constant-control tangent span at the SAME endpoint; manifold leakage = SVD of (I - N N^T) W J with N the conserved-manifold tangent space null(C W^-1). A transverse direction below the leakage floor or below the noise discrepancy is NOT evidence of off-family state generation.",
+        "transverse_above_leakage_floor": true
+      },
+      "reference_span_singular_values": [
+        2.189181067467956,
+        0.10802474642400216
+      ],
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.349975295830461,
+          1.6568681658850628,
+          1.000054083213667,
+          0.9999999999999996,
+          0.5315364330555434
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.42109919412598,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 308809415.14714265,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.782706995916224e-07
+        ]
+      },
+      "cross_integrator_discrepancy": 1.5194110703719e-09,
+      "transverse_replay": {
+        "available": true,
+        "rows": [
+          {
+            "epsilon": 0.01,
+            "sigma2_from_replay": 0.11890215512397215,
+            "transverse_from_replay": 0.00010782753407734262,
+            "sigma2_from_svd": 0.11890151834238828
+          },
+          {
+            "epsilon": 0.1,
+            "sigma2_from_replay": 0.11896518477099711,
+            "transverse_from_replay": 0.0001248662979010491,
+            "sigma2_from_svd": 0.11890151834238828
+          }
+        ],
+        "sigma1_transverse_from_svd": 0.00012338293859241265,
+        "note": "replay along v2; sigma2 reproduced to integration accuracy and the orthogonal-to-family component reproduces the transverse singular value"
+      },
+      "init": "hot",
+      "wall_seconds": 52.34255279414356
+    },
+    {
+      "label": "hot_g1e+04_T1e-04",
+      "gamma": 10000.0,
+      "T": 0.0001,
+      "m": 3,
+      "theta": [
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "durations": [
+        3.3333333333333335e-05,
+        3.3333333333333335e-05,
+        3.3333333333333335e-05
+      ],
+      "q0": [
+        2763.3197351403796,
+        0.003564257635288794,
+        0.0006278060227178588,
+        0.003917047688526132,
+        0.020536341631516505,
+        0.018726720094245666,
+        0.2074951058759479,
+        8.544967284126894e-06,
+        5.705835645227245e-07,
+        0.0,
+        0.7451236055009086
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 0.0001
+      },
+      "fsa": {
+        "n_rhs_evaluations": 24591,
+        "rtol": 1e-07,
+        "method": "Radau",
+        "pathways": [
+          {
+            "method": "Radau",
+            "rtol": 1e-08,
+            "status": "failed: FSA integration failed: Required step size is less than spacing between numbers."
+          },
+          {
+            "method": "Radau",
+            "rtol": 1e-07,
+            "status": "ok"
+          },
+          {
+            "method": "LSODA",
+            "rtol": 1e-08,
+            "status": "ok"
+          }
+        ],
+        "cross_check_available": true
+      },
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          2.279931295430285,
+          0.03254649824790008,
+          3.117189534566824e-11
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 2,
+        "rank_application_effective": 2,
+        "noise_scale_refinement_discrepancy": 1.5158166281627697e-07,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": false
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          2.279931295430285,
+          0.03254649824790008,
+          3.117189534566824e-11
+        ],
+        "singular_values_transverse_scaled": [
+          4.806359456367816e-10,
+          5.6075071123529776e-11,
+          2.734607205606013e-11
+        ],
+        "singular_values_manifold_leakage_scaled": [
+          1.844207038635247e-11,
+          1.212925962920605e-11,
+          1.7705927817070347e-12
+        ],
+        "tangent_space_dimension": 6,
+        "rank_V_basis": 2,
+        "noise_scale_refinement_discrepancy": 1.5158166281627697e-07,
+        "note": "total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with Q an orthonormal basis of the scaled constant-control tangent span at the SAME endpoint; manifold leakage = SVD of (I - N N^T) W J with N the conserved-manifold tangent space null(C W^-1). A transverse direction below the leakage floor or below the noise discrepancy is NOT evidence of off-family state generation.",
+        "transverse_above_leakage_floor": true
+      },
+      "reference_span_singular_values": [
+        3.163414353267506,
+        0.020714386258051696
+      ],
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.3497220868976503,
+          1.6506865425168984,
+          1.0000411001685572,
+          1.0000000000000002,
+          0.5467116366930441
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.297918553756561,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 291333092.540123,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.894295804699348e-07
+        ]
+      },
+      "cross_integrator_discrepancy": 1.5158166281627697e-07,
+      "transverse_replay": {
+        "available": true,
+        "rows": [
+          {
+            "epsilon": 0.01,
+            "sigma2_from_replay": 0.03254628182211881,
+            "transverse_from_replay": 3.635901640692488e-08,
+            "sigma2_from_svd": 0.032546498247900076
+          },
+          {
+            "epsilon": 0.1,
+            "sigma2_from_replay": 0.03252487324882475,
+            "transverse_from_replay": 3.595785517620067e-06,
+            "sigma2_from_svd": 0.032546498247900076
+          }
+        ],
+        "sigma1_transverse_from_svd": 4.806359456367816e-10,
+        "note": "replay along v2; sigma2 reproduced to integration accuracy and the orthogonal-to-family component reproduces the transverse singular value"
+      },
+      "init": "hot",
+      "wall_seconds": 416.64904133882374
+    },
+    {
+      "label": "fresh_g1e+04_T1e-04",
+      "gamma": 10000.0,
+      "T": 0.0001,
+      "m": 3,
+      "theta": [
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "durations": [
+        3.3333333333333335e-05,
+        3.3333333333333335e-05,
+        3.3333333333333335e-05
+      ],
+      "q0": [
+        1200.0,
+        0.028522387527567396,
+        0.0,
+        0.0,
+        0.22635400697100735,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.7451236055014253
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 0.0001
+      },
+      "fsa": {
+        "n_rhs_evaluations": 97954,
+        "rtol": 1e-08,
+        "method": "Radau",
+        "pathways": [
+          {
+            "method": "Radau",
+            "rtol": 1e-08,
+            "status": "ok"
+          },
+          {
+            "method": "Radau",
+            "rtol": 1e-07,
+            "status": "ok"
+          },
+          {
+            "method": "LSODA",
+            "rtol": 1e-08,
+            "status": "ok"
+          }
+        ],
+        "cross_check_available": true
+      },
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          1.7483043865291146,
+          0.008811122561007054,
+          1.068120778939876e-11
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 2,
+        "rank_application_effective": 2,
+        "noise_scale_refinement_discrepancy": 3.619381578911711e-08,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": false
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          1.7483043865291146,
+          0.008811122561007054,
+          1.068120778939876e-11
+        ],
+        "singular_values_transverse_scaled": [
+          1.0548717690079776e-10,
+          1.1329160321751585e-11,
+          2.2317131652743963e-12
+        ],
+        "singular_values_manifold_leakage_scaled": [
+          8.359712899601029e-12,
+          2.866311547219464e-13,
+          2.407791580148157e-13
+        ],
+        "tangent_space_dimension": 6,
+        "rank_V_basis": 2,
+        "noise_scale_refinement_discrepancy": 3.619381578911711e-08,
+        "note": "total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with Q an orthonormal basis of the scaled constant-control tangent span at the SAME endpoint; manifold leakage = SVD of (I - N N^T) W J with N the conserved-manifold tangent space null(C W^-1). A transverse direction below the leakage floor or below the noise discrepancy is NOT evidence of off-family state generation.",
+        "transverse_above_leakage_floor": true
+      },
+      "reference_span_singular_values": [
+        2.8681981111335406,
+        0.07661082129842291
+      ],
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.3496843814990234,
+          1.6497226372342804,
+          1.0000391571157685,
+          1.0000000000000002,
+          0.5491005568132274
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.279151336388558,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 288714622.3830125,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.912186712570007e-07
+        ]
+      },
+      "cross_integrator_discrepancy": 3.619381578911711e-08,
+      "transverse_replay": {
+        "available": true,
+        "rows": [
+          {
+            "epsilon": 0.01,
+            "sigma2_from_replay": 0.008811808112995536,
+            "transverse_from_replay": 3.276343317074783e-09,
+            "sigma2_from_svd": 0.008811122561007053
+          },
+          {
+            "epsilon": 0.1,
+            "sigma2_from_replay": 0.008815407916710717,
+            "transverse_from_replay": 3.2783263721906265e-07,
+            "sigma2_from_svd": 0.008811122561007053
+          }
+        ],
+        "sigma1_transverse_from_svd": 1.0548717690079776e-10,
+        "note": "replay along v2; sigma2 reproduced to integration accuracy and the orthogonal-to-family component reproduces the transverse singular value"
+      },
+      "init": "fresh",
+      "wall_seconds": 293.4856191985309
+    },
+    {
+      "label": "hot_g1e+03_T1e-03",
+      "gamma": 1000.0,
+      "T": 0.001,
+      "m": 3,
+      "theta": [
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "durations": [
+        0.0003333333333333333,
+        0.0003333333333333333,
+        0.0003333333333333333
+      ],
+      "q0": [
+        2763.3197351403796,
+        0.003564257635288794,
+        0.0006278060227178588,
+        0.003917047688526132,
+        0.020536341631516505,
+        0.018726720094245666,
+        0.2074951058759479,
+        8.544967284126894e-06,
+        5.705835645227245e-07,
+        0.0,
+        0.7451236055009086
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 0.001
+      },
+      "fsa": {
+        "n_rhs_evaluations": 5860,
+        "rtol": 1e-07,
+        "method": "Radau",
+        "pathways": [
+          {
+            "method": "Radau",
+            "rtol": 1e-08,
+            "status": "failed: FSA integration failed: Required step size is less than spacing between numbers."
+          },
+          {
+            "method": "Radau",
+            "rtol": 1e-07,
+            "status": "ok"
+          },
+          {
+            "method": "LSODA",
+            "rtol": 1e-08,
+            "status": "ok"
+          }
+        ],
+        "cross_check_available": true
+      },
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          1.1652623661571895,
+          9.944624493438604e-05,
+          3.614175646551003e-11
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 2,
+        "rank_application_effective": 2,
+        "noise_scale_refinement_discrepancy": 1.9571187312497304e-09,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": false
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          1.1652623661571895,
+          9.944624493438604e-05,
+          3.614175646551003e-11
+        ],
+        "singular_values_transverse_scaled": [
+          4.491423160873285e-07,
+          4.031504565415327e-11,
+          2.6095964571565055e-11
+        ],
+        "singular_values_manifold_leakage_scaled": [
+          1.5174200990972658e-11,
+          1.0550078743347833e-11,
+          1.2458332977315503e-12
+        ],
+        "tangent_space_dimension": 6,
+        "rank_V_basis": 2,
+        "noise_scale_refinement_discrepancy": 1.9571187312497304e-09,
+        "note": "total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with Q an orthonormal basis of the scaled constant-control tangent span at the SAME endpoint; manifold leakage = SVD of (I - N N^T) W J with N the conserved-manifold tangent space null(C W^-1). A transverse direction below the leakage floor or below the noise discrepancy is NOT evidence of off-family state generation.",
+        "transverse_above_leakage_floor": true
+      },
+      "reference_span_singular_values": [
+        1.1725199208630672,
+        6.035019115611793e-08
+      ],
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.350001319539102,
+          1.657477705634234,
+          1.0000554065694014,
+          1.0,
+          0.5300537875537323
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.433514814382642,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 310600015.24418116,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.7719749930868294e-07
+        ]
+      },
+      "cross_integrator_discrepancy": 1.9571187312497304e-09,
+      "transverse_replay": {
+        "available": true,
+        "rows": [
+          {
+            "epsilon": 0.01,
+            "sigma2_from_replay": 9.944705660526064e-05,
+            "transverse_from_replay": 3.1869405487374836e-07,
+            "sigma2_from_svd": 9.944624493438606e-05
+          },
+          {
+            "epsilon": 0.1,
+            "sigma2_from_replay": 9.952607748991776e-05,
+            "transverse_from_replay": 3.1876469652132434e-07,
+            "sigma2_from_svd": 9.944624493438606e-05
+          }
+        ],
+        "sigma1_transverse_from_svd": 4.491423160873285e-07,
+        "note": "replay along v2; sigma2 reproduced to integration accuracy and the orthogonal-to-family component reproduces the transverse singular value"
+      },
+      "init": "hot",
+      "wall_seconds": 1774.4408987527713
+    },
+    {
+      "label": "fresh_g1e+03_T1e-03",
+      "gamma": 1000.0,
+      "T": 0.001,
+      "m": 3,
+      "theta": [
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "durations": [
+        0.0003333333333333333,
+        0.0003333333333333333,
+        0.0003333333333333333
+      ],
+      "q0": [
+        1200.0,
+        0.028522387527567396,
+        0.0,
+        0.0,
+        0.22635400697100735,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.7451236055014253
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 0.001
+      },
+      "fsa": {
+        "n_rhs_evaluations": 840764,
+        "rtol": 1e-08,
+        "method": "Radau",
+        "pathways": [
+          {
+            "method": "Radau",
+            "rtol": 1e-08,
+            "status": "ok"
+          },
+          {
+            "method": "Radau",
+            "rtol": 1e-07,
+            "status": "ok"
+          },
+          {
+            "method": "LSODA",
+            "rtol": 1e-08,
+            "status": "ok"
+          }
+        ],
+        "cross_check_available": true
+      },
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          1.1652609893362975,
+          9.94295085886091e-05,
+          1.5334628572301386e-12
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 2,
+        "rank_application_effective": 2,
+        "noise_scale_refinement_discrepancy": 6.235196015900975e-09,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": false
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          1.1652609893362975,
+          9.94295085886091e-05,
+          1.5334628572301386e-12
+        ],
+        "singular_values_transverse_scaled": [
+          1.7835495890882284e-08,
+          3.052609577381337e-11,
+          3.5136372010928883e-13
+        ],
+        "singular_values_manifold_leakage_scaled": [
+          1.1894648001188626e-12,
+          7.565120109739392e-13,
+          1.1504790633799248e-13
+        ],
+        "tangent_space_dimension": 6,
+        "rank_V_basis": 2,
+        "noise_scale_refinement_discrepancy": 6.235196015900975e-09,
+        "note": "total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with Q an orthonormal basis of the scaled constant-control tangent span at the SAME endpoint; manifold leakage = SVD of (I - N N^T) W J with N the conserved-manifold tangent space null(C W^-1). A transverse direction below the leakage floor or below the noise discrepancy is NOT evidence of off-family state generation.",
+        "transverse_above_leakage_floor": true
+      },
+      "reference_span_singular_values": [
+        1.172515483516237,
+        7.526204985313223e-07
+      ],
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.3500013193177716,
+          1.65747770046879,
+          1.0000554065581575,
+          0.9999999999999998,
+          0.530053800107503
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.433514708961912,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 310600000.0168889,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.7719750838410734e-07
+        ]
+      },
+      "cross_integrator_discrepancy": 6.235196015900975e-09,
+      "transverse_replay": {
+        "available": true,
+        "rows": [
+          {
+            "epsilon": 0.01,
+            "sigma2_from_replay": 9.943030884825494e-05,
+            "transverse_from_replay": 1.2703553442001208e-08,
+            "sigma2_from_svd": 9.942950858860912e-05
+          },
+          {
+            "epsilon": 0.1,
+            "sigma2_from_replay": 9.95092490293584e-05,
+            "transverse_from_replay": 1.2897002106851412e-08,
+            "sigma2_from_svd": 9.942950858860912e-05
+          }
+        ],
+        "sigma1_transverse_from_svd": 1.7835495890882284e-08,
+        "note": "replay along v2; sigma2 reproduced to integration accuracy and the orthogonal-to-family component reproduces the transverse singular value"
+      },
+      "init": "fresh",
+      "wall_seconds": 2402.399765200913
+    }
+  ],
+  "wall_seconds": 4939.383959748782,
+  "complete": true
+}
