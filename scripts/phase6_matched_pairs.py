@@ -36,8 +36,9 @@ from thermoreach.controls import History  # noqa: E402
 from thermoreach.io_utils import utc_now, write_json  # noqa: E402
 from thermoreach.reactor import CSTR, ReactorConfig, fresh_state, hot_hp_state  # noqa: E402
 from thermoreach.sensitivity import (  # noqa: E402
-    APPLICATION_THRESHOLD_DEFAULT, StateScaling, classify_ranks, endpoint_jacobian_fd,
-    log_control_plan, scaled_tangent_space, transverse_spectrum,
+    APPLICATION_THRESHOLD_DEFAULT, StateScaling, classify_ranks,
+    endpoint_jacobian_fd, ignition_time_event, log_control_plan,
+    scaled_tangent_space, transverse_spectrum,
 )
 
 GAMMA_LO, GAMMA_HI = 10.0, 1e5
@@ -83,12 +84,14 @@ def constant_family_span(c: CSTR, gamma_star: float, T: float, q0: np.ndarray,
                      samples_per_segment=2, rtol=rtol, atol_T=atol_T,
                      atol_Y=atol_Y, record_extrema=False)
     v_eta = (rp["states"][:, -1] - rm["states"][:, -1]) / (2 * h)
-    # ignition: first time T rises IGNITION_RISE_K above its initial value
-    tt = res["times"]
-    TT = res["states"][0, :]
-    idx = np.where(TT >= q0[0] + IGNITION_RISE_K)[0]
-    t_ign = float(tt[idx[0]]) if idx.size else None
-    return np.vstack([v_tau, v_eta]).T, q_base, t_ign, float(TT.max())
+    # ignition: first time T rises IGNITION_RISE_K above its initial value,
+    # located by dense-output root finding.  A grid lookup on N points
+    # quantizes the estimate to T/(N-1) and makes it depend on the horizon, so
+    # the event time is the reported one and the grid estimate is kept only to
+    # show the quantization; censoring is explicit when no event occurs.
+    ign = ignition_time_event(c, gamma_star, T, q0, rise_K=IGNITION_RISE_K,
+                              rtol=rtol, atol_T=atol_T, atol_Y=atol_Y)
+    return np.vstack([v_tau, v_eta]).T, q_base, ign, float(res["states"][0, :].max())
 
 
 def one_case(c: CSTR, gamma: float, T: float, q0: np.ndarray, scaling: StateScaling,
@@ -107,9 +110,10 @@ def one_case(c: CSTR, gamma: float, T: float, q0: np.ndarray, scaling: StateScal
     fd_alt = endpoint_jacobian_fd(c, theta, durs, q0, 1e-4, GAMMA_LO, GAMMA_HI,
                                   GAMMA_REF, method="Radau", rtol=rtol,
                                   atol_T=atol_T, atol_Y=atol_Y)
-    V, q_base, t_ign, Tmax = constant_family_span(c, gamma, T, q0, scaling,
-                                                  rtol=rtol, atol_T=atol_T,
-                                                  atol_Y=atol_Y)
+    V, q_base, ign, Tmax = constant_family_span(c, gamma, T, q0, scaling,
+                                                 rtol=rtol, atol_T=atol_T,
+                                                 atol_Y=atol_Y)
+    t_ign = ign["t_ign_event"]
     Cmat = constraint_jacobian(c, q_base)
     W = scaling.W
     J, J_alt = fd["J"], fd_alt["J"]
@@ -118,9 +122,14 @@ def one_case(c: CSTR, gamma: float, T: float, q0: np.ndarray, scaling: StateScal
         "init": init, "gamma": gamma, "T": T, "gamma_times_T": gamma * T,
         "theta": theta.tolist(), "durations": durs.tolist(),
         "horizon": float(durs.sum()), "q0": q0.tolist(),
-        "ignition": {"metric": "first time T exceeds T0 + 100 K",
+        "ignition": {"metric": "first upward crossing of T0 + 100 K by "
+                              "dense-output root finding",
                      "rise_K": IGNITION_RISE_K,
-                     "t_ign": t_ign, "max_temperature_K": Tmax,
+                     "t_ign_event": t_ign,
+                     "t_ign_grid_estimate": ign["t_ign_grid_estimate"],
+                     "grid_spacing_s": ign["grid_spacing_s"],
+                     "censored": ign["censored"],
+                     "max_temperature_K": Tmax,
                      "ignited": t_ign is not None},
         "classification": classify_ranks(J, scaling, noise_scale=noise),
         "spectra": transverse_spectrum(J, V, scaling, noise_scale=noise,
@@ -219,7 +228,7 @@ def main() -> None:
                   f"sv_tot={[f'{v:.1e}' for v in sp['singular_values_total_scaled']]} "
                   f"sv_perp={[f'{v:.1e}' for v in sp['singular_values_transverse_scaled']]} "
                   f"noise={rec['classification']['noise_scale_refinement_discrepancy']:.1e} "
-                  f"t_ign={rec['ignition']['t_ign']}")
+                  f"t_ign={rec['ignition']['t_ign_event']}")
 
     out["wall_seconds"] = time.perf_counter() - t0
     write_json(args.results_dir / "phase6_results.json", out)

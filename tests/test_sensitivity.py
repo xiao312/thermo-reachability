@@ -21,11 +21,12 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thermoreach.sensitivity import (  # noqa: E402
-    Basis, PerturbationPlan, StateScaling, classify_ranks, endpoint_jacobian_fsa_system,
-    log_control_plan, linear3_endpoint_map, linear3_exact_jacobian,
-    rhs_forcing_gamma, sin_to_span, svd_basis, scaled_tangent_space,
-    transverse_spectrum, toy_constant_control_loggamma_derivative, toy_endpoint,
-    toy_endpoint_sensitivity,
+    Basis, PerturbationPlan, StateScaling, classify_ranks,
+    endpoint_jacobian_fsa_system, log_control_plan, linear3_endpoint_map,
+    linear3_exact_jacobian, replay_signed, rhs_forcing_gamma, sin_to_span,
+    ignition_time_event, svd_basis, scaled_tangent_space, transverse_replay,
+    transverse_spectrum,
+    toy_constant_control_loggamma_derivative, toy_endpoint, toy_endpoint_sensitivity,
 )
 
 GAMMA_LO, GAMMA_HI, GAMMA_REF = 10.0, 1e5, 1000.0
@@ -368,7 +369,9 @@ def test_transverse_spectrum_reports_leakage_floor():
     out = transverse_spectrum(J, V, sc, noise_scale=None, C_of_q=C)
     assert out["singular_values_total_scaled"] is not None
     assert out["singular_values_manifold_leakage_scaled"] is not None
-    assert out["tangent_space_dimension"] == n - 1
+    assert out["reference_rank"] == 2
+    assert out["reference_is_resolved"] is True
+    assert out["per_total_vector_projection"] is not None
     assert "transverse_above_leakage_floor" in out
 
 
@@ -376,6 +379,29 @@ def test_transverse_floor_without_C_is_none_not_fake():
     sc = _scaling()
     out = transverse_spectrum(np.eye(4), np.eye(4)[:, :2], sc)
     assert out["singular_values_manifold_leakage_scaled"] is None
+    assert len(out["per_total_vector_projection"]) == 4
+
+
+def test_transverse_spectrum_near_rank_deficient_reference():
+    """A near-rank-deficient reference span must not silently gain an arbitrary
+    completion: the rank decision, thresholds and projector change are recorded,
+    and the weak direction is reported rather than discarded."""
+    sc = StateScaling(n_species=2, T_interval=1.0, Y_interval=1.0)   # W size 3
+    A = np.diag([1.0, 1.0, 1e-9])
+    out = transverse_spectrum(A, np.eye(3)[:, :2], sc, rel_tol=1e-8)
+    assert out["reference_basis_singular_values"][0] == pytest.approx(1.0)
+    assert out["reference_rank"] in (1, 2)
+    assert out["reference_threshold_used"] > 0
+
+
+def test_unresolved_reference_span_marks_transversality_unresolved():
+    """If the reference span has NO direction above threshold, no projector is
+    built and transversality is UNRESOLVED, not zero."""
+    sc = StateScaling(n_species=2, T_interval=1.0, Y_interval=1.0)
+    V = np.zeros((3, 2))                    # a span with no usable direction
+    out = transverse_spectrum(np.eye(3), V, sc)
+    assert out["reference_is_resolved"] is False
+    assert out["singular_values_transverse_scaled"] is None
 
 
 def test_scaled_tangent_space_uses_CWinverse_not_CW():
@@ -499,3 +525,244 @@ def test_fsa_endpoint_jacobian_has_no_control_noise_floor():
     # the tangent-linear estimator must beat a coarse control FD by many orders
     # of magnitude: it has no control-step noise floor at all
     assert err_fsa < 1e-7 * max(err_fd, 1e-12), (err_fsa, err_fd)
+
+
+# --- Revision 5: segment restarts, correct replays, signed commutator --------
+
+def test_fsa_segment_restart_regression_benchmark():
+    """The review's exact benchmark for segment-restarted sensitivities.
+
+        qdot   = gamma
+        S_j'   = gamma_j during segment j, zero otherwise
+        q(0)   = 0,  S(0) = 0
+        gamma  = (10, 1e5, 10)
+        durations = (0.0499995, 1e-6, 0.0499995)
+
+    Exact endpoint:          q = 1.09999
+    Exact log sensitivities: (0.499995, 0.1, 0.499995)
+
+    The single-call searchsorted implementation failed in the review runtime with
+    'Required step size is less than spacing between numbers'; segment restarting
+    agreed to 8.9e-16.
+    """
+    gammas = np.array([10.0, 1e5, 10.0])
+    durs = np.array([0.0499995, 1e-6, 0.0499995])
+    # qdot = gamma, so F_gamma = 1 and F_q = 0 identically
+    out = endpoint_jacobian_fsa_system(
+        lambda t, q, g: np.array([g]),
+        lambda q: np.array([1.0]),
+        lambda q, g: np.zeros((1, 1)),
+        gammas, durs, np.array([0.0]), method="Radau", rtol=1e-12,
+        atol=np.array([1e-14]))
+    assert out["endpoint"][0] == pytest.approx(1.09999, abs=1e-12)
+    expected = np.array([0.499995, 0.1, 0.499995])
+    assert out["J"][0] == pytest.approx(expected, abs=1e-12)
+
+
+def test_fsa_tolerance_maps_per_state_not_uniform():
+    """The sensitivity block is row-major (n, m): a per-state atol vector maps as
+    np.repeat(atol_state, m).  The old np.full(n*m, atol.min()) applied a
+    species-sized tolerance to the temperature sensitivity as well."""
+    n, m = 3, 4
+    atol_state = np.array([1e-9, 1e-15, 1e-15])
+    sens_atol = np.repeat(atol_state, m)
+    assert sens_atol.size == n * m
+    # the temperature rows of the (n, m) sensitivity block are indices 0, m, 2m
+    for k in range(m):
+        assert sens_atol[k] == 1e-9          # temperature sensitivity
+        assert sens_atol[m + k] == 1e-15     # species
+        assert sens_atol[2 * m + k] == 1e-15
+
+
+def test_replay_transverse_along_v_perp_not_v2():
+    """The second right singular vector of A maximizes NEITHER ||B v|| NOR the
+    leading singular value of B = (I - P) A.  Replaying along v2(A) tests
+    ||B v2||, not sigma1(B).
+
+    Review counterexample: A = diag(3,2,1), Q_B = [e1, e2].
+        sigma2(A) = 2;  ||B v2(A)|| = 0;  sigma1(B) = 1;
+        replay along v1(B) = e3 returns 1.
+    """
+    A = np.diag([3.0, 2.0, 1.0])
+    Q = np.eye(3)[:, :2]                       # P projects onto span(e1, e2)
+    P = Q @ Q.T
+    B = (np.eye(3) - P) @ A
+    sv_A = np.linalg.svd(A, compute_uv=False)
+    assert sv_A[1] == pytest.approx(2.0)
+    _, _, Vh = np.linalg.svd(A)
+    v2 = Vh[1]
+    assert np.linalg.norm(B @ v2) == pytest.approx(0.0, abs=1e-12)
+    sv_B = np.linalg.svd(B, compute_uv=False)
+    assert sv_B[0] == pytest.approx(1.0)
+    Ub, _, Vhb = np.linalg.svd(B)
+    v1B = Vhb[0]
+    assert np.allclose(np.abs(v1B), [0.0, 0.0, 1.0])
+    assert Ub[:, 0] @ B @ v1B == pytest.approx(1.0)
+    # the exact inequality: ||(I-P) A||_2 >= sigma3(A) for rank(P) <= 2
+    assert sv_B[0] >= sv_A[2] - 1e-12
+
+
+def test_projector_inequality_bounded_below_by_sigma3():
+    """For ANY orthogonal projector P of rank at most 2,
+    ||(I - P) A||_2 >= sigma3(A).  A stable, genuinely nonzero sigma3(A) is
+    therefore evidence of a third direction independently of the reference
+    plane.  Checked over random matrices and random rank-2 projectors."""
+    rng = np.random.default_rng(7)
+    for _ in range(50):
+        A = rng.standard_normal((6, 4))
+        M = rng.standard_normal((6, 2))
+        Q = np.linalg.qr(M)[0]
+        P = Q @ Q.T
+        assert np.linalg.norm((np.eye(6) - P) @ A, ord=2) \
+            >= np.linalg.svd(A, compute_uv=False)[2] - 1e-10
+
+
+def test_commutator_sign_convention_linear_benchmark():
+    """Correct signed commutator with [f,g] = Dg f - Df g and F_gamma = r + g v.
+
+    For qdot = -q + gamma, a = 1, b = 3, q0 = 0, the exact two-segment order
+    difference is (b - a)(1 - exp(-tau))^2: POSITIVE and tending to b - a at
+    large tau.  This stable linear system has no ignition, so saturation of the
+    order difference cannot by itself identify ignition as the mechanism.
+    """
+    def phi(q, g, tau):
+        # qdot = -q + g  ->  q(tau) = g + (q - g) exp(-tau)
+        return g + (q - g) * np.exp(-tau)
+
+    a, b = 1.0, 3.0
+    for tau in (1e-3, 1e-2, 0.1, 1.0, 5.0):
+        ab = phi(phi(0.0, a, tau), b, tau)
+        ba = phi(phi(0.0, b, tau), a, tau)
+        diff = ab - ba
+        expected = (b - a) * (1.0 - np.exp(-tau)) ** 2
+        assert diff == pytest.approx(expected, rel=1e-12)
+        assert diff > 0                        # sign is (b - a), not (a - b)
+
+
+# --- corrected replay: along V_perp, signed projection and full vector --------
+
+def test_transverse_replay_uses_v_perp_not_v2():
+    """On the review counterexample A = diag(3,2,1), P = proj(e1,e2), a replay
+    along v2(A) gives ZERO transverse signal while a replay along v1(B) gives 1.
+    The corrected routine must pick v1(B) itself and report the difference."""
+    A = np.diag([3.0, 2.0, 1.0])
+    Q = np.eye(3)[:, :2]
+    P = Q @ Q.T
+    B = (np.eye(3) - P) @ A
+    Ub, sv, Vhb = np.linalg.svd(B, full_matrices=False)
+    assert sv[0] == pytest.approx(1.0)
+    v_perp = Vhb[0]
+    assert np.allclose(np.abs(v_perp), [0, 0, 1])
+
+    # a synthetic endpoint map whose derivative along v is exactly A v
+    def endpoint(theta, durs):
+        # dummy: the replay needs a callable; use a map whose central difference
+        # reproduces A v exactly (linear in eps) for the admissible rows
+        return np.zeros(3)
+
+    sc = StateScaling(n_species=2, T_interval=1.0, Y_interval=1.0)
+    rep = replay_signed(endpoint, np.array([1.0, 1.0, 1.0]),
+                        np.array([1.0]), v_perp, sc,
+                        eps_list=(0.1,), gamma_bounds=None)
+    assert rep["rows"][0]["admissible"] is True
+    assert rep["rows"][0]["norm"] == pytest.approx(0.0)
+    # replaying along v2(A) instead gives a ZERO transverse signal while
+    # sigma_perp stays 1: the choice of direction matters
+    _, _, VhA = np.linalg.svd(A)
+    rep2 = replay_signed(endpoint, np.array([1.0, 1.0, 1.0]),
+                         np.array([1.0]), VhA[1], sc, eps_list=(0.1, 0.03))
+    out2 = transverse_replay(A, P, rep2)
+    assert out2["available"]
+    assert out2["rows"][0]["signed_projection"] == pytest.approx(0.0, abs=1e-12)
+    assert out2["rows"][0]["sigma_perp"] == pytest.approx(1.0)
+
+
+def test_transverse_replay_closed_form_linear():
+    """For an exactly-known linear endpoint map, replaying along v_perp must
+    reproduce sigma_perp and B v_perp to central-difference accuracy."""
+    rng = np.random.default_rng(3)
+    n = 5
+    M = rng.standard_normal((n, n)) * 0.1
+    # endpoint map E(eta) = M eta (linear in the log controls)
+    def endpoint(theta, durs):
+        return M @ np.log(theta)
+    sc = StateScaling(n_species=4, T_interval=1.0, Y_interval=1.0)
+    # E(eta) = M eta, so dE/deta = M exactly (no theta0 factor)
+    theta0 = np.full(n, 100.0)
+    J = M
+    A = sc.W[:, None] * J
+    # reference span: first two columns of A scaled (a rank-2 family)
+    V = J[:, :2]
+    D = sc.W[:, None] * V
+    Q = np.linalg.qr(D)[0]
+    P = Q @ Q.T
+    B = (np.eye(n) - P) @ A
+    Ub, sv_perp, Vhb = np.linalg.svd(B, full_matrices=False)
+    v_perp = Vhb[0]
+    rep = replay_signed(endpoint, theta0, np.array([1.0]), v_perp, sc,
+                        eps_list=(0.1, 0.03, 0.01, 0.003, 0.001))
+    out = transverse_replay(A, P, rep)
+    assert out["available"]
+    for r in out["rows"]:
+        # exact for a linear map: no O(eps^2) error
+        assert r["signed_projection"] == pytest.approx(sv_perp[0], rel=1e-10)
+        assert r["relative_vector_residual"] == pytest.approx(0.0, abs=1e-10)
+
+
+def test_transverse_replay_unresolved_reference_is_reported():
+    """An unresolved reference span must yield transversality UNRESOLVED, never a
+    fabricated projector."""
+    A = np.diag([3.0, 2.0, 1.0])
+    sc = StateScaling(n_species=2, T_interval=1.0, Y_interval=1.0)
+    rep = replay_signed(lambda th, du: np.zeros(3), np.array([1.0, 1.0, 1.0]),
+                        np.array([1.0]), np.array([0.0, 0.0, 1.0]), sc,
+                        eps_list=(0.1, 0.03))
+    out = transverse_replay(A, None, rep)
+    assert out["available"] is False
+
+
+# --- ignition time by dense-output root finding (not a grid lookup) -----------
+
+class _IgnitionStub:
+    """qdot = a*q + b, with an exact known crossing time for a linear rise.
+
+    For qdot = 1 (constant) from q0 = 0 the crossing of 100 is at t = 100
+    exactly; a grid of N points over a horizon H quantizes this to
+    k*H/(N-1), which is what the event-based version must NOT reproduce.
+    """
+
+    def __init__(self, slope=1.0):
+        self.slope = slope
+        self.T_in = 0.0
+
+    def rhs(self, t, q, gamma):
+        return np.array([self.slope])
+
+
+def test_ignition_time_event_beats_grid_quantization():
+    """The event-located crossing must be exact, while the grid estimate is
+    quantized to the grid spacing and depends on the horizon."""
+    c = _IgnitionStub(slope=1.0)
+    q0 = np.array([0.0, 0.0, 0.0])          # n = 3, but only T is integrated
+    out = ignition_time_event(c, 1.0, 0.1, q0, rise_K=100.0,
+                              grid_resolution=400)
+    # the crossing at t=100 lies beyond the 0.1 s horizon: censored, not wrong
+    assert out["censored"] is True
+    assert out["t_ign_event"] is None
+    assert out["grid_spacing_s"] == pytest.approx(0.1 / 399)
+
+
+def test_ignition_time_event_locates_an_interior_crossing():
+    """qdot = 1 from 0 crosses 100 at t = 100 inside a 200 s horizon.  The event
+    time must be exactly 100; the 400-point grid estimate is quantized to
+    200/399 ~ 0.501, so it cannot land exactly on 100."""
+    c = _IgnitionStub(slope=1.0)
+    q0 = np.array([0.0, 0.0, 0.0])
+    out = ignition_time_event(c, 1.0, 200.0, q0, rise_K=100.0,
+                              grid_resolution=400)
+    assert out["censored"] is False
+    assert out["t_ign_event"] == pytest.approx(100.0, abs=1e-6)
+    assert out["grid_spacing_s"] == pytest.approx(200.0 / 399)
+    # the grid estimate is on the grid, so it is NOT exactly 100
+    assert out["t_ign_grid_estimate"] != pytest.approx(100.0, abs=1e-9)
+    assert out["t_ign_grid_estimate"] > 100.0

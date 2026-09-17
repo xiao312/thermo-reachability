@@ -760,64 +760,237 @@ def classify_ranks(J: np.ndarray, scaling: "StateScaling",
 def transverse_spectrum(J: np.ndarray, V: np.ndarray, scaling: "StateScaling",
                         noise_scale: float | None = None,
                         rel_tol: float = 1e-8,
-                        C_of_q: np.ndarray | None = None) -> dict:
-    """Total and transverse spectra of the scaled Jacobian W J.
+                        C_of_q: np.ndarray | None = None,
+                        ref_abs_tol: float | None = None) -> dict:
+    """Total, transverse and leakage spectra of the scaled Jacobian W J.
 
-    ``V`` is a correctly anchored, noise-filtered basis of the constant-control
-    family tangent span at the SAME endpoint (columns are orthonormal).  The
-    transverse part is (I - Q Q^T) W J.  A second TOTAL singular value is NOT
-    automatically a direction outside the two-parameter constant family: only
-    the transverse spectrum can support that, and only above the noise scale.
+    Reference span.  ``V`` is the anchored constant-control tangent span at the
+    SAME endpoint.  Its basis is built by the ONE rank-revealing SVD routine
+    (:func:`svd_basis`) - never by unfiltered QR, which silently fills a
+    rank-deficient span with arbitrary orthonormal completions.  A direction is
+    kept iff it exceeds BOTH a relative threshold and (when given) an absolute
+    one; a weak-but-real direction below an application tolerance is REPORTED,
+    not discarded, with its detectability separated from its relevance.
 
-    Both raw and projected spectra are returned and labelled, so a disagreement
-    between them can be compared against the physical conservation error rather
-    than hidden by projection.
+    Spectra.  Sorted singular values of A = W J and of B = (I - P) A CANNOT be
+    paired by index: sigma_k((I-P)A) near zero does not imply that u_k(A) lies in
+    the family.  So each total left singular vector gets its own projection
+    magnitude ||(I-P) u_i|| and projected strength sigma_i(A) ||(I-P) u_i||.
+
+    Exact inequality.  For ANY orthogonal projector P of rank at most 2,
+    ||(I - P) A||_2 >= sigma3(A).  A stable, genuinely nonzero sigma3(A) is
+    therefore evidence for a third direction independently of how the reference
+    plane was built, and is reported as such.
+
+    Leakage floor.  (I - N N^T) W J with N the conserved-manifold tangent space
+    null(C W^-1) bounds the conservation/integration error of the derivative
+    columns; a transverse direction below this floor or below the noise
+    discrepancy is NOT evidence of off-family state generation.
     """
     J = np.asarray(J, dtype=float)
     V = np.asarray(V, dtype=float)
-    W = scaling.W
-    # NaN columns must not reach the SVD; they are recorded as an incomplete
-    # stencil in classify_ranks and excluded here.
+    # NaN columns must not reach the SVD; an incomplete stencil is recorded by the
+    # caller and excluded here.
     valid = np.isfinite(J).all(axis=0)
     J = J[:, valid] if (J.ndim == 2 and valid.any()) else J
-    WJ = W[:, None] * J
-    WV = W[:, None] * V
-    sv_total = np.linalg.svd(WJ, compute_uv=False)
-    Q, _ = np.linalg.qr(WV)
-    # Manifold-leakage floor: the scaled distance of the derivative columns from
-    # the conserved-manifold tangent space null(C W^-1).  A transverse direction
-    # BELOW this floor is indistinguishable from conservation/ integration error
-    # and must not be reported as off-family state generation.  Projection must
-    # not hide this error, so the floor is reported alongside the transverse
-    # spectrum rather than subtracted from it.
+    W = scaling.W
+    A = W[:, None] * J
+    D = W[:, None] * V
+
+    ref = svd_basis(D, rel_tol=rel_tol, abs_tol=ref_abs_tol)
+    Q = ref.vectors
+    rank_V = 0 if Q is None else int(Q.shape[1])
+    if Q is None:
+        # The reference span is unresolved.  Transversality is then UNRESOLVED,
+        # not zero: a projector cannot be constructed, and no direction may be
+        # filled in arbitrarily.
+        P = None
+        B = None
+        sv_perp = None
+        u_perp = v_perp = None
+    else:
+        P = Q @ Q.T
+        B = (np.eye(Q.shape[0]) - P) @ A
+        Ub, sv_perp, Vhb = np.linalg.svd(B, full_matrices=False)
+        u_perp, v_perp = Ub[:, :1], Vhb[:1].T
+
+    U_tot, sv_total, Vh_tot = np.linalg.svd(A, full_matrices=False)
+    sv_total = np.asarray(sv_total, dtype=float)
+    # per-total-vector projection magnitudes
+    per_vec = []
+    if P is not None:
+        for i in range(U_tot.shape[1]):
+            ui = U_tot[:, i]
+            resid = float(np.linalg.norm((np.eye(P.shape[0]) - P) @ ui))
+            per_vec.append({"i": i, "sigma_i_total": float(sv_total[i]),
+                            "norm_ImP_ui": resid,
+                            "projected_strength": float(sv_total[i] * resid)})
+
+    # manifold leakage floor
     ts = scaled_tangent_space(C_of_q, scaling) if C_of_q is not None else None
     sv_leak = None
-    tangent_dim = None
     if ts is not None and ts.basis is not None:
         N = ts.basis
-        J_leak = (np.eye(N.shape[0]) - N @ N.T) @ WJ
-        sv_leak = np.linalg.svd(J_leak, compute_uv=False)
-        tangent_dim = int(N.shape[1])
-    J_perp = (np.eye(Q.shape[0]) - Q @ Q.T) @ WJ
-    sv_perp = np.linalg.svd(J_perp, compute_uv=False)
-    out = {"singular_values_total_scaled": sv_total.tolist(),
-           "singular_values_transverse_scaled": sv_perp.tolist(),
-           "singular_values_manifold_leakage_scaled": (sv_leak.tolist()
-                                                        if sv_leak is not None else None),
-           "tangent_space_dimension": tangent_dim,
-           "rank_V_basis": int(Q.shape[1]),
-           "noise_scale_refinement_discrepancy": noise_scale,
-           "note": ("total = SVD of W J; transverse = SVD of (I - Q Q^T) W J with "
-                    "Q an orthonormal basis of the scaled constant-control tangent "
-                    "span at the SAME endpoint; manifold leakage = SVD of "
-                    "(I - N N^T) W J with N the conserved-manifold tangent space "
-                    "null(C W^-1). A transverse direction below the leakage floor "
-                    "or below the noise discrepancy is NOT evidence of off-family "
-                    "state generation.")}
-    if sv_leak is not None and sv_perp.size:
+        sv_leak = np.linalg.svd(
+            (np.eye(N.shape[0]) - N @ N.T) @ A, compute_uv=False)
+
+    out = {
+        "singular_values_total_scaled": np.asarray(sv_total, dtype=float).tolist(),
+        "total_right_singular_vectors": Vh_tot.tolist(),
+        "total_left_singular_vectors": U_tot.tolist(),
+        "singular_values_transverse_scaled": (sv_perp.tolist()
+                                              if sv_perp is not None else None),
+        "transverse_right_singular_vector": (np.asarray(v_perp, dtype=float).ravel().tolist()
+                                             if v_perp is not None else None),
+        "transverse_left_singular_vector": (np.asarray(u_perp, dtype=float).ravel().tolist()
+                                            if u_perp is not None else None),
+        "per_total_vector_projection": per_vec,
+        "reference_basis_singular_values": np.asarray(
+            ref.singular_values, dtype=float).tolist(),
+        "reference_basis_retained": ref.retained.tolist(),
+        "reference_rank": rank_V,
+        "reference_threshold_used": ref.threshold_used,
+        "reference_is_resolved": Q is not None,
+        "reference_residual": ref.projector_residual,
+        "reference_conditioning": ref.conditioning,
+        "singular_values_manifold_leakage_scaled": (sv_leak.tolist()
+                                                    if sv_leak is not None else None),
+        "noise_scale_refinement_discrepancy": noise_scale,
+        "inequality_sigma3_lower_bound_for_transverse": (
+            float(sv_total[2]) if sv_total.size >= 3 else None),
+        "note": ("total = SVD of A = W J; transverse = SVD of B = (I-P) A with P "
+                 "the projector onto the rank-revealed reference span; leakage = "
+                 "SVD of (I - N N^T) A with N the basis of null(C W^-1). For ANY "
+                 "rank<=2 projector, ||(I-P)A||_2 >= sigma3(A), so a stable "
+                 "sigma3(A) is evidence for a third direction independent of the "
+                 "reference-plane construction."),
+    }
+    if sv_perp is not None and sv_perp.size and sv_total.size >= 3:
         out["transverse_above_leakage_floor"] = bool(
-            sv_perp[0] > (sv_leak[0] if sv_leak.size else 0.0))
+            sv_perp[0] > (sv_leak[0] if sv_leak is not None and sv_leak.size else 0.0))
+        out["transverse_geq_sigma3_total"] = bool(sv_perp[0] >= sv_total[2])
+    elif sv_total.size >= 3:
+        out["transverse_geq_sigma3_total"] = None
     return out
+
+
+def replay_signed(endpoint_fn, theta: np.ndarray, durations: np.ndarray,
+                 v_dir: np.ndarray, scaling: "StateScaling",
+                 eps_list=(0.1, 0.03, 0.01, 0.003, 0.001),
+                 gamma_bounds: tuple[float, float] | None = None,
+                 gamma_ref: float | None = None) -> dict:
+    """Signed central-difference replay of the scaled derivative along v_dir.
+
+    Replays the QUANTITY ACTUALLY CLAIMED.  Perturbing the log controls along a
+    direction v and differencing endpoints gives the scaled directional
+    derivative
+
+        d_scaled(eps) = W [E(eta + eps v) - E(eta - eps v)] / (2 eps),
+
+    which converges to A v = W J v as eps -> 0.  Which direction to replay is a
+    separate decision from which singular value is claimed: replaying along
+    v2(A) tests ||A v2||, NOT sigma1(B) for B = (I - P) A, and v2(A) maximizes
+    neither ||B v|| nor sigma1(B) in general.
+
+    Decreasing perturbations are used over a range that includes both truncation
+    and cancellation diagnostics; no predetermined monotone error pattern is
+    demanded, and the O(eps^2) central-difference term is fitted only where the
+    rows support it.  Inadmissible perturbations (levels leaving the declared
+    bounds) are skipped and recorded, never silently clamped.
+    """
+    theta = np.asarray(theta, dtype=float).ravel()
+    v_dir = np.asarray(v_dir, dtype=float).ravel()
+    v_dir = v_dir / max(np.linalg.norm(v_dir), 1e-300)
+    rows = []
+    for eps in eps_list:
+        tp = theta * np.exp(eps * v_dir)
+        tm = theta * np.exp(-eps * v_dir)
+        if gamma_bounds is not None:
+            lo, hi = gamma_bounds
+            if not (np.all(tp > lo) and np.all(tp < hi)
+                    and np.all(tm > lo) and np.all(tm < hi)):
+                rows.append({"epsilon": float(eps), "admissible": False})
+                continue
+        ep = np.asarray(endpoint_fn(tp, durations), dtype=float)
+        em = np.asarray(endpoint_fn(tm, durations), dtype=float)
+        d = scaling.W * (ep - em) / (2.0 * eps)
+        rows.append({"epsilon": float(eps), "admissible": True,
+                     "derivative_scaled": d.tolist(),
+                     "norm": float(np.linalg.norm(d))})
+    return {"direction": v_dir.tolist(),
+            "n_admissible": int(sum(r["admissible"] for r in rows)),
+            "rows": rows,
+            "gamma_bounds": list(gamma_bounds) if gamma_bounds else None,
+            "gamma_ref": gamma_ref}
+
+
+def transverse_replay(A: np.ndarray, P: np.ndarray, replay: dict) -> dict:
+    """Compare a replayed derivative against the claimed transverse quantity.
+
+    ``P`` may be given either as the projector itself or as an orthonormal BASIS
+    Q of the reference span (a non-square array), from which the projector is
+    formed.  Given B = (I - P) A and its leading singular triple (u_perp,
+    sigma_perp, v_perp), a replay along v_perp must satisfy
+
+        u_perp^T (I - P) d_scaled(eps) -> sigma_perp,
+        (I - P) d_scaled(eps)         -> B v_perp   (the FULL signed vector).
+
+    The signed projection, the cosine to u_perp, and the relative vector residual
+    are reported separately so that a scalar agreement cannot mask a wrong
+    direction, and so that a 30 % discrepancy can be diagnosed as a comparison of
+    different mathematical quantities rather than accepted.
+    """
+    A = np.asarray(A, dtype=float)
+    if P is None:
+        return {"available": False,
+                "reason": "reference projector unresolved; transversality unresolved"}
+    P = np.asarray(P, dtype=float)
+    if P.ndim == 2 and P.shape[0] != P.shape[1]:
+        P = P @ P.T                       # a basis Q, not the projector
+    rows = [r for r in replay["rows"] if r.get("admissible")]
+    if len(rows) < 2:
+        return {"available": False, "reason": "fewer than two admissible replays"}
+    B = (np.eye(P.shape[0]) - P) @ A
+    Ub, sv_perp, Vhb = np.linalg.svd(B, full_matrices=False)
+    if sv_perp.size == 0 or sv_perp[0] <= 0:
+        return {"available": False, "reason": "no transverse singular value"}
+    u_perp, v_perp, sigma_perp = Ub[:, 0], Vhb[0], float(sv_perp[0])
+    Bv = B @ v_perp
+    out_rows = []
+    for r in rows:
+        d = np.asarray(r["derivative_scaled"], dtype=float)
+        proj = (np.eye(P.shape[0]) - P) @ d
+        denom = max(np.linalg.norm(proj), 1e-300)
+        out_rows.append({
+            "epsilon": r["epsilon"],
+            "signed_projection": float(u_perp @ proj),
+            "sigma_perp": sigma_perp,
+            "signed_relative_deviation": float((u_perp @ proj - sigma_perp)
+                                               / max(sigma_perp, 1e-300)),
+            "cosine_to_u_perp": float(u_perp @ proj / denom),
+            "relative_vector_residual": float(
+                np.linalg.norm(Bv - proj) / max(np.linalg.norm(Bv), 1e-300)),
+        })
+    # the O(eps^2) central-difference term is fitted only where the rows support
+    # a clean trend in the projection
+    eps = np.array([r["epsilon"] for r in out_rows])
+    val = np.array([r["signed_projection"] for r in out_rows])
+    c2 = None
+    if eps.size >= 3 and np.all(np.diff(eps) != 0):
+        # d(eps) ~ sigma_perp + c2 eps^2
+        design = np.vstack([np.ones_like(eps), eps ** 2]).T
+        coef, *_ = np.linalg.lstsq(design, val, rcond=None)
+        resid = float(np.max(np.abs(design @ coef - val)))
+        c2 = {"quadratic_coefficient": float(coef[1]),
+              "intercept": float(coef[0]),
+              "max_abs_fit_residual": resid}
+    return {"available": True, "sigma_perp": sigma_perp,
+            "u_perp": u_perp.tolist(), "v_perp": v_perp.tolist(),
+            "rows": out_rows, "quadratic_fit": c2,
+            "note": ("replay along the leading transverse RIGHT singular vector "
+                     "of B = (I-P)A; the signed projection must approach "
+                     "sigma_perp and the full projected vector must approach "
+                     "B v_perp")}
 
 
 def endpoint_jacobian_fsa_system(rhs, rhs_dgamma, state_jac,
@@ -843,6 +1016,20 @@ def endpoint_jacobian_fsa_system(rhs, rhs_dgamma, state_jac,
     and is the reference against which the FD estimator's refinement discrepancy
     is judged.  Switching times are parameters of the history but not of this map,
     so no time-shift terms appear: this is the Jacobian with respect to LEVELS.
+
+    Segment restarts.  The column receiving parameter forcing changes
+    discontinuously at each segment boundary, so a single solve_ivp call with a
+    searchsorted control selector forces the stepper to resolve that jump.  Each
+    segment is therefore integrated as its OWN solve_ivp call with the segment
+    index held FIXED inside the RHS closure, carrying the full (state,
+    sensitivity) pair across.  The sensitivity itself is continuous at a fixed
+    switch; only its RHS changes.  There are no saltation terms for level-only
+    parameters with fixed durations.
+
+    Tolerances.  The sensitivity block is row-major (n, m), so a per-state absolute
+    tolerance vector maps as ``np.repeat(atol_state, m)`` - NOT as
+    ``np.full(n*m, atol.min())``, which would apply a species-sized tolerance to
+    the temperature sensitivity as well.
     """
     from scipy.integrate import solve_ivp
 
@@ -850,32 +1037,47 @@ def endpoint_jacobian_fsa_system(rhs, rhs_dgamma, state_jac,
     durations = np.asarray(durations, dtype=float)
     n = q0.size
     m = gamma_segments.size
-    edges = np.concatenate([[0.0], np.cumsum(durations)])
     if atol is None:
         atol = np.full(n, 1e-12)
+    atol_state = np.asarray(atol, dtype=float)
+    atol_sens = np.repeat(atol_state, m)          # row-major (n, m) -> n*m
 
-    def aug(t, y):
-        q = y[:n]
-        S = y[n:].reshape(n, m)
-        k = int(np.searchsorted(edges, t, side="right")) - 1
-        k = min(max(k, 0), m - 1)
-        Fq = np.asarray(state_jac(q, gamma_segments[k]), dtype=float)
-        dS = Fq @ S
-        dS[:, k] += gamma_segments[k] * np.asarray(rhs_dgamma(q), dtype=float)
-        return np.concatenate([rhs(t, q, gamma_segments[k]), dS.ravel()])
+    q = np.array(q0, dtype=float)
+    S = np.zeros((n, m))
+    t0 = 0.0
+    nfev = 0
+    for k in range(m):
+        gk = float(gamma_segments[k])
 
-    y0 = np.concatenate([q0, np.zeros(n * m)])
-    res = solve_ivp(aug, (0.0, float(durations.sum())), y0, method=method,
-                    t_eval=[float(durations.sum())], rtol=rtol,
-                    atol=np.concatenate([atol, np.full(n * m, atol.min())]),
-                    dense_output=False)
-    if not res.success:
-        raise RuntimeError(f"FSA integration failed: {res.message}")
-    return {"J": res.y[n:, -1].reshape(n, m).copy(),
-            "endpoint": res.y[:n, -1].copy(),
-            "success": bool(res.success),
-            "n_rhs_evaluations": int(res.nfev),
-            "method": method, "rtol": rtol}
+        def aug(t, y, _g=gk, _k=k):
+            _q = y[:n]
+            _S = y[n:].reshape(n, m)
+            Fq = np.asarray(state_jac(_q, _g), dtype=float)
+            dS = Fq @ _S
+            # the log-level source acts on column k of this segment only
+            dS[:, _k] += _g * np.asarray(rhs_dgamma(_q), dtype=float)
+            return np.concatenate([rhs(t, _q, _g), dS.ravel()])
+
+        t1 = t0 + float(durations[k])
+        y0 = np.concatenate([q, S.ravel()])
+        res = solve_ivp(aug, (t0, t1), y0, method=method, t_eval=[t1],
+                        rtol=rtol, atol=np.concatenate([atol_state, atol_sens]),
+                        dense_output=False)
+        if not res.success:
+            raise RuntimeError(
+                f"FSA integration failed in segment {k} "
+                f"(gamma={gk:g}, t in [{t0:g}, {t1:g}]): {res.message}")
+        nfev += int(res.nfev)
+        q = res.y[:n, -1].copy()
+        S = res.y[n:, -1].reshape(n, m).copy()
+        t0 = t1
+
+    return {"J": S, "endpoint": q, "success": True,
+            "n_rhs_evaluations": nfev, "method": method, "rtol": rtol,
+            "segments": m,
+            "note": ("per-segment solve_ivp restarts with the segment index held "
+                     "fixed inside each RHS closure; sensitivity atol is "
+                     "np.repeat(state_atol, m)")}
 
 
 def endpoint_jacobian_fsa(cstr, gamma_segments: np.ndarray, durations: np.ndarray,
@@ -898,3 +1100,52 @@ def endpoint_jacobian_fsa(cstr, gamma_segments: np.ndarray, durations: np.ndarra
     out["atol"] = {"T": atol_T, "Y": atol_Y}
     out["state_jacobian_eps"] = eps
     return out
+
+
+def ignition_time_event(cstr, gamma: float, T: float, q0: np.ndarray,
+                        rise_K: float = 100.0, method: str = "Radau",
+                        rtol: float = 1e-10, atol_T: float = 1e-9,
+                        atol_Y: float = 1e-16,
+                        grid_resolution: int = 400) -> dict:
+    """Declared ignition time by dense-output root finding, not a grid lookup.
+
+    The event is the first upward crossing of T0 + rise_K.  A grid lookup on
+    ``grid_resolution`` points quantizes the estimate to T/(grid_resolution-1) and
+    makes it depend on the horizon, so the event time is located by the solver's
+    own root finding on the dense output and the grid estimate is reported only
+    for comparison, together with the effective grid spacing and explicit
+    censoring when the event has not occurred within the horizon.
+    """
+    from scipy.integrate import solve_ivp
+
+    n = q0.size
+    atol = np.concatenate([[atol_T], np.full(n - 1, atol_Y)])
+    T0 = float(q0[0])
+    target = T0 + rise_K
+
+    def event(t, y):
+        return float(y[0] - target)
+
+    event.terminal = True
+    event.direction = 1                    # upward crossing only
+
+    res = solve_ivp(lambda t, y: cstr.rhs(t, y, gamma), (0.0, float(T)), q0,
+                    method=method, rtol=rtol, atol=atol, events=event,
+                    dense_output=True, t_eval=None)
+    t_ev = float(res.t_events[0][0]) if res.t_events[0].size else None
+    # grid estimate for comparison, at the declared resolution
+    tg = np.linspace(0.0, float(T), grid_resolution)
+    Tg = np.array([res.sol(t)[0] for t in tg])
+    idx = np.where(Tg >= target)[0]
+    t_grid = float(tg[idx[0]]) if idx.size else None
+    return {"t_ign_event": t_ev,
+            "t_ign_grid_estimate": t_grid,
+            "grid_spacing_s": float(T) / max(grid_resolution - 1, 1),
+            "grid_resolution": grid_resolution,
+            "censored": t_ev is None,
+            "rise_K": rise_K,
+            "T0": T0,
+            "max_temperature_K": float(max(res.sol(t)[0]
+                                           for t in np.linspace(0, T, 64))),
+            "success": bool(res.success),
+            "method": method}

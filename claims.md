@@ -463,6 +463,85 @@ modelled, but at chemically relevant segment times its observable magnitude is
 set by ignition, not by the small-tau bracket. Phase 4's claim of order
 dependence at 0.7 scaled units is an ignition effect, not a bracket effect.
 
+---
+
+## Revision 5 claims (flagship-validation branch)
+
+**C28. NEW - repaired sensitivity machinery, with a regression test for every
+repair.**
+*Segment restarts.* The tangent-linear estimator now integrates each segment as
+its own solve_ivp call with the segment index fixed inside the RHS closure,
+rather than one call with a searchsorted control selector - the column receiving
+parameter forcing changes discontinuously at each boundary. On the review's
+exact benchmark (qdot = gamma; S_j' = gamma_j on segment j; gamma = (10, 1e5, 10);
+durations = (0.0499995, 1e-6, 0.0499995)) it reproduces the endpoint 1.09999 and
+the sensitivities (0.499995, 0.1, 0.499995). *Tolerances.* The row-major (n, m)
+sensitivity block maps a per-state atol vector as np.repeat(atol_state, m), not
+np.full(n*m, atol.min()), which had applied a species-sized tolerance to the
+temperature sensitivity.
+*Correct replay.* The second right singular vector of A maximizes neither
+||B v|| nor sigma1(B) for B = (I - P) A; replaying along v2(A) tests ||B v2||,
+which is ZERO on the review counterexample A = diag(3,2,1), P = proj(e1,e2) where
+sigma2(A) = 2 and sigma1(B) = 1. The replay now perturbs along the leading
+transverse RIGHT singular vector of B and compares the SIGNED projection, the
+cosine, and the FULL vector residual against B v_perp. A separate replay along
+v3(A) validates the third total direction.
+*Signed commutator.* With [f,g] = Dg f - Df g and F_gamma = r + gamma v,
+[F_a, F_b] = (b - a)[r, v] - the coefficient is (gamma_b - gamma_a), and Phase 7
+had reported the opposite sign while comparing only NORMS, which concealed it.
+Verified on the linear benchmark qdot = -q + gamma, a = 1, b = 3, whose exact
+two-segment difference is (b - a)(1 - exp(-tau))^2, POSITIVE and tending to b - a.
+*Ignition time.* Now located by dense-output root finding, not a 400-point grid
+lookup that quantizes the estimate to T/399 and makes it horizon-dependent; the
+grid estimate is retained only to expose the quantization and censoring is
+explicit.
+*Rank-revealing reference basis everywhere.* Unfiltered QR is gone from the
+transverse analysis; the one svd_basis routine decides the rank, and an
+unresolved reference span yields transversality UNRESOLVED, never a fabricated
+projector.
+
+**C29. NEW - the flagship third direction survives validation (Phase 9).**
+Primary anchor: HP-equilibrium hot start of stoichiometric H2/air, Tin = 1200 K,
+p = 101325 Pa, gamma = 1e4 1/s, horizon 1e-5 s, m = 3 equal segments. The state
+Jacobian is itself numerical, so it is varied (eps ladder 1e-5, 1e-6, 1e-7)
+independently of the ODE tolerance, of the integrator (Radau, LSODA) and of the
+replay, and A = W J and D = W V are PERSISTED as NPZ with singular vectors and
+endpoints.
+
+    total spectrum       (0.9484, 0.1189, 5.963e-5)   [reproduces the historical values]
+    transverse spectrum  (1.234e-4, 2.44e-9, 6.93e-13)
+    sigma3(A)            5.963e-5     ||(I-P)u2|| = 1.000: the third TOTAL
+                        direction is entirely transverse
+    delta_A              3.07e-9      (spread of A across methods x eps ladder)
+    delta_P * ||A||      1.91e-7      (spread of reference projectors)
+    combined bound       <= 1.94e-7   via ||Bhat-B|| <= ||Ahat-A|| + ||Phat-P|| ||Ahat||
+
+The claimed transverse value 1.234e-4 is therefore 635 times above the combined
+operator-error estimate, and sigma3(A) = 5.96e-5 - which by the EXACT inequality
+||(I-P)A||_2 >= sigma3(A) for ANY rank <= 2 projector is evidence independent of
+the reference-plane construction - is 307 times above it. The replay along
+v_perp converges with signed relative deviation 0.074 -> 0.000 and cosine
++1.0000 as epsilon shrinks, and the separate v3(A) replay gives 5.963e-5.
+MATHEMATICS: the exact inequality and the affine structure of F in gamma.
+NUMERICAL EVIDENCE: the spectra, replays and cross-method spreads above. The
+secondary anchor (horizon 1e-6 s) is even cleaner: transverse 1.55e-3 against a
+combined error estimate 1.8e-9, an 8.6e5 margin.
+
+**C30. NEW - the negative case is now correctly UNRESOLVED, and the diagnostic
+demonstrably distinguishes signal from noise.** At the fresh gamma = 1e4,
+horizon 1e-4 s anchor, the state-Jacobian eps spread is delta_A = 1.19e-3, which
+exceeds both sigma3 (7.6e-12) and the transverse value (1.7e-10). The replay does
+not converge: its signed projection is NEGATIVE and proportional to epsilon
+(-2.5e-4, -2.3e-5, -2.5e-6, -2.3e-7, -2.6e-8) with cosine -0.996 against
+sigma_perp = 1.7e-10. This is the correct signature of a quantity below the
+estimator's resolution. The previous revision's claim that the two
+gamma = 1000 / horizon 1e-3 cases have "resolved but below application
+threshold" transverse directions is therefore NARROWED TO CANDIDATE status: it
+rested on projector-based inference without reference-uncertainty machinery, and
+those anchors have reference-span condition numbers ~1.94e7 and ~1.56e6 versus
+~20 for the flagship. They are not withdrawn - they are unconfirmed pending that
+machinery.
+
 ## Not tested / deferred
 
 - Certified (interval/validated) outer bounds; all bounds here are analytic

@@ -106,7 +106,8 @@ def main() -> None:
            "scaling": scaling.to_record(),
            "method": {"integrator": "Radau", "rtol": rtol,
                       "atol_T": atol_T, "atol_Y": atol_Y},
-           "formula": "[f_a, f_b] = (gamma_a - gamma_b) [r, v]",
+           "formula": "[f_a, f_b] = (gamma_b - gamma_a) [r, v]  "
+                    "(convention [f,g] = Dg f - Df g, F_gamma = r + gamma v)",
            "cases": []}
 
     q0s = {"fresh": fresh_state(c), "hot": hot_hp_state(c)}
@@ -141,9 +142,26 @@ def main() -> None:
             br = bracket_by_differences(c, q0, ga, gb, 1e-6, rtol, atol_T, atol_Y)
             rv = bracket_by_differences(c, q0, 100.0, 101.0, 1e-6, rtol, atol_T,
                                         atol_Y)   # [r, v] proxy: (101-100)[r,v]
+            # [f_a, f_b] = (b - a) [r, v] with [f,g] = Dg f - Df g.
+            # The SIGNED vector is compared, not only its norm: a norm-only
+            # comparison conceals a sign error in the coefficient.
             bracket_rv = rv / (101.0 - 100.0)
-            predicted = (ga - gb) * bracket_rv
+            predicted = (gb - ga) * bracket_rv
             d0 = np.array(rows[0]["delta_raw"])
+            Wv = scaling.W
+            # signed comparison at the smallest tau, in scaled units
+            obs_scaled = Wv * np.array(rows[0]["delta_raw"])
+            pred_scaled = Wv * (rows[0]["tau_squared"] * predicted)
+            denom = max(np.linalg.norm(pred_scaled), 1e-300)
+            signed = {"tau": rows[0]["tau"],
+                      "observed_scaled": obs_scaled.tolist(),
+                      "predicted_scaled": pred_scaled.tolist(),
+                      "cosine": float(obs_scaled @ pred_scaled / (
+                          max(np.linalg.norm(obs_scaled), 1e-300) * denom)),
+                      "relative_vector_residual": float(
+                          np.linalg.norm(pred_scaled - obs_scaled) / denom),
+                      "signed_ratio": float(
+                          np.linalg.norm(obs_scaled) / denom)}
             dn = [r_["delta_scaled_norm"] for r_ in rows]
             dns = [r_["delta_scaled_norm"] for r_ in rows
                    if r_["tau"] in tau_asymptotic]
@@ -158,6 +176,7 @@ def main() -> None:
                 "bracket_f_a_f_b": br.tolist(),
                 "bracket_r_v": bracket_rv.tolist(),
                 "predicted_bracket_scaled_norm": float(np.linalg.norm(W * predicted)),
+                "signed_comparison": signed,
                 "observed_delta_scaled_norm_at_tau0": rows[0]["delta_scaled_norm"],
                 "loglog_slope_of_delta_vs_tau": _slope(taus, dn),
                 "loglog_slope_small_tau": _slope(tau_asymptotic, dns),
@@ -168,11 +187,12 @@ def main() -> None:
             out["cases"].append(rec)
             sa = rec["loglog_slope_of_delta_vs_tau"]
             ss = rec["loglog_slope_small_tau"]
+            sg = rec["signed_comparison"]
             print(f"[phase7] {init} a={ga:<7.0f} b={gb:<7.0f} "
                   f"|delta|@tau0={rec['observed_delta_scaled_norm_at_tau0']:.3e} "
                   f"slope_all={sa if sa is None else round(sa, 2)} "
                   f"slope_small={ss if ss is None else round(ss, 2)} "
-                  f"pred={rec['predicted_bracket_scaled_norm']:.3e} "
+                  f"cos={sg['cosine']:+.3f} relres={sg['relative_vector_residual']:.2e} "
                   f"affine_err={rec['affine_check_F_equal_gamma_v_plus_r']:.1e}")
 
     out["wall_seconds"] = time.perf_counter() - t0

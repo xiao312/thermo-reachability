@@ -1,0 +1,1481 @@
+{
+  "timestamp_utc": "2026-09-17T05:08:46.491195+00:00",
+  "mechanism": {
+    "mechanism": "h2o2.yaml",
+    "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+    "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+    "phase": "ohmech",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "elements": [
+      "O",
+      "H",
+      "Ar",
+      "N"
+    ],
+    "n_reactions": 29,
+    "input_header": {
+      "description": "Hydrogen-Oxygen submechanism extracted from GRI-Mech 3.0.\nModified from the original to include N2.\n\nRedlich-Kwong coefficients are based on tabulated critical properties or\nestimated according to the method of Joback and Reid, \"Estimation of pure-\ncomponent properties from group-contributions,\" Chem. Eng. Comm. 57 (1987)\n233-243",
+      "generator": "ck2yaml",
+      "input-files": [
+        "h2o2.inp",
+        "gri30_tran.dat"
+      ],
+      "cantera-version": "2.5.0",
+      "date": "Wed, 11 Dec 2019 16:59:04 -0500"
+    }
+  },
+  "mechanism_sha256_16": "0efc6c52862741a2",
+  "config": {
+    "mechanism": "h2o2.yaml",
+    "pressure": 101325.0,
+    "inlet_temperature": 1200.0,
+    "fuel": "H2",
+    "oxidizer": "O2:1,N2:3.76",
+    "equivalence_ratio": 1.0,
+    "reactor_mass": 1.0,
+    "rtol": 1e-08,
+    "atol_T": 1e-06,
+    "atol_Y": 1e-14,
+    "phase": null
+  },
+  "scaling": {
+    "T_interval_K": 100.0,
+    "Y_interval": 0.01,
+    "meaning": "a scaled unit is dT = T_INTERVAL K or dY = Y_INTERVAL in every mass fraction; singular values count such increments per unit Euclidean step in log control",
+    "component_bound_at_application_threshold": {
+      "sigma_scaled": 1e-06,
+      "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+      "mass_fraction_per_unit_log_control": 1e-08
+    }
+  },
+  "application_threshold": 1e-06,
+  "gamma_bounds": [
+    10.0,
+    100000.0
+  ],
+  "gamma_ref": 1000.0,
+  "m_prefix": 3,
+  "settings": {
+    "rtol": 1e-08,
+    "atol_T": 1e-07,
+    "atol_Y": 1e-13,
+    "state_jacobian_eps_ladder": [
+      1e-05,
+      1e-06,
+      1e-07
+    ],
+    "replay_eps": [
+      0.1,
+      0.03,
+      0.01,
+      0.003,
+      0.001
+    ]
+  },
+  "deliberately_excluded": [
+    {
+      "case": "fresh gamma=100 horizon=1e-2",
+      "reason": "did not complete within the compute budget in phase 8; phase 6 established it as the memory-erased control"
+    },
+    {
+      "case": "hot/fresh gamma=1000 horizon=1e-3",
+      "reason": "reference-span condition ~1.94e7 and ~1.56e6 versus ~20 for the flagship; projector-based inference deferred until reference uncertainty is implemented"
+    }
+  ],
+  "index": [
+    {
+      "label": "primary_hot_g1e+04_T1e-05",
+      "role": "primary",
+      "init": "hot",
+      "gamma": 10000.0,
+      "T": 1e-05,
+      "status": "completed"
+    },
+    {
+      "label": "secondary_hot_g1e+04_T1e-06",
+      "role": "secondary",
+      "init": "hot",
+      "gamma": 10000.0,
+      "T": 1e-06,
+      "status": "completed"
+    },
+    {
+      "label": "negative_fresh_g1e+04_T1e-04",
+      "role": "negative",
+      "init": "fresh",
+      "gamma": 10000.0,
+      "T": 0.0001,
+      "status": "completed"
+    }
+  ],
+  "cases": [
+    {
+      "label": "primary_hot_g1e+04_T1e-05",
+      "status": "completed",
+      "gamma": 10000.0,
+      "T": 1e-05,
+      "m": 3,
+      "theta": [
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "durations": [
+        3.3333333333333337e-06,
+        3.3333333333333337e-06,
+        3.3333333333333337e-06
+      ],
+      "horizon": 1e-05,
+      "q0": [
+        2763.3197351403796,
+        0.003564257635288794,
+        0.0006278060227178588,
+        0.003917047688526132,
+        0.020536341631516505,
+        0.018726720094245666,
+        0.2074951058759479,
+        8.544967284126894e-06,
+        5.705835645227245e-07,
+        0.0,
+        0.7451236055009086
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 1e-05
+      },
+      "primary_setting": "Radau_eps1e-05",
+      "reference_setting": "Radau_eps1e-05",
+      "settings_run": [
+        "LSODA_eps1e-05",
+        "LSODA_eps1e-06",
+        "LSODA_eps1e-07",
+        "Radau_eps1e-05",
+        "Radau_eps1e-06",
+        "Radau_eps1e-07"
+      ],
+      "settings_failed": [],
+      "cross_check_available": true,
+      "cross_check_methods": [
+        "LSODA",
+        "Radau"
+      ],
+      "delta_A_norm": 3.0678884529391722e-09,
+      "delta_P_norm_times_A": 1.9089445569964408e-07,
+      "operator_error_bound_note": "||Bhat-B|| <= ||Ahat-A|| + ||Phat-P||*||Ahat||; delta_A and delta_P are empirical spreads, not certified bounds",
+      "endpoint_3segment": [
+        2630.4064674682827,
+        0.004267837757483147,
+        0.0009426294434940281,
+        0.005449261671037061,
+        0.026503942936350826,
+        0.01996499572406186,
+        0.19773892645200755,
+        8.365171073405301e-06,
+        4.3534353443567673e-07,
+        0.0,
+        0.7451236055009568
+      ],
+      "endpoint_reference_1segment": [
+        2630.4064674694137,
+        0.004267837757387173,
+        0.0009426294435295811,
+        0.005449261671235049,
+        0.026503942935953928,
+        0.019964995723465537,
+        0.19773892645286337,
+        8.365171073296547e-06,
+        4.3534353443870244e-07,
+        0.0,
+        0.745123605500955
+      ],
+      "endpoint_3_vs_reference_max_abs_diff": 1.1309566616546363e-09,
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          0.9484054527007659,
+          0.11890151833046525,
+          5.9633056703605776e-05
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 3,
+        "rank_application_effective": 3,
+        "noise_scale_refinement_discrepancy": 3.0678884529391722e-09,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": true
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          0.9484054527007658,
+          0.11890151833046522,
+          5.9633056703605776e-05
+        ],
+        "total_right_singular_vectors": [
+          [
+            0.5228819746241041,
+            0.5515494428342635,
+            0.6499135732714094
+          ],
+          [
+            -0.4632326106989872,
+            -0.4561702171491513,
+            0.7598185845128407
+          ],
+          [
+            0.7155487327905754,
+            -0.6983566031013884,
+            0.016972504426033003
+          ]
+        ],
+        "total_left_singular_vectors": [
+          [
+            -0.7673387525305794,
+            0.3864401237197728,
+            0.4823181666959112
+          ],
+          [
+            0.037197906856158106,
+            0.06055059700966215,
+            0.1279035388890296
+          ],
+          [
+            0.01966783117317304,
+            -0.01864332893948812,
+            -0.0889296666544264
+          ],
+          [
+            0.09274925148364331,
+            -0.2373788088134154,
+            0.09101378173512155
+          ],
+          [
+            0.3346831985194709,
+            0.7680140041004618,
+            -0.045827593761447065
+          ],
+          [
+            0.050706366565425674,
+            -0.4213575598264897,
+            0.5618563269765036
+          ],
+          [
+            -0.5350087179440836,
+            -0.15137254956429824,
+            -0.645782569615987
+          ],
+          [
+            8.796313335810779e-06,
+            0.0001753985282237692,
+            -0.00022099825558863584
+          ],
+          [
+            -4.6329723445074185e-06,
+            1.224747946739155e-05,
+            -1.2814581050421116e-05
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.8339920864842898e-12,
+            -2.066450619116306e-12,
+            9.189732517728251e-10
+          ]
+        ],
+        "singular_values_transverse_scaled": [
+          0.00012339179883404995,
+          2.438954759997632e-09,
+          6.929382367056713e-13
+        ],
+        "transverse_right_singular_vector": [
+          0.02117074673790286,
+          0.6962827590510893,
+          -0.7174553079675153
+        ],
+        "transverse_left_singular_vector": [
+          -0.4826560340477534,
+          -0.1279541707027731,
+          0.08894368250253937,
+          -0.0907710301673922,
+          0.04512367435150963,
+          -0.5614933523454303,
+          0.6459175990670142,
+          0.00022081395585000707,
+          1.2802618386666618e-05,
+          0.0,
+          -1.6160348493221461e-09
+        ],
+        "per_total_vector_projection": [
+          {
+            "i": 0,
+            "sigma_i_total": 0.9484054527007658,
+            "norm_ImP_ui": 9.260807424442488e-06,
+            "projected_strength": 8.78300025775299e-06
+          },
+          {
+            "i": 1,
+            "sigma_i_total": 0.11890151833046522,
+            "norm_ImP_ui": 0.0009055185218192384,
+            "projected_strength": 0.00010766752712066595
+          },
+          {
+            "i": 2,
+            "sigma_i_total": 5.9633056703605776e-05,
+            "norm_ImP_ui": 0.9999995899751386,
+            "projected_strength": 5.963303225256997e-05
+          }
+        ],
+        "reference_basis_singular_values": [
+          2.1891810721559755,
+          0.10802474905370758
+        ],
+        "reference_basis_retained": [
+          true,
+          true
+        ],
+        "reference_rank": 2,
+        "reference_threshold_used": 2.1891810721559754e-08,
+        "reference_is_resolved": true,
+        "reference_residual": 1.4212033743121765e-15,
+        "reference_conditioning": 20.26555110132736,
+        "singular_values_manifold_leakage_scaled": [
+          3.4870515451732927e-12,
+          1.4827765207120499e-12,
+          2.772408634546306e-13
+        ],
+        "noise_scale_refinement_discrepancy": 3.0678884529391722e-09,
+        "inequality_sigma3_lower_bound_for_transverse": 5.9633056703605776e-05,
+        "note": "total = SVD of A = W J; transverse = SVD of B = (I-P) A with P the projector onto the rank-revealed reference span; leakage = SVD of (I - N N^T) A with N the basis of null(C W^-1). For ANY rank<=2 projector, ||(I-P)A||_2 >= sigma3(A), so a stable sigma3(A) is evidence for a third direction independent of the reference-plane construction.",
+        "transverse_above_leakage_floor": true,
+        "transverse_geq_sigma3_total": true
+      },
+      "transverse_replay": {
+        "available": true,
+        "sigma_perp": 0.0001233917988340524,
+        "u_perp": [
+          -0.48265603404773333,
+          -0.127954170702726,
+          0.08894368250252109,
+          -0.09077103016737134,
+          0.04512367435195883,
+          -0.5614933523455616,
+          0.6459175990668986,
+          0.0002208139558500427,
+          1.2802618386670131e-05,
+          0.0,
+          -1.616034849322069e-09
+        ],
+        "v_perp": [
+          0.02117074673786534,
+          0.6962827590512637,
+          -0.7174553079673474
+        ],
+        "rows": [
+          {
+            "epsilon": 0.1,
+            "signed_projection": 0.0001324969583075077,
+            "sigma_perp": 0.0001233917988340524,
+            "signed_relative_deviation": 0.07379063729916649,
+            "cosine_to_u_perp": 0.9992941005656268,
+            "relative_vector_residual": 0.0841107881742851
+          },
+          {
+            "epsilon": 0.03,
+            "signed_projection": 0.00012421081251820742,
+            "sigma_perp": 0.0001233917988340524,
+            "signed_relative_deviation": 0.00663750501973385,
+            "cosine_to_u_perp": 0.9999934952410701,
+            "relative_vector_residual": 0.007565672079015158
+          },
+          {
+            "epsilon": 0.01,
+            "signed_projection": 0.0001234827950500962,
+            "sigma_perp": 0.0001233917988340524,
+            "signed_relative_deviation": 0.0007374575693329042,
+            "cosine_to_u_perp": 0.999999918746841,
+            "relative_vector_residual": 0.0008405889453753969
+          },
+          {
+            "epsilon": 0.003,
+            "signed_projection": 0.00012340003433760672,
+            "sigma_perp": 0.0001233917988340524,
+            "signed_relative_deviation": 6.674271411981579e-05,
+            "cosine_to_u_perp": 0.999999999333443,
+            "relative_vector_residual": 7.607812563487696e-05
+          },
+          {
+            "epsilon": 0.001,
+            "signed_projection": 0.00012339318566835896,
+            "sigma_perp": 0.0001233917988340524,
+            "signed_relative_deviation": 1.1239274568088821e-05,
+            "cosine_to_u_perp": 0.9999999999809419,
+            "relative_vector_residual": 1.2823349465509008e-05
+          }
+        ],
+        "quadratic_fit": {
+          "quadratic_coefficient": 0.0009105102692471521,
+          "intercept": 0.00012339181356347314,
+          "max_abs_fit_residual": 4.61594616560845e-10
+        },
+        "note": "replay along the leading transverse RIGHT singular vector of B = (I-P)A; the signed projection must approach sigma_perp and the full projected vector must approach B v_perp"
+      },
+      "total_sigma3_replay": {
+        "direction": "v3(A)",
+        "rows": [
+          {
+            "epsilon": 0.1,
+            "norm": 6.0063852095399344e-05
+          },
+          {
+            "epsilon": 0.03,
+            "norm": 5.963488133939722e-05
+          },
+          {
+            "epsilon": 0.01,
+            "norm": 5.963290072833628e-05
+          },
+          {
+            "epsilon": 0.003,
+            "norm": 5.96331404833912e-05
+          },
+          {
+            "epsilon": 0.001,
+            "norm": 5.963329222517949e-05
+          }
+        ]
+      },
+      "replay_admissible_count": 5,
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.3499752958304607,
+          1.6568681658850621,
+          1.000054083213667,
+          1.0,
+          0.5315364330555431
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.421099194125982,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 308809415.1471431,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.782706995916222e-07
+        ]
+      },
+      "budget_note": "",
+      "variants": {
+        "Radau_eps1e-05": {
+          "nfev": 3024,
+          "endpoint": [
+            2630.4064674682827,
+            0.004267837757483147,
+            0.0009426294434940281,
+            0.005449261671037061,
+            0.026503942936350826,
+            0.01996499572406186,
+            0.19773892645200755,
+            8.365171073405301e-06,
+            4.3534353443567673e-07,
+            0.0,
+            0.7451236055009568
+          ]
+        },
+        "Radau_eps1e-06": {
+          "nfev": 12709,
+          "endpoint": [
+            2630.406467468281,
+            0.0042678377574831535,
+            0.0009426294434940214,
+            0.005449261671037016,
+            0.026503942936350763,
+            0.019964995724061928,
+            0.1977389264520074,
+            8.36517107340531e-06,
+            4.3534353443567525e-07,
+            0.0,
+            0.7451236055009502
+          ]
+        },
+        "Radau_eps1e-07": {
+          "nfev": 42100,
+          "endpoint": [
+            2630.4064674682727,
+            0.004267837757483134,
+            0.0009426294434940178,
+            0.005449261671037002,
+            0.02650394293635082,
+            0.019964995724061897,
+            0.19773892645200764,
+            8.365171073405323e-06,
+            4.353435344356654e-07,
+            0.0,
+            0.7451236055009246
+          ]
+        },
+        "LSODA_eps1e-05": {
+          "nfev": 4333,
+          "endpoint": [
+            2630.4064674679,
+            0.004267837757482395,
+            0.0009426294434953857,
+            0.005449261671049457,
+            0.026503942936334197,
+            0.019964995724080618,
+            0.1977389264519923,
+            8.365171073388618e-06,
+            4.3534353444680166e-07,
+            0.0,
+            0.7451236055009549
+          ]
+        },
+        "LSODA_eps1e-06": {
+          "nfev": 3810,
+          "endpoint": [
+            2630.406467467936,
+            0.00426783775748303,
+            0.0009426294434951413,
+            0.005449261671046309,
+            0.02650394293634302,
+            0.01996499572407505,
+            0.19773892645199181,
+            8.365171073401146e-06,
+            4.353435344352698e-07,
+            0.0,
+            0.7451236055009531
+          ]
+        },
+        "LSODA_eps1e-07": {
+          "nfev": 6369,
+          "endpoint": [
+            2630.4064674688707,
+            0.004267837757477782,
+            0.0009426294434926187,
+            0.005449261671034872,
+            0.02650394293629654,
+            0.019964995724067295,
+            0.19773892645206598,
+            8.365171073398839e-06,
+            4.353435344357321e-07,
+            0.0,
+            0.7451236055009495
+          ]
+        }
+      },
+      "role": "primary",
+      "init": "hot",
+      "wall_seconds": 190.7955916505307,
+      "matrices_npz": "primary_hot_g1e+04_T1e-05.npz"
+    },
+    {
+      "label": "secondary_hot_g1e+04_T1e-06",
+      "status": "completed",
+      "gamma": 10000.0,
+      "T": 1e-06,
+      "m": 3,
+      "theta": [
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "durations": [
+        3.333333333333333e-07,
+        3.333333333333333e-07,
+        3.333333333333333e-07
+      ],
+      "horizon": 1e-06,
+      "q0": [
+        2763.3197351403796,
+        0.003564257635288794,
+        0.0006278060227178588,
+        0.003917047688526132,
+        0.020536341631516505,
+        0.018726720094245666,
+        0.2074951058759479,
+        8.544967284126894e-06,
+        5.705835645227245e-07,
+        0.0,
+        0.7451236055009086
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 1e-06
+      },
+      "primary_setting": "Radau_eps1e-05",
+      "reference_setting": "Radau_eps1e-05",
+      "settings_run": [
+        "LSODA_eps1e-05",
+        "LSODA_eps1e-06",
+        "LSODA_eps1e-07",
+        "Radau_eps1e-05",
+        "Radau_eps1e-06",
+        "Radau_eps1e-07"
+      ],
+      "settings_failed": [],
+      "cross_check_available": true,
+      "cross_check_methods": [
+        "LSODA",
+        "Radau"
+      ],
+      "delta_A_norm": 1.2321719944043026e-10,
+      "delta_P_norm_times_A": 1.6829854396325713e-09,
+      "operator_error_bound_note": "||Bhat-B|| <= ||Ahat-A|| + ||Phat-P||*||Ahat||; delta_A and delta_P are empirical spreads, not certified bounds",
+      "endpoint_3segment": [
+        2748.9351269103913,
+        0.003720340289419608,
+        0.0006517982549115284,
+        0.003912992331842341,
+        0.02208712818402822,
+        0.018476260720949735,
+        0.20601854898270305,
+        8.754298194187883e-06,
+        5.714370376587799e-07,
+        0.0,
+        0.7451236055009103
+      ],
+      "endpoint_reference_1segment": [
+        2748.9351269103845,
+        0.0037203402894197737,
+        0.0006517982549113954,
+        0.003912992331843144,
+        0.02208712818402663,
+        0.01847626072095197,
+        0.2060185489827016,
+        8.75429819418508e-06,
+        5.714370376585535e-07,
+        0.0,
+        0.7451236055009127
+      ],
+      "endpoint_3_vs_reference_max_abs_diff": 6.821210263296962e-12,
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          0.14970797311244388,
+          0.011197743893412108,
+          0.0011076399829738587
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": 3,
+        "rank_application_effective": 3,
+        "noise_scale_refinement_discrepancy": 1.2321719944043026e-10,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": true
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          0.1497079731124439,
+          0.011197743893412108,
+          0.0011076399829738589
+        ],
+        "total_right_singular_vectors": [
+          [
+            0.5155363775827303,
+            0.5657158331479399,
+            0.643574268841296
+          ],
+          [
+            -0.7408522683616423,
+            -0.08309972899126063,
+            0.6665075779801668
+          ],
+          [
+            0.4305347371029262,
+            -0.820402359313594,
+            0.37627092497348646
+          ]
+        ],
+        "total_left_singular_vectors": [
+          [
+            -0.5497897399238539,
+            0.6860041968660614,
+            0.44717708497507164
+          ],
+          [
+            0.06050051570507354,
+            0.055643286024671126,
+            0.11733964221425412
+          ],
+          [
+            0.008995312325517962,
+            -0.03391879471503247,
+            -0.08383527413097026
+          ],
+          [
+            -0.002757125751959528,
+            -0.2136322815716772,
+            0.06898140545895658
+          ],
+          [
+            0.6005751118453988,
+            0.5704168819811782,
+            -0.09148038557639981
+          ],
+          [
+            -0.09855238131437745,
+            -0.3923675004105754,
+            0.6135223515856842
+          ],
+          [
+            -0.5688403722148381,
+            0.0136052781314725,
+            -0.6242586627894975
+          ],
+          [
+            7.870971433074299e-05,
+            0.00022651512113725316,
+            -0.00024508525834448337
+          ],
+          [
+            2.2968887570649468e-07,
+            2.6615385516931727e-05,
+            -2.3991065507285907e-05
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.972173889566377e-12,
+            -2.356236359026253e-12,
+            -2.0791043450965557e-12
+          ]
+        ],
+        "singular_values_transverse_scaled": [
+          0.0015531924760664383,
+          7.765707259345675e-07,
+          2.3566124076360545e-13
+        ],
+        "transverse_right_singular_vector": [
+          0.17788938886211594,
+          0.6011759647098571,
+          -0.7790653533468392
+        ],
+        "transverse_left_singular_vector": [
+          -0.5114240139960577,
+          -0.12230023319713469,
+          0.08676664244304581,
+          -0.0482762896707079,
+          0.03523757852772172,
+          -0.5721647275079674,
+          0.6204956641353853,
+          0.00022017810824985972,
+          2.1187289157949177e-05,
+          0.0,
+          2.0123685107345173e-12
+        ],
+        "per_total_vector_projection": [
+          {
+            "i": 0,
+            "sigma_i_total": 0.1497079731124439,
+            "norm_ImP_ui": 0.000721912892798909,
+            "projected_strength": 0.00010807611594466568
+          },
+          {
+            "i": 1,
+            "sigma_i_total": 0.011197743893412108,
+            "norm_ImP_ui": 0.09723284508003223,
+            "projected_strength": 0.0010887884972340164
+          },
+          {
+            "i": 2,
+            "sigma_i_total": 0.0011076399829738589,
+            "norm_ImP_ui": 0.9952614038824925,
+            "projected_strength": 0.001102391324450943
+          }
+        ],
+        "reference_basis_singular_values": [
+          0.3415789936252593,
+          0.02452169959623091
+        ],
+        "reference_basis_retained": [
+          true,
+          true
+        ],
+        "reference_rank": 2,
+        "reference_threshold_used": 3.415789936252593e-09,
+        "reference_is_resolved": true,
+        "reference_residual": 6.235397435717159e-17,
+        "reference_conditioning": 13.929662268506114,
+        "singular_values_manifold_leakage_scaled": [
+          4.2025776894471994e-13,
+          2.7079667158028794e-13,
+          1.6929516302367992e-15
+        ],
+        "noise_scale_refinement_discrepancy": 1.2321719944043026e-10,
+        "inequality_sigma3_lower_bound_for_transverse": 0.0011076399829738589,
+        "note": "total = SVD of A = W J; transverse = SVD of B = (I-P) A with P the projector onto the rank-revealed reference span; leakage = SVD of (I - N N^T) A with N the basis of null(C W^-1). For ANY rank<=2 projector, ||(I-P)A||_2 >= sigma3(A), so a stable sigma3(A) is evidence for a third direction independent of the reference-plane construction.",
+        "transverse_above_leakage_floor": true,
+        "transverse_geq_sigma3_total": true
+      },
+      "transverse_replay": {
+        "available": true,
+        "sigma_perp": 0.0015531924760664344,
+        "u_perp": [
+          -0.5114240139960591,
+          -0.12230023319713502,
+          0.08676664244304619,
+          -0.04827628967070691,
+          0.03523757852771965,
+          -0.5721647275079681,
+          0.6204956641353834,
+          0.00022017810824985932,
+          2.118728915794919e-05,
+          0.0,
+          2.0123685107345096e-12
+        ],
+        "v_perp": [
+          0.1778893888621162,
+          0.6011759647098575,
+          -0.7790653533468389
+        ],
+        "rows": [
+          {
+            "epsilon": 0.1,
+            "signed_projection": 0.0015545968234228868,
+            "sigma_perp": 0.0015531924760664344,
+            "signed_relative_deviation": 0.0009041682715390213,
+            "cosine_to_u_perp": 0.9999999999826223,
+            "relative_vector_residual": 0.0009041875256322752
+          },
+          {
+            "epsilon": 0.03,
+            "signed_projection": 0.0015533188224738273,
+            "sigma_perp": 0.0015531924760664344,
+            "signed_relative_deviation": 8.134626541122652e-05,
+            "cosine_to_u_perp": 0.9999999999998593,
+            "relative_vector_residual": 8.13479942244046e-05
+          },
+          {
+            "epsilon": 0.01,
+            "signed_projection": 0.0015532065104403175,
+            "sigma_perp": 0.0015531924760664344,
+            "signed_relative_deviation": 9.035824020102645e-06,
+            "cosine_to_u_perp": 0.9999999999999982,
+            "relative_vector_residual": 9.03601757592686e-06
+          },
+          {
+            "epsilon": 0.003,
+            "signed_projection": 0.0015531937319326165,
+            "sigma_perp": 0.0015531924760664344,
+            "signed_relative_deviation": 8.085708638501705e-07,
+            "cosine_to_u_perp": 0.9999999999999999,
+            "relative_vector_residual": 8.085880987039656e-07
+          },
+          {
+            "epsilon": 0.001,
+            "signed_projection": 0.0015531926119583769,
+            "sigma_perp": 0.0015531924760664344,
+            "signed_relative_deviation": 8.749201695285418e-08,
+            "cosine_to_u_perp": 1.0,
+            "relative_vector_residual": 8.759947010925726e-08
+          }
+        ],
+        "quadratic_fit": {
+          "quadratic_coefficient": 0.00014043610908827983,
+          "intercept": 0.001553192459733392,
+          "max_abs_fit_residual": 2.9757744228822713e-11
+        },
+        "note": "replay along the leading transverse RIGHT singular vector of B = (I-P)A; the signed projection must approach sigma_perp and the full projected vector must approach B v_perp"
+      },
+      "total_sigma3_replay": {
+        "direction": "v3(A)",
+        "rows": [
+          {
+            "epsilon": 0.1,
+            "norm": 0.0011101369540070425
+          },
+          {
+            "epsilon": 0.03,
+            "norm": 0.001107735822932616
+          },
+          {
+            "epsilon": 0.01,
+            "norm": 0.0011076493700075602
+          },
+          {
+            "epsilon": 0.003,
+            "norm": 0.0011076408096674605
+          },
+          {
+            "epsilon": 0.001,
+            "norm": 0.0011076400641366936
+          }
+        ]
+      },
+      "replay_admissible_count": 5,
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.350060402805065,
+          1.658845615096808,
+          1.0000584010800662,
+          0.9999999999999999,
+          0.526735633591636
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.461555765234223,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 314664621.1962435,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.748053621410952e-07
+        ]
+      },
+      "budget_note": "",
+      "variants": {
+        "Radau_eps1e-05": {
+          "nfev": 1355,
+          "endpoint": [
+            2748.9351269103913,
+            0.003720340289419608,
+            0.0006517982549115284,
+            0.003912992331842341,
+            0.02208712818402822,
+            0.018476260720949735,
+            0.20601854898270305,
+            8.754298194187883e-06,
+            5.714370376587799e-07,
+            0.0,
+            0.7451236055009103
+          ]
+        },
+        "Radau_eps1e-06": {
+          "nfev": 1362,
+          "endpoint": [
+            2748.9351269103895,
+            0.0037203402894196093,
+            0.0006517982549115283,
+            0.003912992331842338,
+            0.022087128184028196,
+            0.018476260720949725,
+            0.20601854898270328,
+            8.754298194187826e-06,
+            5.71437037658781e-07,
+            0.0,
+            0.7451236055009101
+          ]
+        },
+        "Radau_eps1e-07": {
+          "nfev": 2322,
+          "endpoint": [
+            2748.9351269103895,
+            0.003720340289419608,
+            0.0006517982549115294,
+            0.003912992331842339,
+            0.022087128184028196,
+            0.018476260720949697,
+            0.20601854898270308,
+            8.754298194187854e-06,
+            5.714370376587857e-07,
+            0.0,
+            0.7451236055009087
+          ]
+        },
+        "LSODA_eps1e-05": {
+          "nfev": 2138,
+          "endpoint": [
+            2748.9351269103604,
+            0.003720340289416408,
+            0.0006517982549118376,
+            0.003912992331850552,
+            0.022087128183986907,
+            0.01847626072097134,
+            0.20601854898271726,
+            8.754298194178708e-06,
+            5.714370376533002e-07,
+            0.0,
+            0.7451236055009086
+          ]
+        },
+        "LSODA_eps1e-06": {
+          "nfev": 1807,
+          "endpoint": [
+            2748.9351269100957,
+            0.003720340289383896,
+            0.0006517982549151543,
+            0.003912992331932503,
+            0.022087128183572058,
+            0.018476260721186643,
+            0.20601854898286434,
+            8.754298194051612e-06,
+            5.714370376464502e-07,
+            0.0,
+            0.7451236055009086
+          ]
+        },
+        "LSODA_eps1e-07": {
+          "nfev": 1619,
+          "endpoint": [
+            2748.9351269101917,
+            0.003720340289396149,
+            0.0006517982549137864,
+            0.003912992331902395,
+            0.022087128183724984,
+            0.018476260721109188,
+            0.20601854898280786,
+            8.754298194096937e-06,
+            5.714370376505366e-07,
+            0.0,
+            0.7451236055009086
+          ]
+        }
+      },
+      "role": "secondary",
+      "init": "hot",
+      "wall_seconds": 18.87614326365292,
+      "matrices_npz": "secondary_hot_g1e+04_T1e-06.npz"
+    },
+    {
+      "label": "negative_fresh_g1e+04_T1e-04",
+      "status": "completed",
+      "gamma": 10000.0,
+      "T": 0.0001,
+      "m": 3,
+      "theta": [
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "durations": [
+        3.3333333333333335e-05,
+        3.3333333333333335e-05,
+        3.3333333333333335e-05
+      ],
+      "horizon": 0.0001,
+      "q0": [
+        1200.0,
+        0.028522387527567396,
+        0.0,
+        0.0,
+        0.22635400697100735,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.7451236055014253
+      ],
+      "time_reference": {
+        "tau": "t/T_ref",
+        "T_ref": 0.0001
+      },
+      "primary_setting": "Radau_eps1e-05",
+      "reference_setting": "Radau_eps1e-05",
+      "settings_run": [
+        "Radau_eps1e-05",
+        "Radau_eps1e-06",
+        "Radau_eps1e-07"
+      ],
+      "settings_failed": [],
+      "cross_check_available": false,
+      "cross_check_methods": [
+        "Radau"
+      ],
+      "delta_A_norm": 0.001189820083293642,
+      "delta_P_norm_times_A": 3.705379319200239e-08,
+      "operator_error_bound_note": "||Bhat-B|| <= ||Ahat-A|| + ||Phat-P||*||Ahat||; delta_A and delta_P are empirical spreads, not certified bounds",
+      "endpoint_3segment": [
+        2206.113531075658,
+        0.00537382250707344,
+        0.0023440513721305987,
+        0.012001534542254513,
+        0.03953496385539386,
+        0.020626755357620777,
+        0.17498057194048416,
+        1.4107658304484449e-05,
+        5.872653127303793e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "endpoint_reference_1segment": [
+        2206.1135309245074,
+        0.005373822507300223,
+        0.0023440513727203205,
+        0.012001534544553957,
+        0.0395349638600842,
+        0.020626755356530555,
+        0.17498057193376432,
+        1.4107658308568867e-05,
+        5.872653129334081e-07,
+        0.0,
+        0.7451236055014253
+      ],
+      "endpoint_3_vs_reference_max_abs_diff": 1.511507434770465e-07,
+      "classification": {
+        "stencil_complete": true,
+        "n_valid_columns": 3,
+        "singular_values_scaled": [
+          1.7482929919079537,
+          0.008803359444661438,
+          7.579995979153682e-12
+        ],
+        "rank_machine": 3,
+        "rank_derivative_noise_resolved": null,
+        "rank_application_effective": 2,
+        "noise_scale_refinement_discrepancy": null,
+        "noise_scale_is_certified_bound": false,
+        "application_threshold": 1e-06,
+        "component_bound_at_threshold": {
+          "sigma_scaled": 1e-06,
+          "temperature_K_per_unit_log_control": 9.999999999999999e-05,
+          "mass_fraction_per_unit_log_control": 1e-08
+        },
+        "full_rank_claim_valid": false
+      },
+      "spectra": {
+        "singular_values_total_scaled": [
+          1.7482929919079537,
+          0.008803359444661438,
+          7.579995979153682e-12
+        ],
+        "total_right_singular_vectors": [
+          [
+            0.010058852810720676,
+            0.08506599139311073,
+            0.9963245438050996
+          ],
+          [
+            -0.11699790485474106,
+            -0.9894311935895496,
+            0.08565864469836353
+          ],
+          [
+            0.9930812201122993,
+            -0.117429511879539,
+            2.473240385371241e-11
+          ]
+        ],
+        "total_left_singular_vectors": [
+          [
+            -0.845790212342057,
+            0.4257936713483645,
+            -0.2687452642606571
+          ],
+          [
+            0.01777140692135463,
+            0.08126556273038005,
+            -0.01877706146366894
+          ],
+          [
+            0.03210975536079586,
+            -0.03207620718791281,
+            -0.04595640439685129
+          ],
+          [
+            0.11566083606589184,
+            -0.28776866333427203,
+            -0.24121657568386717
+          ],
+          [
+            0.31430811703119393,
+            0.7597852621790496,
+            0.38923138812879665
+          ],
+          [
+            -0.07290391089250009,
+            -0.1737132944773525,
+            -0.2010973020988241
+          ],
+          [
+            -0.40719773807238896,
+            -0.3475715900420411,
+            0.8216962669296382
+          ],
+          [
+            0.0002402933489013477,
+            8.672518221247487e-05,
+            0.0001545815108573995
+          ],
+          [
+            1.124023617437622e-05,
+            -7.795307386360996e-06,
+            3.5887166919914924e-06
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "singular_values_transverse_scaled": [
+          1.6862651034325752e-10,
+          2.0054360729637585e-11,
+          2.5257540653922222e-12
+        ],
+        "transverse_right_singular_vector": [
+          0.06422903487557954,
+          0.20788434456480714,
+          -0.9760423814383328
+        ],
+        "transverse_left_singular_vector": [
+          -0.21619729292641612,
+          -0.04433380710966913,
+          0.007709700637266495,
+          -0.18610337791727097,
+          0.22085187363491515,
+          -0.6373127640098399,
+          0.6794523832062811,
+          0.000826360673885956,
+          6.440298296237019e-05,
+          0.0,
+          0.0
+        ],
+        "per_total_vector_projection": [
+          {
+            "i": 0,
+            "sigma_i_total": 1.7482929919079537,
+            "norm_ImP_ui": 9.209138611025965e-11,
+            "projected_strength": 1.6100272495165641e-10
+          },
+          {
+            "i": 1,
+            "sigma_i_total": 0.008803359444661438,
+            "norm_ImP_ui": 6.079198298569828e-09,
+            "projected_strength": 5.351736775768444e-11
+          },
+          {
+            "i": 2,
+            "sigma_i_total": 7.579995979153682e-12,
+            "norm_ImP_ui": 0.9999999999999998,
+            "projected_strength": 7.57999597915368e-12
+          }
+        ],
+        "reference_basis_singular_values": [
+          2.8674658559535517,
+          0.07663038375641851
+        ],
+        "reference_basis_retained": [
+          true,
+          true
+        ],
+        "reference_rank": 2,
+        "reference_threshold_used": 2.867465855953552e-08,
+        "reference_is_resolved": true,
+        "reference_residual": 4.851398522758903e-16,
+        "reference_conditioning": 37.419437504948874,
+        "singular_values_manifold_leakage_scaled": [
+          2.2445004172860597e-11,
+          2.44550573888022e-12,
+          8.449489848451365e-15
+        ],
+        "noise_scale_refinement_discrepancy": null,
+        "inequality_sigma3_lower_bound_for_transverse": 7.579995979153682e-12,
+        "note": "total = SVD of A = W J; transverse = SVD of B = (I-P) A with P the projector onto the rank-revealed reference span; leakage = SVD of (I - N N^T) A with N the basis of null(C W^-1). For ANY rank<=2 projector, ||(I-P)A||_2 >= sigma3(A), so a stable sigma3(A) is evidence for a third direction independent of the reference-plane construction.",
+        "transverse_above_leakage_floor": true,
+        "transverse_geq_sigma3_total": true
+      },
+      "transverse_replay": {
+        "available": true,
+        "sigma_perp": 1.6862655070070036e-10,
+        "u_perp": [
+          -0.2161970173343607,
+          -0.04433371929088106,
+          0.007709730501436783,
+          -0.18610361949778248,
+          0.22085236579095707,
+          -0.6373125881669117,
+          0.6794524150845009,
+          0.0008263604586218493,
+          6.44029868186475e-05,
+          0.0,
+          0.0
+        ],
+        "v_perp": [
+          0.06422902921005368,
+          0.20788434790772506,
+          -0.9760423810991584
+        ],
+        "rows": [
+          {
+            "epsilon": 0.1,
+            "signed_projection": -0.0002517405587514483,
+            "sigma_perp": 1.6862655070070036e-10,
+            "signed_relative_deviation": -1492889.0280441076,
+            "cosine_to_u_perp": -0.996179782207954,
+            "relative_vector_residual": 1498614.0524849824
+          },
+          {
+            "epsilon": 0.03,
+            "signed_projection": -2.2686893002217717e-05,
+            "sigma_perp": 1.6862655070070036e-10,
+            "signed_relative_deviation": -134540.26981217373,
+            "cosine_to_u_perp": -0.99617738189144,
+            "relative_vector_residual": 135056.53172543104
+          },
+          {
+            "epsilon": 0.01,
+            "signed_projection": -2.5213449856749217e-06,
+            "sigma_perp": 1.6862655070070036e-10,
+            "signed_relative_deviation": -14953.241952396465,
+            "cosine_to_u_perp": -0.9961761026254267,
+            "relative_vector_residual": 15010.633441284006
+          },
+          {
+            "epsilon": 0.003,
+            "signed_projection": -2.272438472349546e-07,
+            "sigma_perp": 1.6862655070070036e-10,
+            "signed_relative_deviation": -1348.6160562537723,
+            "cosine_to_u_perp": -0.9961644102785788,
+            "relative_vector_residual": 1353.801027910502
+          },
+          {
+            "epsilon": 0.001,
+            "signed_projection": -2.5569028521444148e-08,
+            "sigma_perp": 1.6862655070070036e-10,
+            "signed_relative_deviation": -152.63109495625798,
+            "cosine_to_u_perp": -0.9960686385626232,
+            "relative_vector_residual": 153.22565864081218
+          }
+        ],
+        "quadratic_fit": {
+          "quadratic_coefficient": -0.0251734027809664,
+          "intercept": -8.48899933145307e-09,
+          "max_abs_fit_residual": 2.2341500016505246e-08
+        },
+        "note": "replay along the leading transverse RIGHT singular vector of B = (I-P)A; the signed projection must approach sigma_perp and the full projected vector must approach B v_perp"
+      },
+      "total_sigma3_replay": {
+        "direction": "v3(A)",
+        "rows": [
+          {
+            "epsilon": 0.1,
+            "norm": 0.0012205511226102317
+          },
+          {
+            "epsilon": 0.03,
+            "norm": 0.0011856004437330256
+          },
+          {
+            "epsilon": 0.01,
+            "norm": 0.0011825299892291791
+          },
+          {
+            "epsilon": 0.003,
+            "norm": 0.001182180738055016
+          },
+          {
+            "epsilon": 0.001,
+            "norm": 0.0011821500359701965
+          }
+        ]
+      },
+      "replay_admissible_count": 5,
+      "tangent_space": {
+        "n_constraints": 5,
+        "singular_values_CWinverse": [
+          2.34968438149959,
+          1.6497226372488298,
+          1.0000391571157978,
+          0.9999999999999999,
+          0.5491005567771182
+        ],
+        "rank_CWinverse": 5,
+        "conditioning": 4.2791513366709895,
+        "tangent_dimension": 6,
+        "conditioning_CWinverse_before_equilibration": 288714622.54199725,
+        "row_equilibration_scales": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          3.912186712298845e-07
+        ]
+      },
+      "budget_note": "reduced budget",
+      "variants": {
+        "Radau_eps1e-05": {
+          "nfev": 17695,
+          "endpoint": [
+            2206.113531075658,
+            0.00537382250707344,
+            0.0023440513721305987,
+            0.012001534542254513,
+            0.03953496385539386,
+            0.020626755357620777,
+            0.17498057194048416,
+            1.4107658304484449e-05,
+            5.872653127303793e-07,
+            0.0,
+            0.7451236055014253
+          ]
+        },
+        "Radau_eps1e-06": {
+          "nfev": 75119,
+          "endpoint": [
+            2206.113530972982,
+            0.005373822507227854,
+            0.0023440513725311416,
+            0.012001534543816453,
+            0.03953496385858222,
+            0.020626755356879984,
+            0.17498057193591648,
+            1.4107658307259357e-05,
+            5.87265312868288e-07,
+            0.0,
+            0.7451236055014253
+          ]
+        },
+        "Radau_eps1e-07": {
+          "nfev": 265458,
+          "endpoint": [
+            2206.113531154164,
+            0.005373822506957074,
+            0.0023440513718238566,
+            0.012001534541058815,
+            0.03953496385296795,
+            0.020626755358185197,
+            0.17498057194396796,
+            1.4107658302365032e-05,
+            5.872653126249037e-07,
+            0.0,
+            0.7451236055014253
+          ]
+        }
+      },
+      "role": "negative",
+      "init": "fresh",
+      "wall_seconds": 962.7668063202873,
+      "matrices_npz": "negative_fresh_g1e+04_T1e-04.npz"
+    }
+  ],
+  "wall_seconds": 1223.1656228341162,
+  "complete": true
+}
