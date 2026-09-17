@@ -399,3 +399,52 @@ The FSA is no longer too slow to use: the multi-segment `endpoint_jacobian_fsa`
 makes it tractable by integrating the (state, sensitivity) pair in one system,
 which costs one state-Jacobian FD pass per RHS evaluation regardless of segment
 count. 76 tests pass on the server (34 in test_sensitivity alone).
+
+
+## Revision 5 - flagship validation and a finite local patch (branch
+`flagship-validation`)
+
+The assignment was to retain and validate the single most consequential result
+rather than sweep again. It survives.
+
+Repairs, each with a regression test (46 in test_sensitivity, 88 in the whole
+suite on the server):
+* The tangent-linear estimator now integrates each segment as its own solve_ivp
+  call with the segment index fixed inside the RHS closure, instead of one call
+  with a searchsorted control selector (the parameter-forcing column changes
+  discontinuously at every boundary). The review's exact benchmark reproduces
+  the endpoint 1.09999 and sensitivities (0.499995, 0.1, 0.499995). Sensitivity
+  absolute tolerances now map the per-state vector as np.repeat(atol_state, m)
+  for the row-major (n, m) block.
+* The replay perturbs along the leading transverse RIGHT singular vector of
+  B = (I-P)A, comparing the signed projection, the cosine and the FULL vector -
+  not along v2(A), which maximizes neither ||Bv|| nor sigma1(B) and gives zero on
+  the review counterexample.
+* Signed commutator: [F_a,F_b] = (gamma_b-gamma_a)[r,v]. Phase 7 had the sign
+  backwards and the norm-only comparison concealed it.
+* Ignition time by dense-output root finding, not a 400-point grid lookup that
+  quantizes to T/399 and depends on the horizon.
+* One rank-revealing reference-basis routine everywhere; an unresolved reference
+  span yields transversality UNRESOLVED, never a fabricated projector.
+
+Flagship (hot, gamma=1e4, horizon 1e-5): total (0.9484, 0.1189, 5.963e-5),
+transverse 1.234e-4, and ||(I-P)u2|| = 1.000, so the third total direction is
+entirely transverse. The state Jacobian is itself numerical, so it was varied
+(eps ladder 1e-5/1e-6/1e-7) independently of the integrator and tolerance:
+delta_A = 3.07e-9 and delta_P*||A|| = 1.91e-7 measured separately, combined
+<= 1.94e-7 - a 635x margin over the claim, and 307x over sigma3(A), which the
+exact inequality ||(I-P)A||_2 >= sigma3(A) makes reference-plane independent.
+The replay converges (reldev 0.074 -> 0.000, cosine +1.0000, vector residual
+1.3e-5 with O(eps^2) behaviour). The secondary anchor at horizon 1e-6 has an
+8.6e5 margin. The fresh negative case is correctly unresolved: delta_A = 1.19e-3
+dwarfs the signal and the replay diverges (cosine -0.996). A = WJ and D = WV are
+persisted as NPZ so the patch is built on the validated matrices.
+
+Local patch (phase 10): 32 finite excursions at radii 0.003-0.1. ||W R|| grows as
+r^2 so the linear model holds; L = 1.60 (EMPIRICAL, not certified). Distance to
+the CONTINUOUS constant-control family, by global grid + local refinement + replay
+(an upper estimate, not a global exclusion): the in-family direction sits
+essentially ON the curved family (gap closed ~180x) while the transverse
+direction stays off it at 1.21e-5/1.26e-5 scaled units = 1.2e-3 K in both signs.
+That is a genuine but application-small excursion - the honest conclusion, since
+one scaled unit is 100 K.

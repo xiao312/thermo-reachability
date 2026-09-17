@@ -100,7 +100,7 @@ Local model check `E(η₀+dη) = E₀ + J dη + R`, transverse direction:
 
 The residual grows as r² (a ×11 step for a ×3.3 radius), so the linear model
 holds with a clean second-order correction.  The least-squares scale
-`L = 2 Σ n²‖R‖ / Σ n⁴` in the physical control norm
+`L = 2 Σ n²‖R‖ / Σ n⁴ = 1.60` in the physical control norm
 `n = √(Σⱼ (durⱼ/T) dηⱼ²)` is recorded, and the resulting containing shell is
 labelled **EMPIRICAL**, not certified: L is estimated from samples, not bounded.
 
@@ -120,18 +120,28 @@ the nearest candidate.  This is an **upper estimate** of the distance to the
 continuous family: a grid plus a local minimizer can overestimate the minimum, so
 it is not a certified global exclusion.
 
-| direction, sign | tangent-plane distance | curved-family distance (upper est.) | nearest (γ, t) |
-|---|---|---|---|
-| v1 +1 | 1.63e-4 | 9.09e-7 | 1.07e4, 9.92e-6 |
-| v1 −1 | 1.49e-4 | 8.48e-7 | 9.37e3, 1.01e-5 |
-| v2 +1 | 1.05e-5 | 1.12e-5 | 1.08e4, 9.23e-6 |
+| direction, sign | tangent-plane distance | curved-family distance (upper est.) | ratio | nearest (γ, t) |
+|---|---|---|---|---|
+| v1 +1 | 1.63e-4 | 9.09e-7 | **0.006** | 1.07e4, 9.92e-6 |
+| v1 −1 | 1.49e-4 | 8.48e-7 | **0.006** | 9.37e3, 1.01e-5 |
+| v2 +1 | 1.05e-5 | 1.12e-5 | 1.07 | 1.08e4, 9.23e-6 |
+| v2 −1 | 1.60e-5 | 1.03e-5 | 0.65 | 9.30e3, 1.09e-5 |
+| v3 +1 | 5.58e-6 | 5.72e-6 | 1.03 | 1e4, 1.00e-5 |
+| v3 −1 | 6.34e-6 | 6.20e-6 | 0.98 | 1e4, 1.00e-5 |
+| v_transverse +1 | 1.27e-5 | **1.21e-5** | 0.95 | 9.34e3, 1.08e-5 |
+| v_transverse −1 | 1.41e-5 | **1.26e-5** | 0.90 | 1.07e4, 9.32e-6 |
 
-The in-family direction (v1) sits essentially ON the curved family — 180× closer
-to it than to the tangent plane, i.e. the family curves to meet it, and the
-nearest point is the base point with γ and t nudged.  The second direction (v2)
-is different: the curved-family distance (1.12e-5) is no smaller than the
-tangent-plane distance (1.05e-5), so the family does **not** curve to meet it — a
-genuine, if small, off-family excursion.
+The in-family direction (v1) sits essentially ON the curved family — the family
+closes the gap by a factor of ~180, i.e. it curves to meet it, and the nearest
+point is the base point with γ and t nudged.  Every other direction is different:
+the curved-family distance is no smaller than the tangent-plane distance (ratios
+0.65–1.07), so the family does **not** curve to meet them.  The transverse
+direction is off the continuous constant-control family by
+
+    1.21e-5 / 1.26e-5 scaled units = **1.2e-3 K and ~1e-7 in mass fraction**
+
+at control radius r = 0.1 (a 10 % change in each segment level), in both signs,
+with the nearest family candidate confirmed by fresh integration.
 
 ## 4. What changed relative to Revision 4
 

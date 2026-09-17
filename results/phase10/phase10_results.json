@@ -1,0 +1,1353 @@
+{
+  "timestamp_utc": "2026-09-17T05:39:13.732863+00:00",
+  "mechanism": {
+    "mechanism": "h2o2.yaml",
+    "path": "/data2/kexiao/conda-envs/tr/lib/python3.12/site-packages/cantera/data/h2o2.yaml",
+    "sha256": "0efc6c52862741a29e0c29b65d979c7d8cb409db5282bca83b9c5437b3d8c8d4",
+    "phase": "ohmech",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "elements": [
+      "O",
+      "H",
+      "Ar",
+      "N"
+    ],
+    "n_reactions": 29,
+    "input_header": {
+      "description": "Hydrogen-Oxygen submechanism extracted from GRI-Mech 3.0.\nModified from the original to include N2.\n\nRedlich-Kwong coefficients are based on tabulated critical properties or\nestimated according to the method of Joback and Reid, \"Estimation of pure-\ncomponent properties from group-contributions,\" Chem. Eng. Comm. 57 (1987)\n233-243",
+      "generator": "ck2yaml",
+      "input-files": [
+        "h2o2.inp",
+        "gri30_tran.dat"
+      ],
+      "cantera-version": "2.5.0",
+      "date": "Wed, 11 Dec 2019 16:59:04 -0500"
+    }
+  },
+  "config": {
+    "mechanism": "h2o2.yaml",
+    "pressure": 101325.0,
+    "inlet_temperature": 1200.0,
+    "fuel": "H2",
+    "oxidizer": "O2:1,N2:3.76",
+    "equivalence_ratio": 1.0,
+    "reactor_mass": 1.0,
+    "rtol": 1e-08,
+    "atol_T": 1e-06,
+    "atol_Y": 1e-14,
+    "phase": null
+  },
+  "base_endpoint": [
+    2630.4064674682827,
+    0.004267837757483147,
+    0.0009426294434940281,
+    0.005449261671037061,
+    0.026503942936350826,
+    0.01996499572406186,
+    0.19773892645200755,
+    8.365171073405301e-06,
+    4.3534353443567673e-07,
+    0.0,
+    0.7451236055009568
+  ],
+  "singular_values_total": [
+    0.9484054527007658,
+    0.11890151833046522,
+    5.9633056703605776e-05
+  ],
+  "singular_values_transverse": [
+    0.0001233917988340524,
+    2.4389547799222086e-09,
+    6.929279818507764e-13
+  ],
+  "radii": [
+    0.003,
+    0.01,
+    0.03,
+    0.1
+  ],
+  "control_norm": {
+    "definition": "sqrt(sum_j (duration_j/T) deta_j^2)",
+    "weights": [
+      0.33333333333333337,
+      0.33333333333333337,
+      0.33333333333333337
+    ]
+  },
+  "directions": {
+    "v1_total": [
+      0.5228819746241041,
+      0.5515494428342635,
+      0.6499135732714094
+    ],
+    "v2_total": [
+      -0.4632326106989872,
+      -0.4561702171491513,
+      0.7598185845128407
+    ],
+    "v3_total": [
+      0.7155487327905754,
+      -0.6983566031013884,
+      0.016972504426033003
+    ],
+    "v_transverse": [
+      0.02117074673786534,
+      0.6962827590512637,
+      -0.7174553079673474
+    ]
+  },
+  "cases": [
+    {
+      "direction": "v1_total",
+      "radius": 0.003,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10015.698768924567,
+        10016.560180143939,
+        10019.516427001743
+      ],
+      "control_norm_of_deta": 0.0017320508075688778,
+      "endpoint": [
+        2630.1879720922716,
+        0.004268896785164941,
+        0.0009431895425420107,
+        0.00545190284871947,
+        0.026513472340584727,
+        0.019966438658405864,
+        0.19772369368904183,
+        8.365422831929352e-06,
+        4.3521175147567516e-07,
+        0.0,
+        0.7451236055009576
+      ],
+      "finite_deviation": {
+        "dT_K": -0.2184953760111057,
+        "dY_max_abs": 1.523276296572229e-05
+      },
+      "scaled_displacement_norm": 0.0028473532196262334,
+      "local_model_residual_norm": 2.141618942373355e-06,
+      "tangent_plane_distance_scaled": 1.1533731956996855e-07
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.003,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9984.32583758084,
+        9983.467198473234,
+        9980.521587899062
+      ],
+      "control_norm_of_deta": 0.0017320508075688778,
+      "endpoint": [
+        2630.624621202647,
+        0.004266780063016871,
+        0.0009420703572348572,
+        0.00544662501258493,
+        0.02649442741281572,
+        0.019963553248513587,
+        0.19775413800721084,
+        8.36492227836489e-06,
+        4.3547538735230686e-07,
+        0.0,
+        0.7451236055009572
+      ],
+      "finite_deviation": {
+        "dT_K": 0.2181537343644777,
+        "dY_max_abs": 1.5211555203287208e-05
+      },
+      "scaled_displacement_norm": 0.0028430812802846595,
+      "local_model_residual_norm": 2.1398180739133663e-06,
+      "tangent_plane_distance_scaled": 1.6507641442844002e-07
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.01,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10052.425138818633,
+        10055.307327705204,
+        10065.203009423636
+      ],
+      "control_norm_of_deta": 0.00577350269189626,
+      "endpoint": [
+        2629.6768183080967,
+        0.004271373039307257,
+        0.000944500389191223,
+        0.0054580832116072455,
+        0.026535761691120773,
+        0.019969807259376637,
+        0.19768806798202196,
+        8.36602188199131e-06,
+        4.349045349587101e-07,
+        0.0,
+        0.7451236055009574
+      ],
+      "finite_deviation": {
+        "dT_K": -0.7296491601859998,
+        "dY_max_abs": 5.085846998559296e-05
+      },
+      "scaled_displacement_norm": 0.009507820570666,
+      "local_model_residual_norm": 2.3819126581983925e-05,
+      "tangent_plane_distance_scaled": 1.4795883825423368e-06
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.01,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9947.848267363692,
+        9944.996879853887,
+        9935.219379715867
+      ],
+      "control_norm_of_deta": 0.00577350269189626,
+      "endpoint": [
+        2631.1323206064585,
+        0.004264317289149943,
+        0.0009407697510313356,
+        0.005440490344187806,
+        0.026472278411687665,
+        0.019960189286293107,
+        0.19778954928018871,
+        8.364353193025145e-06,
+        4.3578331123313067e-07,
+        0.0,
+        0.7451236055009577
+      ],
+      "finite_deviation": {
+        "dT_K": 0.7258531381758075,
+        "dY_max_abs": 5.0622828181162705e-05
+      },
+      "scaled_displacement_norm": 0.009460354544162016,
+      "local_model_residual_norm": 2.37524309213377e-05,
+      "tangent_plane_distance_scaled": 1.6314286317296335e-06
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.03,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10158.1013758599,
+        10166.841345061084,
+        10196.887230064172
+      ],
+      "control_norm_of_deta": 0.017320508075688777,
+      "endpoint": [
+        2628.206062365352,
+        0.004278488170066628,
+        0.0009482763113159333,
+        0.005475877995562921,
+        0.026599864359637904,
+        0.019979444822815436,
+        0.19758564098599893,
+        8.367824643126398e-06,
+        4.3402900062148756e-07,
+        0.0,
+        0.7451236055009588
+      ],
+      "finite_deviation": {
+        "dT_K": -2.2004051029307448,
+        "dY_max_abs": 0.00015328546600862358
+      },
+      "scaled_displacement_norm": 0.02866665367707899,
+      "local_model_residual_norm": 0.0002149736274235452,
+      "tangent_plane_distance_scaled": 1.3958862159616644e-05
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.03,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9844.359324631667,
+        9835.896578496215,
+        9806.914379239519
+      ],
+      "control_norm_of_deta": 0.017320508075688777,
+      "endpoint": [
+        2632.5727080836905,
+        0.004257320664764412,
+        0.0009370838569686326,
+        0.005423097275325243,
+        0.02640940959289674,
+        0.019950592483633126,
+        0.19789009114648315,
+        8.362813905562834e-06,
+        4.3666506620081955e-07,
+        0.0,
+        0.745123605500957
+      ],
+      "finite_deviation": {
+        "dT_K": 2.166240615407787,
+        "dY_max_abs": 0.00015116469447559733
+      },
+      "scaled_displacement_norm": 0.02823945708281449,
+      "local_model_residual_norm": 0.00021317288693478104,
+      "tangent_plane_distance_scaled": 1.403960998374867e-05
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.1,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10536.793664790488,
+        10567.043322871736,
+        10671.498013177135
+      ],
+      "control_norm_of_deta": 0.057735026918962595,
+      "endpoint": [
+        2622.936271979895,
+        0.00430386232865442,
+        0.0009618565819358589,
+        0.005539780738738334,
+        0.026829173097543856,
+        0.020013306502225398,
+        0.19721960899522575,
+        8.375260624329964e-06,
+        4.309940916052154e-07,
+        0.0,
+        0.7451236055009601
+      ],
+      "finite_deviation": {
+        "dT_K": -7.470195488387617,
+        "dY_max_abs": 0.0005193174567817982
+      },
+      "scaled_displacement_norm": 0.09724703443401,
+      "local_model_residual_norm": 0.002412093057928815,
+      "tangent_plane_distance_scaled": 0.00016270519877546743
+    },
+    {
+      "direction": "v1_total",
+      "radius": 0.1,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9490.553120932596,
+        9463.385068513548,
+        9370.755621799344
+      ],
+      "control_norm_of_deta": 0.057735026918962595,
+      "endpoint": [
+        2637.4970209864764,
+        0.004233294321220606,
+        0.0009245279292718345,
+        0.0053637647085619695,
+        0.026194137005012347,
+        0.0199171920002717,
+        0.1982346803827658,
+        8.35838094686239e-06,
+        4.397709937809935e-07,
+        0.0,
+        0.7451236055009547
+      ],
+      "finite_deviation": {
+        "dT_K": 7.090553518193701,
+        "dY_max_abs": 0.0004957539307582359
+      },
+      "scaled_displacement_norm": 0.09250010850646481,
+      "local_model_residual_norm": 0.0023454054225317163,
+      "tangent_plane_distance_scaled": 0.0001487565028899837
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.003,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        9986.112673507796,
+        9986.324253322382,
+        10022.820556879078
+      ],
+      "control_norm_of_deta": 0.0017320508075688776,
+      "endpoint": [
+        2630.4200601524317,
+        0.004268054804492363,
+        0.0009425634183993655,
+        0.0054484169669099716,
+        0.02650669235872138,
+        0.019963493311796233,
+        0.19773837245429654,
+        8.365797296811867e-06,
+        4.3538712968764167e-07,
+        0.0,
+        0.7451236055009559
+      ],
+      "finite_deviation": {
+        "dT_K": 0.013592684148989065,
+        "dY_max_abs": 2.7494223705550047e-06
+      },
+      "scaled_displacement_norm": 0.0003568765087375378,
+      "local_model_residual_norm": 2.5858563476174568e-06,
+      "tangent_plane_distance_scaled": 3.207459158267584e-07
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.003,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        10013.906639095974,
+        10013.69447489459,
+        9977.23140232876
+      ],
+      "control_norm_of_deta": 0.0017320508075688776,
+      "endpoint": [
+        2630.392491269408,
+        0.00426762283013867,
+        0.0009426964214020018,
+        0.005450110448500542,
+        0.02650121326875682,
+        0.01996649931491961,
+        0.19773945236958185,
+        8.3645459877926e-06,
+        4.3529975519267045e-07,
+        0.0,
+        0.745123605500956
+      ],
+      "finite_deviation": {
+        "dT_K": -0.013976198874843249,
+        "dY_max_abs": 2.729667594004309e-06
+      },
+      "scaled_displacement_norm": 0.00035655160446753086,
+      "local_model_residual_norm": 2.5842139737222188e-06,
+      "tangent_plane_distance_scaled": 3.2539991004079616e-07
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.01,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        9953.783865676745,
+        9954.486865890463,
+        10076.271253085728
+      ],
+      "control_norm_of_deta": 0.005773502691896258,
+      "endpoint": [
+        2630.450283153143,
+        0.0042685695054785295,
+        0.0009424130686938572,
+        0.005446461839132365,
+        0.026513184638361366,
+        0.019959992268125212,
+        0.19773697042820823,
+        8.367262908631226e-06,
+        4.3548813408085893e-07,
+        0.0,
+        0.7451236055009561
+      ],
+      "finite_deviation": {
+        "dT_K": 0.043815684860419424,
+        "dY_max_abs": 9.241702010540087e-06
+      },
+      "scaled_displacement_norm": 0.0011911722593189466,
+      "local_model_residual_norm": 2.8753095560750245e-05,
+      "tangent_plane_distance_scaled": 1.0534065513817979e-06
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.01,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        10046.430719158609,
+        10045.721225737418,
+        9924.306073973194
+      ],
+      "control_norm_of_deta": 0.005773502691896258,
+      "endpoint": [
+        2630.3583904981265,
+        0.004267129561356569,
+        0.0009428564051429632,
+        0.0054521067623592165,
+        0.026494920732321535,
+        0.019970012275441075,
+        0.1977405704736501,
+        8.36309188052439e-06,
+        4.351968904542824e-07,
+        0.0,
+        0.7451236055009569
+      ],
+      "finite_deviation": {
+        "dT_K": -0.0480769701562167,
+        "dY_max_abs": 9.022204029290881e-06
+      },
+      "scaled_displacement_norm": 0.0011875618441217369,
+      "local_model_residual_norm": 2.869226284830053e-05,
+      "tangent_plane_distance_scaled": 1.105144828080116e-06
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.03,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        9861.991389206964,
+        9864.081088504605,
+        10230.56338740202
+      ],
+      "control_norm_of_deta": 0.017320508075688773,
+      "endpoint": [
+        2630.5250824882437,
+        0.004270104048955258,
+        0.0009420121719428594,
+        0.005440998162017813,
+        0.026532330152503125,
+        0.019950024680638556,
+        0.19773211802735827,
+        8.371484487935007e-06,
+        4.357711388972763e-07,
+        0.0,
+        0.7451236055009569
+      ],
+      "finite_deviation": {
+        "dT_K": 0.11861501996099832,
+        "dY_max_abs": 2.8387216152298694e-05
+      },
+      "scaled_displacement_norm": 0.0035927966550110906,
+      "local_model_residual_norm": 0.0002593305455018414,
+      "tangent_plane_distance_scaled": 3.065777762388026e-06
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.03,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        10139.939901939168,
+        10137.791762127554,
+        9774.632756113979
+      ],
+      "control_norm_of_deta": 0.017320508075688773,
+      "endpoint": [
+        2630.2495000438876,
+        0.004265783435672541,
+        0.0009433419994912343,
+        0.005457932525305192,
+        0.026477531239047628,
+        0.019980084620755272,
+        0.19774292680978364,
+        8.358971455198048e-06,
+        4.3489753170774563e-07,
+        0.0,
+        0.7451236055009576
+      ],
+      "finite_deviation": {
+        "dT_K": -0.156967424395134,
+        "dY_max_abs": 2.641169730319831e-05
+      },
+      "scaled_displacement_norm": 0.003560273683206772,
+      "local_model_residual_norm": 0.00025768802500649444,
+      "tangent_plane_distance_scaled": 3.533997594693224e-06
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.1,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        9547.332841986961,
+        9554.077925716547,
+        10789.430002827336
+      ],
+      "control_norm_of_deta": 0.05773502691896259,
+      "endpoint": [
+        2630.6508383609266,
+        0.004276231373396261,
+        0.0009409460482241747,
+        0.005423309137100449,
+        0.026606388322122965,
+        0.01991555175438702,
+        0.19770514451044532,
+        8.386658328265354e-06,
+        4.3669503816636435e-07,
+        0.0,
+        0.7451236055009566
+      ],
+      "finite_deviation": {
+        "dT_K": 0.24437089264392853,
+        "dY_max_abs": 0.00010244538577213955
+      },
+      "scaled_displacement_norm": 0.012419732364116969,
+      "local_model_residual_norm": 0.002903400973303686,
+      "tangent_plane_distance_scaled": 1.046263287154622e-05
+    },
+    {
+      "direction": "v2_total",
+      "radius": 0.1,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        10474.129440656276,
+        10466.73480973312,
+        9268.33020593261
+      ],
+      "control_norm_of_deta": 0.05773502691896259,
+      "endpoint": [
+        2629.7358529972016,
+        0.004261799719059489,
+        0.0009453719096955943,
+        0.0054797415895987,
+        0.026423452437944653,
+        0.020015748451211554,
+        0.19774150165368298,
+        8.344950147239844e-06,
+        4.3378770163119645e-07,
+        0.0,
+        0.7451236055009564
+      ],
+      "finite_deviation": {
+        "dT_K": -0.6706144710810804,
+        "dY_max_abs": 8.0490498406173e-05
+      },
+      "scaled_displacement_norm": 0.01205463971855287,
+      "local_model_residual_norm": 0.0028425570963244162,
+      "tangent_plane_distance_scaled": 1.6001884473571248e-05
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.003,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10021.48951892864,
+        9979.071233175979,
+        10000.509188095972
+      ],
+      "control_norm_of_deta": 0.0017320508075688774,
+      "endpoint": [
+        2630.4062907822345,
+        0.0042678386904010475,
+        0.0009426297808001673,
+        0.00544926454084727,
+        0.02650394864274425,
+        0.019964998923358467,
+        0.19773891340706606,
+        8.365170449977556e-06,
+        4.3534337533801347e-07,
+        0.0,
+        0.7451236055009558
+      ],
+      "finite_deviation": {
+        "dT_K": -0.00017668604823484202,
+        "dY_max_abs": 1.3044941488127293e-08
+      },
+      "scaled_displacement_norm": 2.311641066048992e-06,
+      "local_model_residual_norm": 2.304709132391572e-06,
+      "tangent_plane_distance_scaled": 1.7868541502281167e-07
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.003,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9978.556561988084,
+        10020.972660015152,
+        9999.490837829977
+      ],
+      "control_norm_of_deta": 0.0017320508075688774,
+      "endpoint": [
+        2630.406273527842,
+        0.004267838232746653,
+        0.0009426300989822183,
+        0.005449264215176286,
+        0.02650394880654845,
+        0.019964996913039542,
+        0.19773891571788746,
+        8.365171240694439e-06,
+        4.3534342118988134e-07,
+        0.0,
+        0.7451236055009562
+      ],
+      "finite_deviation": {
+        "dT_K": -0.00019394044056753046,
+        "dY_max_abs": 1.0734120092781296e-08
+      },
+      "scaled_displacement_norm": 2.3116041004283802e-06,
+      "local_model_residual_norm": 2.3046699878742284e-06,
+      "tangent_plane_distance_scaled": 1.791132614539245e-07
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.01,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10071.811489980932,
+        9930.407624002299,
+        10001.697394483717
+      ],
+      "control_norm_of_deta": 0.005773502691896258,
+      "endpoint": [
+        2630.404437135315,
+        0.004267846343775762,
+        0.0009426344288535734,
+        0.005449292291855813,
+        0.02650400698072706,
+        0.019965023453893557,
+        0.19773879049076978,
+        8.365167221759604e-06,
+        4.353419449850738e-07,
+        0.0,
+        0.7451236055009561
+      ],
+      "finite_deviation": {
+        "dT_K": -0.0020303329674788984,
+        "dY_max_abs": 1.359612377682673e-07
+      },
+      "scaled_displacement_norm": 2.5615389172503222e-05,
+      "local_model_residual_norm": 2.5608450586309034e-05,
+      "tangent_plane_distance_scaled": 5.939428914519331e-07
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.01,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9928.700522192707,
+        10070.080079924926,
+        9998.302893582206
+      ],
+      "control_norm_of_deta": 0.005773502691896258,
+      "endpoint": [
+        2630.4043797168665,
+        0.004267844817678027,
+        0.0009426354892243906,
+        0.005449291205411697,
+        0.026504007521105478,
+        0.01996501675285126,
+        0.19773879820081663,
+        8.365169857096647e-06,
+        4.353420978649513e-07,
+        0.0,
+        0.7451236055009544
+      ],
+      "finite_deviation": {
+        "dT_K": -0.0020877514161838917,
+        "dY_max_abs": 1.2825119091730564e-07
+      },
+      "scaled_displacement_norm": 2.5613961962694374e-05,
+      "local_model_residual_norm": 2.5607015698542473e-05,
+      "tangent_plane_distance_scaled": 5.987138772425575e-07
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.03,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10216.985240210393,
+        9792.672431218456,
+        10005.093047844433
+      ],
+      "control_norm_of_deta": 0.017320508075688773,
+      "endpoint": [
+        2630.38802046568,
+        0.004267910464392654,
+        0.0009426774977138968,
+        0.005449534019049159,
+        0.026504521044835794,
+        0.01996522518668822,
+        0.1977377258123447,
+        8.365144329645768e-06,
+        4.353296883079277e-07,
+        0.0,
+        0.7451236055009569
+      ],
+      "finite_deviation": {
+        "dT_K": -0.018447002602897555,
+        "dY_max_abs": 1.200639662857217e-06
+      },
+      "scaled_displacement_norm": 0.00023050132561367378,
+      "local_model_residual_norm": 0.00023049440248381085,
+      "tangent_plane_distance_scaled": 1.7664286523447756e-06
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.03,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9787.62302664743,
+        10211.71704684067,
+        9994.909544748798
+      ],
+      "control_norm_of_deta": 0.017320508075688773,
+      "endpoint": [
+        2630.387850748081,
+        0.0042679058706939915,
+        0.0009426806726181283,
+        0.005449530736736208,
+        0.026504522517423287,
+        0.019965205083580347,
+        0.19773774913561706,
+        8.365152225477883e-06,
+        4.3533014803748706e-07,
+        0.0,
+        0.7451236055009559
+      ],
+      "finite_deviation": {
+        "dT_K": -0.018616720201862336,
+        "dY_max_abs": 1.1773163904882367e-06
+      },
+      "scaled_displacement_norm": 0.00023046263048991862,
+      "local_model_residual_norm": 0.00023045566818739792,
+      "tangent_plane_distance_scaled": 1.8114470234901982e-06
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.1,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10741.77092703494,
+        9325.470618086598,
+        10016.986915873495
+      ],
+      "control_norm_of_deta": 0.05773502691896259,
+      "endpoint": [
+        2630.200731763137,
+        0.004268628149119621,
+        0.0009431760673002138,
+        0.005452276503873972,
+        0.026510376637889178,
+        0.019967466783555182,
+        0.1977256702596643,
+        8.364906078614596e-06,
+        4.3519156122579894e-07,
+        0.0,
+        0.745123605500955
+      ],
+      "finite_deviation": {
+        "dT_K": -0.20573570514579842,
+        "dY_max_abs": 1.3256192343241713e-05
+      },
+      "scaled_displacement_norm": 0.0025622447644904557,
+      "local_model_residual_norm": 0.002562238199380223,
+      "tangent_plane_distance_scaled": 5.579858603152601e-06
+    },
+    {
+      "direction": "v3_total",
+      "radius": 0.1,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9309.451921779462,
+        10723.31940074443,
+        9983.041890724087
+      ],
+      "control_norm_of_deta": 0.05773502691896259,
+      "endpoint": [
+        2630.2002622795967,
+        0.004268612252630477,
+        0.00094318641481932,
+        0.005452264691333909,
+        0.026510375912640567,
+        0.01996739977497802,
+        0.19772575532749415,
+        8.364932010900895e-06,
+        4.351931348673389e-07,
+        0.0,
+        0.7451236055009552
+      ],
+      "finite_deviation": {
+        "dT_K": -0.20620518868599902,
+        "dY_max_abs": 1.3171124513405852e-05
+      },
+      "scaled_displacement_norm": 0.0025608107210086184,
+      "local_model_residual_norm": 0.0025608034129944845,
+      "tangent_plane_distance_scaled": 6.343176842935176e-06
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.003,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10000.635142571597,
+        10020.910314405517,
+        9978.499487546582
+      ],
+      "control_norm_of_deta": 0.0017320508075688776,
+      "endpoint": [
+        2630.4097821697687,
+        0.004267574876381664,
+        0.0009426482008379544,
+        0.005449814741995122,
+        0.026500884181103888,
+        0.01996620486604229,
+        0.19774046771001888,
+        8.36460795844185e-06,
+        4.353147043309174e-07,
+        0.0,
+        0.7451236055009564
+      ],
+      "finite_deviation": {
+        "dT_K": 0.0033147014860333,
+        "dY_max_abs": 3.058755246938133e-06
+      },
+      "scaled_displacement_norm": 0.00036984730390343543,
+      "local_model_residual_norm": 2.5788821798175272e-06,
+      "tangent_plane_distance_scaled": 3.694318825560316e-07
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.003,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9999.364897766467,
+        9979.133318481616,
+        10021.546839262024
+      ],
+      "control_norm_of_deta": 0.0017320508075688776,
+      "endpoint": [
+        2630.402765690754,
+        0.004268102691233577,
+        0.0009426116562550715,
+        0.005448712898409392,
+        0.02650702058149255,
+        0.019963788282575324,
+        0.19773735728186426,
+        8.365735055590394e-06,
+        4.3537215672836247e-07,
+        0.0,
+        0.7451236055009572
+      ],
+      "finite_deviation": {
+        "dT_K": -0.0037017775284766685,
+        "dY_max_abs": 3.077645141725399e-06
+      },
+      "scaled_displacement_norm": 0.0003728377537597764,
+      "local_model_residual_norm": 2.579330368212168e-06,
+      "tangent_plane_distance_scaled": 3.709754533921948e-07
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.01,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10002.117298789874,
+        10069.871244333819,
+        9928.51122585771
+      ],
+      "control_norm_of_deta": 0.005773502691896258,
+      "endpoint": [
+        2630.416011474785,
+        0.004266969462962078,
+        0.0009426957406719831,
+        0.005451121966571908,
+        0.026493820477119658,
+        0.019969032824143102,
+        0.19774395548355447,
+        8.363297392311402e-06,
+        4.352466266573871e-07,
+        0.0,
+        0.7451236055009565
+      ],
+      "finite_deviation": {
+        "dT_K": 0.009544006502437696,
+        "dY_max_abs": 1.012245923116828e-05
+      },
+      "scaled_displacement_norm": 0.0012214066912454922,
+      "local_model_residual_norm": 2.8648515095024326e-05,
+      "tangent_plane_distance_scaled": 1.2264008152216456e-06
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.01,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9997.883149410663,
+        9930.613567305423,
+        10072.003518469237
+      ],
+      "control_norm_of_deta": 0.005773502691896258,
+      "endpoint": [
+        2630.3926226040153,
+        0.0042687288592546686,
+        0.0009425739253026241,
+        0.005447449134902784,
+        0.02651427528379153,
+        0.01996097751833625,
+        0.1977335872849307,
+        8.367054390516718e-06,
+        4.354381332000749e-07,
+        0.0,
+        0.7451236055009567
+      ],
+      "finite_deviation": {
+        "dT_K": -0.01384486426741205,
+        "dY_max_abs": 1.0332347440702994e-05
+      },
+      "scaled_displacement_norm": 0.0012546287261962804,
+      "local_model_residual_norm": 2.8665114340467816e-05,
+      "tangent_plane_distance_scaled": 1.243520150809122e-06
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.03,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10006.353241350753,
+        10211.08174134456,
+        9787.063217484287
+      ],
+      "control_norm_of_deta": 0.017320508075688773,
+      "endpoint": [
+        2630.4222044166327,
+        0.004265301119760386,
+        0.000942860674940524,
+        0.005454986103074867,
+        0.026474203413638882,
+        0.019977164068533695,
+        0.19775308449434498,
+        8.35957884546361e-06,
+        4.3504590371738776e-07,
+        0.0,
+        0.7451236055009554
+      ],
+      "finite_deviation": {
+        "dT_K": 0.01573694834996786,
+        "dY_max_abs": 2.9739522711944022e-05
+      },
+      "scaled_displacement_norm": 0.0035702824104221465,
+      "local_model_residual_norm": 0.0002576933532340069,
+      "tangent_plane_distance_scaled": 3.6543074756287255e-06
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.03,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9993.650792454056,
+        9793.28170443502,
+        10217.569640436495
+      ],
+      "control_norm_of_deta": 0.017320508075688773,
+      "endpoint": [
+        2630.3520217846053,
+        0.004270579663448793,
+        0.0009424952263722922,
+        0.005443967088027498,
+        0.02653557149187207,
+        0.019952997423912704,
+        0.1977219771349805,
+        8.370850043383692e-06,
+        4.356203851001722e-07,
+        0.0,
+        0.7451236055009572
+      ],
+      "finite_deviation": {
+        "dT_K": -0.054445683677386114,
+        "dY_max_abs": 3.162855552124588e-05
+      },
+      "scaled_displacement_norm": 0.0038688707749900486,
+      "local_model_residual_norm": 0.0002581415455990313,
+      "tangent_plane_distance_scaled": 3.8055426010144657e-06
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.1,
+      "sign": 1,
+      "admissible": true,
+      "theta": [
+        10021.193172586694,
+        10721.095782110635,
+        9307.677173974998
+      ],
+      "control_norm_of_deta": 0.05773502691896258,
+      "endpoint": [
+        2630.3086296237902,
+        0.0042601740254156455,
+        0.0009437777572570531,
+        0.005470025516949632,
+        0.02641209053654192,
+        0.02000623162669794,
+        0.1977753138998491,
+        8.346864917327134e-06,
+        4.34271413633096e-07,
+        0.0,
+        0.7451236055009538
+      ],
+      "finite_deviation": {
+        "dT_K": -0.09783784449246014,
+        "dY_max_abs": 9.185239980890464e-05
+      },
+      "scaled_displacement_norm": 0.01097643879520309,
+      "local_model_residual_norm": 0.002858221465040838,
+      "tangent_plane_distance_scaled": 1.2724802731615715e-05
+    },
+    {
+      "direction": "v_transverse",
+      "radius": 0.1,
+      "sign": -1,
+      "admissible": true,
+      "theta": [
+        9978.851647481808,
+        9327.40477581233,
+        10743.819121660998
+      ],
+      "control_norm_of_deta": 0.05773502691896258,
+      "endpoint": [
+        2630.0740799139157,
+        0.004277782625365694,
+        0.0009425595022656028,
+        0.005433275748587867,
+        0.02661678950870799,
+        0.019925648584605438,
+        0.19767151790131623,
+        8.384443292167987e-06,
+        4.361849012824956e-07,
+        0.0,
+        0.7451236055009541
+      ],
+      "finite_deviation": {
+        "dT_K": -0.3323875543669601,
+        "dY_max_abs": 0.00011284657235716491
+      },
+      "scaled_displacement_norm": 0.0142427979073997,
+      "local_model_residual_norm": 0.0028748235261673934,
+      "tangent_plane_distance_scaled": 1.4056491719235437e-05
+    }
+  ],
+  "second_derivative_scale": {
+    "L_empirical": 1.6019629623093425,
+    "label": "EMPIRICAL least-squares fit of ||W R|| = (L/2) ||deta||^2 over the sampled radii; NOT a certified uniform bound",
+    "shell_note": "if L were a certified uniform bound then ||W R|| <= L ||deta||^2/2 would give a containing ellipsoid shell; L here is estimated from samples"
+  },
+  "family_distance": [
+    {
+      "scaled_distance_upper_estimate": 9.085951624798091e-07,
+      "gamma_at_best": 10668.932289381848,
+      "t_at_best_s": 9.924274670432539e-06,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 9.085951624798091e-07,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v1_total",
+      "sign": 1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 0.00016270519877546743,
+      "scaled_displacement_norm": 0.09724703443401
+    },
+    {
+      "scaled_distance_upper_estimate": 8.476779118302271e-07,
+      "gamma_at_best": 9373.186703085585,
+      "t_at_best_s": 1.0076471696813558e-05,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 8.476779118302271e-07,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v1_total",
+      "sign": -1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 0.0001487565028899837,
+      "scaled_displacement_norm": 0.09250010850646481
+    },
+    {
+      "scaled_distance_upper_estimate": 1.1205400797253581e-05,
+      "gamma_at_best": 10757.45346661499,
+      "t_at_best_s": 9.228984827086789e-06,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 1.1205400797253581e-05,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v2_total",
+      "sign": 1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 1.046263287154622e-05,
+      "scaled_displacement_norm": 0.012419732364116969
+    },
+    {
+      "scaled_distance_upper_estimate": 1.0328033787968454e-05,
+      "gamma_at_best": 9297.638180150987,
+      "t_at_best_s": 1.0878580734908235e-05,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 1.0328033787968454e-05,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v2_total",
+      "sign": -1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 1.6001884473571248e-05,
+      "scaled_displacement_norm": 0.01205463971855287
+    },
+    {
+      "scaled_distance_upper_estimate": 5.724434310651094e-06,
+      "gamma_at_best": 10000.698404627878,
+      "t_at_best_s": 1.0016782750743859e-05,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 5.724434310651094e-06,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v3_total",
+      "sign": 1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 5.579858603152601e-06,
+      "scaled_displacement_norm": 0.0025622447644904557
+    },
+    {
+      "scaled_distance_upper_estimate": 6.198233056448203e-06,
+      "gamma_at_best": 10000.67860142323,
+      "t_at_best_s": 1.0016795048283497e-05,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 6.198233056448203e-06,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v3_total",
+      "sign": -1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 6.343176842935176e-06,
+      "scaled_displacement_norm": 0.0025608107210086184
+    },
+    {
+      "scaled_distance_upper_estimate": 1.2083629714272229e-05,
+      "gamma_at_best": 9341.997621795472,
+      "t_at_best_s": 1.0769873299013599e-05,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 1.2083629714272229e-05,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v_transverse",
+      "sign": 1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 1.2724802731615715e-05,
+      "scaled_displacement_norm": 0.01097643879520309
+    },
+    {
+      "scaled_distance_upper_estimate": 1.2593898894357916e-05,
+      "gamma_at_best": 10707.913413587008,
+      "t_at_best_s": 9.31991153535999e-06,
+      "domain_gamma": [
+        10.0,
+        100000.0
+      ],
+      "domain_time_s": [
+        0.0,
+        0.001
+      ],
+      "grid": [
+        61,
+        61
+      ],
+      "refine_loops": 3,
+      "replay_distance": 1.2593898894357916e-05,
+      "replay_ok": true,
+      "label": "upper estimate of the distance to the CONTINUOUS family by global grid + local refinement; a local minimizer can overestimate the minimum, so this is not a certified global exclusion",
+      "direction": "v_transverse",
+      "sign": -1,
+      "radius": 0.1,
+      "tangent_plane_distance_scaled": 1.4056491719235437e-05,
+      "scaled_displacement_norm": 0.0142427979073997
+    }
+  ],
+  "wall_seconds": 10615.804924036376,
+  "complete": true
+}

@@ -542,6 +542,47 @@ those anchors have reference-span condition numbers ~1.94e7 and ~1.56e6 versus
 ~20 for the flagship. They are not withdrawn - they are unconfirmed pending that
 machinery.
 
+**C31. NEW - a finite local reachable patch exists and is genuinely off the
+constant-control family, but it is small on the application scale (Phase 10).**
+Built on the validated matrices loaded from the phase-9 NPZ (not recomputed),
+with finite histories at radii r in {0.003, 0.01, 0.03, 0.1} along the three total
+and the transverse right-singular directions, both signs, every state witnessed
+by an actual history from the original q0 and the raw nonlinear endpoint
+evaluated.
+
+Local model E(eta0 + deta) = E0 + J deta + R: ||W R|| grows as r^2
+(2.58e-6, 2.87e-5, 2.58e-4, 2.86e-3) for the transverse direction, so the linear
+model holds with a clean second-order correction.  The least-squares
+second-derivative scale in the physical control norm
+sqrt(sum_j (dur_j/T) deta_j^2) is L = 1.60 and the resulting containing shell is
+labelled EMPIRICAL, not certified - L is estimated from samples, not bounded.
+
+Distance to the CONTINUOUS constant-control family B(gamma, t; q0) by global grid
+over a declared domain plus local refinement and a fresh-integration replay of the
+nearest candidate.  This is an UPPER ESTIMATE of the distance to the continuous
+parent family, since a grid plus a local minimizer can overestimate the minimum;
+it is not a certified global exclusion.
+
+    direction        tangent plane   curved family   ratio
+    v1  +1 / -1      1.63e-4/1.49e-4  9.09e-7/8.48e-7  0.006
+    v2  +1 / -1      1.05e-5/1.60e-5  1.12e-5/1.03e-5  1.07/0.65
+    v3  +1 / -1      5.58e-6/6.34e-6  5.72e-6/6.20e-6  1.03/0.98
+    v_perp +1 / -1   1.27e-5/1.41e-5  1.21e-5/1.26e-5  0.95/0.90
+
+The in-family direction v1 sits essentially ON the curved family - the family
+closes the gap by a factor ~180.  Every other direction stays off it: the
+curved-family distance is no smaller than the tangent-plane distance.  The
+transverse direction is off the continuous constant-control family by
+1.21e-5 / 1.26e-5 scaled units = 1.2e-3 K and ~1e-7 in mass fraction at control
+radius r = 0.1 (a 10% change in each segment level), in both signs.
+
+APPLICATION SIGNIFICANCE: this is a genuine but SMALL excursion.  One scaled unit
+is 100 K or 1e-2 mass fraction, so the reachable off-family displacement at the
+largest admissible-in-the-linear-model radius is ~1e-3 K.  The direction is
+mathematically real (C29) but would not by itself change a CFD calculation.
+Significance is judged on the finite state difference, not on the derivative per
+unit log-control norm.
+
 ## Not tested / deferred
 
 - Certified (interval/validated) outer bounds; all bounds here are analytic
