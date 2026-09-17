@@ -49,7 +49,7 @@ from thermoreach.io_utils import utc_now, write_json  # noqa: E402
 from thermoreach.reactor import CSTR, ReactorConfig, fresh_state, hot_hp_state  # noqa: E402
 from thermoreach.sensitivity import (  # noqa: E402
     APPLICATION_THRESHOLD_DEFAULT, StateScaling, classify_ranks,
-    endpoint_jacobian_fsa, replay_signed, scaled_tangent_space,
+    endpoint_jacobian_fsa, replay_signed, scaled_tangent_space, svd_basis,
     transverse_replay, transverse_spectrum,
 )
 
@@ -158,18 +158,26 @@ def flagship_case(c: CSTR, gamma: float, T: float, q0: np.ndarray, scaling: Stat
         for j in range(i + 1, len(keys)):
             dA = max(dA, float(np.linalg.norm(variants[keys[i]]["A"]
                                               - variants[keys[j]]["A"], ord=2)))
-    # projector spread: ||Phat - P|| * ||Ahat|| over all reference spans
+    # projector spread: ||Phat - P|| * ||Ahat|| over all reference spans.
+    # The ONE rank-revealing helper builds every projector: unfiltered QR
+    # silently fills a rank-deficient span with rounding noise, whereas a
+    # rank-deficient reference span must be reported, not smoothed over.  At full
+    # rank the two agree exactly (verified in tests against the committed NPZ).
     dP = 0.0
     rkeys = sorted(refs)
+    ref_bases = {rk: svd_basis(refs[rk]["D"], rel_tol=1e-12) for rk in rkeys}
     for i in range(len(rkeys)):
         for j in range(i + 1, len(rkeys)):
-            Qi = np.linalg.qr(refs[rkeys[i]]["D"])[0]
-            Qj = np.linalg.qr(refs[rkeys[j]]["D"])[0]
+            bi, bj = ref_bases[rkeys[i]], ref_bases[rkeys[j]]
+            if bi.vectors is None or bj.vectors is None:
+                continue
+            Qi, Qj = bi.vectors, bj.vectors
             # align ranks: use the smaller
             k = min(Qi.shape[1], Qj.shape[1])
             dP = max(dP, float(np.linalg.norm(Qi[:, :k] @ Qi[:, :k].T
                                                - Qj[:, :k] @ Qj[:, :k].T)
                                * np.linalg.norm(A, ord=2)))
+    ref_rank_deficient = [rk for rk, b in ref_bases.items() if b.rank < 2]
     n_variants = len(variants)
     cross_available = n_variants >= 2 and len({k.split("_")[0] for k in keys}) >= 2
 
@@ -189,7 +197,7 @@ def flagship_case(c: CSTR, gamma: float, T: float, q0: np.ndarray, scaling: Stat
                                        record_extrema=False)["states"][:, -1],
             theta, durs, v_perp, scaling, eps_list=REPLAY_EPS,
             gamma_bounds=(GAMMA_LO, GAMMA_HI))
-        replay_report = transverse_replay(A, (np.linalg.qr(D)[0]
+        replay_report = transverse_replay(A, (svd_basis(D, rel_tol=1e-12).vectors
                                               if D.size else None), rep)
     else:
         rep = {"rows": [], "n_admissible": 0}

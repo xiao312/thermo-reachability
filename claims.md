@@ -583,6 +583,69 @@ mathematically real (C29) but would not by itself change a CFD calculation.
 Significance is judged on the finite state difference, not on the derivative per
 unit log-control norm.
 
+**C32. NEW - declared control norm; past results re-expressed, not re-meaninged.**
+Everything in Revision 6 is measured in the TIME control norm
+||d eta||_time^2 = sum_j (duration_j/T) d eta_j^2, portable across segment counts,
+with the whitened map A H^(-1/2) for any cross-segment-count comparison. The
+phase-9 matrices were computed in the Euclidean parameter norm and are
+re-expressed through it; both norms and every actual gamma_j are reported. For
+m = 3 equal segments a Euclidean radius r is a time-norm radius r/sqrt(3). The
+secondary anchor's spectra are (0.1497, 0.01120, 0.001108) Euclidean and
+(0.2593, 0.01940, 0.001918) time-norm, i.e. exactly sqrt(3) apart. The 2-column
+family tangent D is NOT whitened: its columns are family tangents in the scaled
+STATE space parametrized by the family's own coordinates (t, gamma), so the
+state-space projector P is invariant under a change of input norm.
+
+**C33. NEW - corrections to the metric, enclosure and uncertainty wording of
+Revision 5.** Method/eps spreads are empirical uncertainty indicators, not
+guaranteed operator bounds. A scaled magnitude d bounds each component
+(|Delta T| <= 100 d, |Delta Y_k| <= 0.01 d) and does not equal it. The best
+located reference pair is constructive evidence of closeness, not a certified
+global exclusion. No CFD significance or insignificance claim has been
+established from state distance alone - no target application tolerances have
+been supplied. L = 1.602 is a descriptive least-squares fit, not a containing
+shell: 12 of 22 Revision 6 samples exceed the L_fit envelope by up to 1.33x.
+
+**C34. NEW - the canonical family represents the generated states well, within a
+declared local class (Phase 11).** At the secondary anchor (hot HP-equilibrium
+start, gamma = 1e4, horizon 1e-6 s, m = 3) and time-norm radii up to 1.0: the
+distance to the continuous constant-control family reaches at most 1.61e-3
+scaled units = 0.080 K and 1.0e-5 in mass fraction, growing LINEARLY in the
+radius. The same chemistry-only map Phi_dt (adiabatic, constant pressure,
+exchange control zero) applied to a generated state and to its nearest
+representative differs by at most 0.106 K and 6.8e-6 in mass fraction over
+dt = 1e-7..1e-4 s, temperature-dominated and DECAYING with dt (0.106 at 1e-6 to
+0.023 at 1e-4) - the two states relax to the same equilibrium, so the chemical
+map does not amplify the geometric difference. Enthalpy is preserved to 2e-8 in
+1.34e6 J/kg and elements to 5.6e-17; baseline mismatches are reported, not
+projected away. APPLICATION: this is scoped to the declared class - this anchor,
+these bounds, this horizon. Phase 6 established that memory erases at holds
+beyond one residence time, so the class boundary matters. No global claim.
+
+**C35. NEW - the fixed-anchor linear model is NOT accurate at large radius, even
+where the family distance is small.** The whole-state Taylor residual over the
+linear prediction, R/lin, is 0.105 at r = 0.03 but exceeds 1.0 at r >= 0.3 and
+reaches 3.3-4.0 at r = 1.0. The residual relative to the MOVING curved reference
+stays exactly at the family distance (the residual is purely normal at a
+minimum). So smooth O(r^2) growth of the residual says nothing about useful
+RELATIVE linear accuracy, and the curved reference - not the fixed tangent plane -
+is the usable local model. This confirms the review's warning that a small
+weakest-direction singular value can be dominated by quadratic curvature in other
+directions.
+
+**C36. NEW - the off-family residual is one-dimensional, and the approximation is
+not merely fitting four rays.** Recomputing the normal basis at each located point
+(the anchor normal is not assumed to remain correct), the SVD of the stacked
+normal residuals over 23 samples puts 99.89% of the energy in a single direction
+(3.469e-3 vs 1.171e-4 for the second). A "nearest curved reference + one normal
+direction" representation is therefore a candidate local generator for this
+class. A held-out set of 12 NEW admissible three-segment histories on random
+directions gives distances comparable to the transverse ray at the same radius
+and SMALLER R/lin, so the transverse direction is the hardest direction for the
+linear model (as the rank analysis predicts) and the fit is tested rather than
+memorized. This is an empirical local-coverage check, not a global completeness
+claim.
+
 ## Not tested / deferred
 
 - Certified (interval/validated) outer bounds; all bounds here are analytic

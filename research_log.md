@@ -448,3 +448,57 @@ essentially ON the curved family (gap closed ~180x) while the transverse
 direction stays off it at 1.21e-5/1.26e-5 scaled units = 1.2e-3 K in both signs.
 That is a genuine but application-small excursion - the honest conclusion, since
 one scaled unit is 100 K.
+
+## Revision 6 - radius sweep, chemistry response, local coverage (branch
+`radius-response`, from `flagship-validation@39afaa3`)
+
+The rank result is an accepted milestone. The new question: at permitted finite
+perturbations, can the canonical constant-control family represent the generated
+states well enough for the intended chemistry computation?
+
+Repairs, each with a regression test (111 tests on the server, 23 new):
+* The ignition event was terminal, so its dense output was valid only on
+  [0, t_event] while the routine evaluated it to the horizon - extrapolation, not
+  solution. Now non-terminal; dense evaluation restricted to [0, t_end]; censored
+  (no crossing in the horizon) is distinguished from integration failure.
+* admissible_radius_interval handled only 2 of 4 cases. For a MIXED-SIGN direction
+  a negative-v segment bounds r from above through the lower level bound and from
+  below through the upper one. All four cases now handled and tested.
+* Reference refinement: coordinate golden section stalls when the coarse candidate
+  is wrong in both gamma and t; Nelder-Mead stalled at 1.2e-4 and a zoom grid at
+  1.2e-2 within a bounded eval budget. Replaced by damped Gauss-Newton on the
+  scaled residual, whose Jacobian is the family tangent (dB/dt exact from the ODE
+  RHS, dB/dlog gamma by central difference) - recovers exact family points to
+  1.7e-14. A zero horizon is the identity, returned rather than integrated.
+* A Jacobian column-order swap (dB/dt, dB/dlog gamma) vs parameter order
+  (log gamma, t) silently made the first LM iterations reject every step.
+* The three np.linalg.qr projector constructions replaced by the single
+  rank-revealing svd_basis; equivalence at full rank asserted against the
+  committed NPZ.
+
+Declared the TIME control norm ||d eta||_time^2 = sum_j (dur_j/T) d eta_j^2 with
+the whitened map A H^(-1/2). Both norms and every actual gamma_j reported; a
+Euclidean radius r is a time-norm radius r/sqrt(3) for m = 3. D is not whitened -
+it is a state-space family tangent, so P is input-norm invariant.
+
+Cached continuous reference: each library gamma integrated ONCE to 100 x T with
+dense output retained, killing phase 10's repeated 61x61 fresh-integration grid.
+Exact in-family positive control (all prefix levels equal and perturbed together;
+v1(A) is NOT a substitute) recovers to relative error 1e-12.
+
+Result: within the class (hot start, gamma ~ 1e4, horizon 1e-6 s, radii to 1.0)
+the family distance reaches at most 1.61e-3 scaled = 0.080 K and 1.0e-5 in mass
+fraction, growing LINEARLY in r. The chemistry-only map differs by at most
+0.106 K and 6.8e-6, temperature-dominated and DECAYING with dt. The fixed-anchor
+linear model is a different story: its residual over the linear prediction
+exceeds 1.0 at r >= 0.3 and reaches 3.3-4.0 at r = 1.0, so the curved reference,
+not the tangent plane, is the usable local model. The off-family residual is
+99.89% one-dimensional over 23 samples. 12 of 22 samples exceed the L_fit
+envelope by up to 1.33x, confirming L_fit is descriptive, not a shell. 12 held-out
+histories give comparable distances and smaller R/lin, so the transverse
+direction is the hardest and the fit is tested rather than memorized.
+
+Decision: geometry small AND chemistry response small -> a tolerance-qualified
+canonical approximation for this local class. No CFD significance claim; no
+application tolerances have ever been supplied, so the E table spans illustrative
+choices only.

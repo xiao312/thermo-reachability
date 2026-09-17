@@ -1113,8 +1113,20 @@ def ignition_time_event(cstr, gamma: float, T: float, q0: np.ndarray,
     ``grid_resolution`` points quantizes the estimate to T/(grid_resolution-1) and
     makes it depend on the horizon, so the event time is located by the solver's
     own root finding on the dense output and the grid estimate is reported only
-    for comparison, together with the effective grid spacing and explicit
-    censoring when the event has not occurred within the horizon.
+    for comparison, together with the effective grid spacing.
+
+    Terminal events and dense output.  A TERMINAL event stops the integration at
+    the crossing, so the returned dense output is defined only on [0, t_event] and
+    evaluating it beyond that point is an extrapolation, not a solution.  The
+    event is therefore NON-terminal: the trajectory is integrated over the whole
+    horizon so the dense output is valid on [0, T], and the first upward crossing
+    is read from ``t_events``.  All dense evaluation in this routine is restricted
+    to the actually integrated interval [0, t_end].
+
+    Censoring vs failure.  A horizon shorter than the ignition delay yields no
+    crossing: that is a CENSORED measurement (``censored=True``), reported
+    separately from an integration failure (``integration_success=False``), for
+    which no dense evaluation is attempted at all.
     """
     from scipy.integrate import solve_ivp
 
@@ -1126,26 +1138,41 @@ def ignition_time_event(cstr, gamma: float, T: float, q0: np.ndarray,
     def event(t, y):
         return float(y[0] - target)
 
-    event.terminal = True
+    # non-terminal: keep the dense output valid over the whole horizon
+    event.terminal = False
     event.direction = 1                    # upward crossing only
 
     res = solve_ivp(lambda t, y: cstr.rhs(t, y, gamma), (0.0, float(T)), q0,
                     method=method, rtol=rtol, atol=atol, events=event,
                     dense_output=True, t_eval=None)
-    t_ev = float(res.t_events[0][0]) if res.t_events[0].size else None
-    # grid estimate for comparison, at the declared resolution
-    tg = np.linspace(0.0, float(T), grid_resolution)
-    Tg = np.array([res.sol(t)[0] for t in tg])
+    if not res.success:
+        # integration failure: no dense evaluation is attempted
+        return {"t_ign_event": None, "t_ign_grid_estimate": None,
+                "censored": None,
+                "integration_success": False, "message": res.message,
+                "method": method, "rise_K": rise_K, "T0": T0,
+                "horizon": float(T)}
+    t_end = float(res.t[-1])               # the actually integrated interval end
+    tev = np.asarray(res.t_events[0], dtype=float)
+    t_ev = float(tev[0]) if tev.size else None
+    # grid estimate for comparison, restricted to the integrated interval
+    tg = np.linspace(0.0, t_end, grid_resolution)
+    Tg = res.sol(tg)[0]                    # valid on [0, t_end]
     idx = np.where(Tg >= target)[0]
     t_grid = float(tg[idx[0]]) if idx.size else None
     return {"t_ign_event": t_ev,
             "t_ign_grid_estimate": t_grid,
-            "grid_spacing_s": float(T) / max(grid_resolution - 1, 1),
+            "grid_spacing_s": t_end / max(grid_resolution - 1, 1),
             "grid_resolution": grid_resolution,
-            "censored": t_ev is None,
+            "censored": bool(t_ev is None),
+            "censored_note": ("no upward crossing within the horizon; this is a "
+                               "censored measurement, not an integration failure"),
+            "integration_success": True,
+            "message": res.message,
             "rise_K": rise_K,
             "T0": T0,
-            "max_temperature_K": float(max(res.sol(t)[0]
-                                           for t in np.linspace(0, T, 64))),
-            "success": bool(res.success),
+            "horizon": float(T),
+            "integrated_interval_end_s": t_end,
+            "max_temperature_K": float(np.max(Tg)),
+            "n_upward_crossings": int(tev.size),
             "method": method}

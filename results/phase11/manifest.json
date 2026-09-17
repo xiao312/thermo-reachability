@@ -1,0 +1,36 @@
+{
+  "run_id": "phase11",
+  "timestamp_utc": "2026-09-17T12:49:54.572760+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:167ec853687c09f7",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "anchor": {
+      "init": "hot_hp_equilibrium",
+      "gamma_ref": 10000.0,
+      "horizon_s": 1e-06,
+      "m_segments": 3,
+      "npz": "secondary_hot_g1e+04_T1e-06.npz"
+    },
+    "control_norm": {
+      "declared": "||d eta||_time^2 = sum_j (duration_j/T) d eta_j^2",
+      "H_diag": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "euclidean_radius_to_time_radius_factor": 0.5773502691896258,
+      "note": "the phase-9 matrices were computed in the Euclidean parameter norm and are re-expressed here through the whitened map A H^(-1/2); both norms and every actual gamma_j are reported so no past result changes meaning"
+    },
+    "radii": [
+      0.0,
+      0.03,
+      0.1,
+      0.3,
+      0.6,
+      1.0
+    ],
+    "held_out": 12
+  }
+}

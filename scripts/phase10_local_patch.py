@@ -38,7 +38,7 @@ from thermoreach.admissibility import AdmissibleControls  # noqa: E402
 from thermoreach.controls import History  # noqa: E402
 from thermoreach.io_utils import utc_now, write_json  # noqa: E402
 from thermoreach.reactor import CSTR, ReactorConfig, hot_hp_state  # noqa: E402
-from thermoreach.sensitivity import StateScaling  # noqa: E402
+from thermoreach.sensitivity import StateScaling, svd_basis  # noqa: E402
 
 RADII = (0.003, 0.01, 0.03, 0.1)
 FAMILY_GAMMA_DOMAIN = (10.0, 1e5)          # declared reference domain in gamma
@@ -176,8 +176,14 @@ def main() -> None:
     scaling = StateScaling(n_species=c.gas.n_species)
     assert np.allclose(scaling.W, W), "scaling mismatch between npz and config"
 
-    # reference projector for tangent-plane distances
-    Q = np.linalg.qr(D)[0]
+    # reference projector for tangent-plane distances, built by the ONE
+    # rank-revealing helper: an unfiltered QR fills a rank-deficient span with
+    # rounding noise instead of reporting it.
+    _basis = svd_basis(D, rel_tol=1e-12)
+    if _basis.vectors is None:
+        raise SystemExit("reference span is rank-deficient; cannot build the "
+                         "projector - report rather than fill with QR noise")
+    Q = _basis.vectors
     P = Q @ Q.T
     # transverse direction from the phase-9 spectra
     B = (np.eye(P.shape[0]) - P) @ A

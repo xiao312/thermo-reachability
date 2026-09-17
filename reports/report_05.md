@@ -178,3 +178,32 @@ empirical, not certified operator-error bounds.  Matrices, singular vectors,
 projectors, endpoints and per-case settings are persisted in
 `results/phase9/*.npz` and the JSON manifests; the requested/completed/failed
 index and deliberate exclusions are recorded explicitly.
+
+---
+
+## Addendum — metric, enclosure and uncertainty wording (Revision 6)
+
+The following narrow the wording attached to the results above. No historical
+number is changed; only the claims are tightened. Full detail in Report 06.
+
+1. **Method/eps spreads are empirical uncertainty indicators, not guaranteed
+   operator bounds.** delta_A and delta_P*||A|| measure the spread of A and of the
+   reference projectors across the settings actually tried. The inequality
+   ||Bhat - B|| <= delta_A + delta_P*||Ahat|| combines measured quantities; the
+   spread itself certifies nothing beyond those settings.
+2. **A scaled magnitude d bounds each component, and does not equal it.** With
+   T_scale = 100 K and Y_scale = 0.01, ||W(q - q_B)|| = d implies
+   |Delta T| <= 100 d and |Delta Y_k| <= 0.01 d - upper bounds per component, not
+   equality, and not a claim that both components are that large.
+3. **The best located reference pair is constructive evidence of closeness**, not a
+   certified global exclusion. It is an upper estimate of the infimum over the
+   declared reference domain; a certified exclusion would require a separately
+   justified lower bound, which is not available.
+4. **No CFD significance or insignificance claim has been established from state
+   distance alone.** No target application tolerances have been supplied for this
+   project.
+5. **L = 1.602 is a descriptive least-squares fit, not a containing shell.** The
+   Revision 6 study confirms quantitatively that calibration samples exceed it:
+   12 of 22 samples exceed the L_fit envelope by up to 1.33x (Report 06, section
+   7). L_sample_max contains the observed samples and is not a uniform derivative
+   bound over the neighbourhood.
