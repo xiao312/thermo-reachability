@@ -74,16 +74,53 @@ def whitened_map(A, durations, T: float) -> np.ndarray:
     return A / np.sqrt(h)[None, :]
 
 
+def unwhiten_svd_direction(u, durations, T: float) -> np.ndarray:
+    """The log-control direction of unit TIME norm corresponding to a
+    Euclidean-unit RIGHT singular vector ``u`` of the whitened map A H^(-1/2).
+
+    A whitened right singular vector is NOT a unit direction in physical
+    log-control coordinates: the whitened map acts on xi = H^(1/2) d_eta, so
+
+        A H^(-1/2) u = sigma * (state direction)
+        d_eta = H^(-1/2) u,     ||d_eta||_time = ||H^(1/2) d_eta||_2 = ||u||_2 = 1
+
+    Applying ``r * u`` directly as a log-control perturbation therefore produces
+    an actual time norm of r * ||u||_time, which for m equal segments is
+    r/sqrt(m) - a labelled r of 1 is an actual norm of 0.577 for m = 3.  Scalar
+    rescaling of u is NOT a substitute for H^(-1/2) u when the durations are
+    unequal.
+    """
+    h = hdiag(durations, T)
+    return np.asarray(u, dtype=float).ravel() / np.sqrt(h)
+
+
+def radius_from_deta(deta, durations, T: float) -> dict:
+    """Actual norms of a log-control perturbation, derived from d_eta itself and
+    never from an inverted memorized conversion factor."""
+    deta = np.asarray(deta, dtype=float).ravel()
+    return {"time_norm": time_norm(deta, durations, T),
+            "euclidean_norm": float(np.linalg.norm(deta))}
+
+
 def radius_norm_report(theta, v_euclid, durations, T: float) -> dict:
-    """Both norms and the actual segment rates for a saved Euclidean direction."""
+    """Both norms and the actual segment rates for a saved Euclidean direction.
+
+    The Euclidean norm of a saved direction is reported for continuity only; the
+    physical radius is the TIME norm, derived from the perturbation itself."""
     v_t = unit_time_norm_direction(v_euclid, durations, T)
     return {"euclidean_norm_of_saved_direction": float(np.linalg.norm(v_euclid)),
             "time_norm_of_saved_direction": time_norm(v_euclid, durations, T),
             "unit_time_norm_direction": v_t.tolist(),
-            "euclidean_radius_to_time_radius_factor": 1.0 / np.sqrt(float(len(durations))),
+            "euclidean_radius_to_time_radius_factor":
+                float(time_norm(v_euclid, durations, T)
+                      / max(np.linalg.norm(v_euclid), 1e-300)),
             "actual_gamma_at_unit_time_radius": (np.asarray(theta, dtype=float)
                                                  * np.exp(v_t)).tolist(),
-            "H_diag": hdiag(durations, T).tolist()}
+            "H_diag": hdiag(durations, T).tolist(),
+            "note": ("the factor above is the ratio measured for THIS direction "
+                     "and these durations; it equals 1/sqrt(m) only for equal "
+                     "durations and must never be used to convert a radius in "
+                     "place of recomputing the norm")}
 
 
 def admissible_radius_interval(theta, v, gamma_lo: float, gamma_hi: float) -> dict:
@@ -740,3 +777,76 @@ def normal_residual(cstr, q_ref0: np.ndarray, q_target: np.ndarray, q_B: np.ndar
             "tangent_residual_norm": float(np.linalg.norm(P @ e)),
             "total_residual_norm": float(np.linalg.norm(e)),
             "basis": tan}
+
+
+def located_reference(lib: "ReferenceLibrary", q_target: np.ndarray, W: np.ndarray,
+                      cstr, *, refine_method: str = "Radau",
+                      refine_rtol: float = 1e-11, refine_atol_T: float = 1e-10,
+                      refine_atol_Y: float = 1e-17,
+                      expand_gamma_half_width_log: float = 1.5,
+                      expand_gamma_points: int = 21,
+                      label: str = "") -> dict:
+    """Coarse library scan + damped-Gauss-Newton refinement, with a ONE-TIME
+    reference-domain expansion if the minimizer sits on a domain edge.
+
+    The expansion rebuilds the library over a wider gamma domain (and a longer t
+    domain when the minimizer pressed against t_max) and redoes the search.  A
+    stale cache can never be reused because the new library is a new object with
+    its own recorded identity.
+    """
+    out = {"expanded_domain": False}
+    coarse = lib.coarse_min(q_target, W)
+    ref = refine_reference(lib, q_target, W, coarse, cstr,
+                           refine_method=refine_method, refine_rtol=refine_rtol,
+                           refine_atol_T=refine_atol_T, refine_atol_Y=refine_atol_Y)
+    edge = (ref.get("boundary_activity", {}).get("gamma_at_bracket_edge")
+            or ref.get("boundary_activity", {}).get("t_at_domain_edge"))
+    if edge and ref.get("success"):
+        gs = np.array(sorted(lib._sols.keys()), dtype=float)
+        log_lo = np.log(gs[0]) - 0.5 * expand_gamma_half_width_log
+        log_hi = np.log(gs[-1]) + 0.5 * expand_gamma_half_width_log
+        grid2 = np.exp(np.linspace(log_lo, log_hi, expand_gamma_points))
+        t_max2 = lib.t_max * 10.0 if np.isclose(ref["t_best"], lib.t_max) else lib.t_max
+        lib2 = ReferenceLibrary(cstr, lib.q0, grid2, t_max=t_max2,
+                                t_anchor=lib.t_anchor, method=lib.method,
+                                rtol=lib.rtol, atol_T=lib.atol_T,
+                                atol_Y=lib.atol_Y, t_grid_points=lib.t_grid_points)
+        out["expanded_domain"] = True
+        out["coarse_before_expansion"] = coarse
+        out["expansion"] = {"reason": "minimizer on a reference-domain edge",
+                            "gamma_domain_before": list(coarse["gamma_domain"]),
+                            "gamma_domain": [float(grid2[0]), float(grid2[-1])],
+                            "t_domain_before": list(coarse["t_domain"]),
+                            "t_max": t_max2,
+                            "library_identity": lib2.identity()}
+        coarse = lib2.coarse_min(q_target, W)
+        ref = refine_reference(lib2, q_target, W, coarse, cstr,
+                               refine_method=refine_method,
+                               refine_rtol=refine_rtol,
+                               refine_atol_T=refine_atol_T,
+                               refine_atol_Y=refine_atol_Y)
+        out["expanded_library_failures"] = lib2._failures
+    out["coarse"] = coarse
+    out["refined"] = ref
+    if ref.get("success"):
+        q_B = np.asarray(ref["q_B"], dtype=float)
+        resid = q_target - q_B
+        out["gamma_best"] = ref["gamma_best"]
+        out["t_best"] = ref["t_best"]
+        out["q_B"] = q_B.tolist()
+        out["signed_residual_raw"] = resid.tolist()
+        out["signed_residual_scaled"] = (W * resid).tolist()
+        out["dist_scaled_upper_estimate"] = ref["dist_scaled_upper_estimate"]
+        out["abs_dT_K"] = float(abs(resid[0]))
+        out["abs_dY"] = np.abs(resid[1:]).tolist()
+        out["relative_dT"] = float(abs(resid[0]) / max(abs(q_target[0]), 1e-12))
+        wT = abs(resid[0]) * W[0]
+        wY = float(np.linalg.norm(resid[1:] * W[1:]))
+        out["scaled_norm_split"] = {"temperature_component": float(wT),
+                                    "composition_component": wY,
+                                    "total": float(np.hypot(wT, wY))}
+        out["dist_note"] = (
+            "the optimized distance is an UPPER ESTIMATE of the infimum over the "
+            "reference domain; a local method plus a grid can overestimate the "
+            "minimum, so global nonmembership is not claimed")
+    return out

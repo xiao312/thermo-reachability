@@ -19,10 +19,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thermoreach.chemresponse import (  # noqa: E402
-    ChemistryConfig, admissible_radius_interval, chemistry_map, chemistry_response,
-    chemistry_source, hdiag, local_family_tangent_at, normal_residual,
-    refine_reference, time_norm, unit_time_norm_direction, whitened_map,
-    ReferenceLibrary,
+    ChemistryConfig, ReferenceLibrary, admissible_radius_interval,
+    chemistry_map, chemistry_response, chemistry_source, hdiag,
+    local_family_tangent_at, located_reference, normal_residual,
+    radius_from_deta, refine_reference, time_norm, unwhiten_svd_direction,
+    unit_time_norm_direction, whitened_map,
 )
 from thermoreach.sensitivity import ignition_time_event, svd_basis  # noqa: E402
 
@@ -452,3 +453,152 @@ def test_chemistry_response_reports_differences_separately():
     assert "tolerance_table_note" in r
     # baseline enthalpy mismatch is reported, not projected away
     assert "baseline" in r and "h_q_J_kg" in r["baseline"]
+
+
+# ---------------------------------------------------------------------------
+# 7. end-to-end whitening: the eta-space direction of unit TIME norm
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("durations,T", [
+    (np.full(3, 1.0 / 3), 1.0),                 # equal durations, m = 3
+    (np.array([0.1, 0.3, 0.6]), 1.0),           # unequal durations
+    (np.array([0.05, 0.15, 0.3, 0.5]), 1.0),    # m = 4, unequal
+])
+def test_unwhitened_svd_direction_has_unit_time_norm(durations, T):
+    """A Euclidean-unit right singular vector of A H^(-1/2) maps, under
+    H^(-1/2), to a log-control direction of exactly unit time norm - and back to
+    the same linear image.  Applying r*u directly instead would give an actual
+    time norm of r/sqrt(m) for m equal segments."""
+    rng = np.random.default_rng(7)
+    A = rng.normal(size=(6, durations.size))
+    A_time = whitened_map(A, durations, T)
+    u = np.linalg.svd(A_time, full_matrices=False)[2][0]
+    deta = unwhiten_svd_direction(u, durations, T)
+    assert time_norm(deta, durations, T) == pytest.approx(1.0, abs=1e-12)
+    # the linear images agree exactly: A deta = A_time u
+    np.testing.assert_allclose(A @ deta, A_time @ u, rtol=1e-12, atol=1e-12)
+    # and the old, incorrect construction does NOT have unit time norm
+    bad = 1.0 * u
+    assert time_norm(bad, durations, T) != pytest.approx(1.0, abs=1e-9)
+
+
+def test_scalar_rescaling_is_not_a_substitute_for_unwhitening():
+    """For unequal durations, rescaling u by a scalar cannot reproduce the unit\n    time-norm direction, because the metric H is not a multiple of the identity."""
+    durations = np.array([0.1, 0.3, 0.6])
+    rng = np.random.default_rng(11)
+    A = rng.normal(size=(5, 3))
+    A_time = whitened_map(A, durations, 1.0)
+    u = np.linalg.svd(A_time, full_matrices=False)[2][0]
+    deta = unwhiten_svd_direction(u, durations, 1.0)
+    h = hdiag(durations, 1.0)
+    # any scalar multiple c*u has time norm c*||u||_time; matching 1 requires
+    # c = 1/||u||_time, and then A(c u) != A_time u in general
+    c = 1.0 / time_norm(u, durations, 1.0)
+    assert time_norm(c * u, durations, 1.0) == pytest.approx(1.0, abs=1e-12)
+    assert not np.allclose(A @ (c * u), A_time @ u, rtol=1e-6, atol=1e-9)
+    np.testing.assert_allclose(A @ deta, A_time @ u, rtol=1e-12, atol=1e-12)
+
+
+def test_admissible_interval_uses_the_unwhitened_direction():
+    """The radius r is a TIME-norm radius, so the admissible interval must be
+    computed on the converted direction.  On the whitened vector the interval is
+    in the wrong units."""
+    durations = np.full(3, 1.0 / 3)
+    rng = np.random.default_rng(3)
+    A = rng.normal(size=(5, 3))
+    A_time = whitened_map(A, durations, 1.0)
+    u = np.linalg.svd(A_time, full_matrices=False)[2][0]
+    deta = unwhiten_svd_direction(u, durations, 1.0)
+    theta = np.full(3, 1e4)
+    r_whitened = admissible_radius_interval(theta, u, 10.0, 1e5)
+    r_converted = admissible_radius_interval(theta, deta, 10.0, 1e5)
+    assert r_converted["r_max_positive"] is not None
+    # a unit time-norm step along deta stays inside the bounds
+    g = theta * np.exp(1.0 * deta)
+    assert np.all(g > 10.0) and np.all(g < 1e5)
+    # the two intervals differ (they are in different units)
+    assert abs(r_whitened["r_max_positive"] - r_converted["r_max_positive"]) > 1e-6
+
+
+def test_radius_from_deta_derives_norms_not_from_a_factor():
+    durations = np.array([0.2, 0.3, 0.5])
+    deta = np.array([0.1, -0.2, 0.05])
+    r = radius_from_deta(deta, durations, 1.0)
+    assert r["time_norm"] == pytest.approx(np.sqrt(np.sum(durations * deta ** 2)))
+    assert r["euclidean_norm"] == pytest.approx(np.linalg.norm(deta))
+
+
+# ---------------------------------------------------------------------------
+# 8. located_reference: coarse scan + refinement, and the one-time domain
+#    expansion (previously untested because the expansion branch in the study
+#    script was unreachable in practice)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("label", ["no-expansion", "expansion"])
+def test_located_reference_recovers_the_stub_family(label):
+    """The stub family is known in closed form, so the locator must find the
+    exact gamma-t pair (up to tolerance), and the expansion branch must run
+    without a signature mismatch."""
+    cstr = _StubCSTR()
+    n = 3
+    q0 = np.zeros(n)
+    W = np.ones(n)                     # 1-D scaling diagonal, as StateScaling.W is
+    if label == "no-expansion":
+        grid = np.exp(np.linspace(np.log(8.0), np.log(12.0), 9))
+        lib = ReferenceLibrary(cstr, q0, grid, t_max=1.0, t_anchor=0.5,
+                               method="Radau", rtol=1e-10, atol_T=1e-12,
+                               atol_Y=1e-12, t_grid_points=12)
+        gamma_true, t_true = 10.0, 0.7
+        kw = {}
+    else:
+        # deliberately NARROW domain: the minimizer sits on the top gamma edge
+        # and the locator must expand the domain once
+        grid = np.exp(np.linspace(np.log(0.5), np.log(2.0), 7))
+        lib = ReferenceLibrary(cstr, q0, grid, t_max=0.2, t_anchor=0.1,
+                               method="Radau", rtol=1e-10, atol_T=1e-12,
+                               atol_Y=1e-12, t_grid_points=8)
+        gamma_true, t_true = 10.0, 0.7
+        kw = {"expand_gamma_half_width_log": 3.0, "expand_gamma_points": 15}
+
+    q_target = stub_family(gamma_true, t_true, n)
+    out = located_reference(lib, q_target, W, cstr, **kw)
+    assert out["refined"]["success"] is True
+    if label == "no-expansion":
+        assert out["expanded_domain"] is False
+        assert out["gamma_best"] == pytest.approx(gamma_true, rel=1e-6)
+        assert out["t_best"] == pytest.approx(t_true, rel=1e-4, abs=1e-8)
+        assert out["dist_scaled_upper_estimate"] == pytest.approx(0.0, abs=1e-7)
+    else:
+        assert out["expanded_domain"] is True
+        # the expanded grid must strictly contain the original domain
+        lo0, hi0 = out["coarse_before_expansion"]["gamma_domain"]
+        lo1, hi1 = out["expansion"]["gamma_domain"]
+        assert lo1 < lo0 and hi1 > hi0
+        assert out["expansion"]["reason"] == "minimizer on a reference-domain edge"
+        # the expanded library must carry its own identity (never a stale cache)
+        assert out["expansion"]["library_identity"]["gamma_grid"] is not None
+        assert out["expansion"]["library_identity"]["n_integrated"] >= 1
+
+
+def test_expansion_branch_does_not_use_a_wrong_keyword():
+    """Regression for the integrity defect: the expansion call used ``rtol=``
+    where the signature is ``refine_rtol=``, so it would raise TypeError whenever
+    it fired.  Force it to fire here and assert no exception and no stale-cache
+    reuse of the first library's solution object."""
+    cstr = _StubCSTR()
+    n = 3
+    q0 = np.zeros(n)
+    W = np.ones(n)                     # 1-D scaling diagonal, as StateScaling.W is
+    grid = np.exp(np.linspace(np.log(0.5), np.log(2.0), 5))
+    lib = ReferenceLibrary(cstr, q0, grid, t_max=0.1, t_anchor=0.05,
+                           method="Radau", rtol=1e-9, atol_T=1e-12,
+                           atol_Y=1e-12, t_grid_points=6)
+    q_target = stub_family(30.0, 0.3, n)
+    out = located_reference(lib, q_target, W, cstr,
+                            expand_gamma_half_width_log=2.0, expand_gamma_points=11)
+    assert out["expanded_domain"] is True
+    assert isinstance(out["expanded_library_failures"], list)
+    # the coarse scan on the expanded library must use the NEW domain
+    assert out["coarse"]["gamma_domain"][1] > 2.0

@@ -57,8 +57,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from thermoreach.admissibility import AdmissibleControls, stable_child_seed  # noqa: E402
 from thermoreach.chemresponse import (  # noqa: E402
     ChemistryConfig, ReferenceLibrary, admissible_radius_interval,
-    chemistry_response, hdiag, local_family_tangent_at, normal_residual,
-    refine_reference, time_norm, unit_time_norm_direction, whitened_map,
+    chemistry_response, hdiag, local_family_tangent_at, located_reference,
+    normal_residual, radius_from_deta, refine_reference, time_norm,
+    unwhiten_svd_direction, unit_time_norm_direction, whitened_map,
 )
 from thermoreach.controls import History  # noqa: E402
 from thermoreach.io_utils import manifest, utc_now, write_json  # noqa: E402
@@ -85,31 +86,71 @@ LIB_T_MAX_FACTOR = 100.0            # t_max = 100 x the anchor horizon
 
 
 def load_verified(npz_path: Path, cstr: CSTR, scaling: StateScaling) -> dict:
-    """Load the phase-9 matrices and verify shape, finiteness, scaling and
-    mechanism/scaling/configuration identity before any analysis uses them."""
+    """Load the phase-9 matrices and verify them against the loaded MECHANISM
+    CONTENT, not just dimensions and filenames: mechanism hash, species order,
+    pressure, feed/initial state and the declared scaling.
+
+    A mismatch means the saved matrices describe a different physical system and
+    every downstream number would be meaningless, so it is fatal by design."""
     d = np.load(npz_path)
     A, D, J = d["A"], d["D"], d["J"]
     n, m = J.shape
+    import hashlib
+    from pathlib import Path as _P
+    import cantera as _ct
+    mech_path = None
+    for dir_ in _ct.get_data_directories():
+        cand = _P(dir_) / cstr.cfg.mechanism
+        if cand.is_file():
+            mech_path = cand
+            break
+    mech_hash = hashlib.sha256(mech_path.read_bytes()).hexdigest()[:16] \
+        if mech_path else None
+    q0_hot = hot_hp_state(cstr)
     checks = {
+        # matrix structure
         "A_shape": list(A.shape), "D_shape": list(D.shape), "J_shape": list(J.shape),
         "n_states": n, "m_segments": m,
-        "A_is_scaling_of_J": bool(np.allclose(A, d["W"][:, None] * J, rtol=1e-12)),
+        "n_species_matches": bool(n == cstr.gas.n_species + 1),
         "all_finite": bool(np.all(np.isfinite(A)) and np.all(np.isfinite(D))
                            and np.all(np.isfinite(J))),
-        "n_species_matches": bool(n == cstr.gas.n_species + 1),
+        # declared scaling
         "W_matches_declared_scaling": bool(
             np.allclose(d["W"], scaling.W, rtol=1e-12)),
+        "A_is_scaling_of_J": bool(np.allclose(A, d["W"][:, None] * J, rtol=1e-12)),
+        # physical system identity
+        "mechanism_content_hash_matches": bool(
+            mech_hash is not None
+            and cstr.mech.get("sha256", "")[:16] == mech_hash),
+        "mechanism_hash_on_disk": mech_hash,
+        "mechanism_hash_in_record": cstr.mech.get("sha256", "")[:16],
+        "species_order_matches": bool(
+            list(cstr.gas.species_names) == cstr.mech.get("species")),
+        "pressure_matches": bool(float(cstr.p) == float(cstr.cfg.pressure)),
+        "feed_composition_recorded": {"Y_in_sha256_16": hashlib.sha256(
+            cstr.Y_in.tobytes()).hexdigest()[:16],
+            "h_in_J_kg": float(cstr.h_in),
+            "equivalence_ratio": float(cstr.cfg.equivalence_ratio),
+            "fuel": cstr.cfg.fuel, "oxidizer": cstr.cfg.oxidizer,
+            "T_in_K": float(cstr.T_in)},
+        "initial_state_is_hot_hp_equilibrium": bool(
+            np.allclose(d["q0"], q0_hot, rtol=1e-9, atol=1e-12)),
         "theta_all_equal_base": bool(np.allclose(d["theta"], GAMMA_REF)),
         "durations_sum_to_horizon": bool(
             np.isclose(float(d["durations"].sum()), HORIZON)),
-        "horizon_matches": bool(np.isclose(float(d["durations"].sum()), HORIZON)),
         "singular_values_reproduce": bool(
             np.allclose(d["singular_values"],
                         np.linalg.svd(A, compute_uv=False), rtol=1e-6)),
     }
-    ok = all(v is True for k, v in checks.items()
-             if k not in ("A_shape", "D_shape", "J_shape", "n_states", "m_segments"))
-    return {"npz": npz_path.name, "checks": checks, "verified": bool(ok),
+    fatal = [k for k, v in checks.items()
+             if k in ("n_species_matches", "all_finite", "W_matches_declared_scaling",
+                      "A_is_scaling_of_J", "mechanism_content_hash_matches",
+                      "species_order_matches", "pressure_matches",
+                      "initial_state_is_hot_hp_equilibrium",
+                      "durations_sum_to_horizon", "singular_values_reproduce")
+             and v is not True]
+    return {"npz": npz_path.name, "checks": checks, "verified": not fatal,
+            "failed_checks": fatal,
             "A": A, "D": D, "J": J, "q0": d["q0"], "theta": d["theta"],
             "durations": d["durations"], "W": d["W"],
             "singular_values": d["singular_values"], "Vh": d["Vh"], "U": d["U"],
@@ -153,68 +194,6 @@ def integrate_history(cstr: CSTR, theta: np.ndarray, durations: np.ndarray,
     return out
 
 
-def located_reference(lib: ReferenceLibrary, q_target: np.ndarray, W: np.ndarray,
-                      cstr: CSTR, *, refine_method: str = "Radau",
-                      refine_rtol: float = 1e-11, refine_atol_T: float = 1e-10,
-                      refine_atol_Y: float = 1e-17, label: str = "") -> dict:
-    """Coarse library scan + damped-Gauss-Newton refinement, with a ONE-TIME
-    reference-domain expansion if the minimizer sits on a domain edge."""
-    out = {"expanded_domain": False}
-    coarse = lib.coarse_min(q_target, W)
-    ref = refine_reference(lib, q_target, W, coarse, cstr,
-                           refine_method=refine_method, refine_rtol=refine_rtol,
-                           refine_atol_T=refine_atol_T, refine_atol_Y=refine_atol_Y)
-    edge = (ref.get("boundary_activity", {}).get("gamma_at_bracket_edge")
-            or ref.get("boundary_activity", {}).get("t_at_domain_edge"))
-    if edge and ref.get("success"):
-        # expand the domain ONCE, as instructed, and redo the search
-        gs = np.array(sorted(lib._sols.keys()), dtype=float)
-        log_lo = np.log(gs[0]) - 0.5 * LIB_GAMMA_HALF_WIDTH_LOG
-        log_hi = np.log(gs[-1]) + 0.5 * LIB_GAMMA_HALF_WIDTH_LOG
-        grid2 = np.exp(np.linspace(log_lo, log_hi, LIB_GAMMA_POINTS))
-        t_max2 = lib.t_max * 10.0 if np.isclose(ref["t_best"], lib.t_max) else lib.t_max
-        lib2 = ReferenceLibrary(cstr, lib.q0, grid2, t_max=t_max2,
-                                t_anchor=lib.t_anchor, method=lib.method,
-                                rtol=lib.rtol, atol_T=lib.atol_T,
-                                atol_Y=lib.atol_Y, t_grid_points=lib.t_grid_points)
-        out["expanded_domain"] = True
-        out["expansion"] = {"reason": "minimizer on a reference-domain edge",
-                            "gamma_domain": [float(grid2[0]), float(grid2[-1])],
-                            "t_max": t_max2,
-                            "library_identity": lib2.identity()}
-        coarse = lib2.coarse_min(q_target, W)
-        ref = refine_reference(lib2, q_target, W, coarse, cstr,
-                               refine_method=refine_method, rtol=refine_rtol,
-                               refine_atol_T=refine_atol_T,
-                               refine_atol_Y=refine_atol_Y)
-        out["expanded_library_failures"] = lib2._failures
-    out["coarse"] = coarse
-    out["refined"] = ref
-    if ref.get("success"):
-        q_B = np.asarray(ref["q_B"], dtype=float)
-        resid = q_target - q_B
-        out["gamma_best"] = ref["gamma_best"]
-        out["t_best"] = ref["t_best"]
-        out["q_B"] = q_B.tolist()
-        out["signed_residual_raw"] = resid.tolist()
-        out["signed_residual_scaled"] = (W * resid).tolist()
-        out["dist_scaled_upper_estimate"] = ref["dist_scaled_upper_estimate"]
-        out["abs_dT_K"] = float(abs(resid[0]))
-        out["abs_dY"] = np.abs(resid[1:]).tolist()
-        out["relative_dT"] = float(abs(resid[0]) / max(abs(q_target[0]), 1e-12))
-        # trace diagnostics: the scaled norm split over T and composition
-        wT = abs(resid[0]) * W[0]
-        wY = np.linalg.norm(resid[1:] * W[1:])
-        out["scaled_norm_split"] = {"temperature_component": float(wT),
-                                    "composition_component": float(wY),
-                                    "total": float(np.hypot(wT, wY))}
-        out["dist_note"] = (
-            "the optimized distance is an UPPER ESTIMATE of the infimum over the "
-            "reference domain; a local method plus a grid can overestimate the "
-            "minimum, so global nonmembership is not claimed")
-    return out
-
-
 def analyze_case(cstr: CSTR, lib: ReferenceLibrary, q0: np.ndarray, q_base: np.ndarray,
                  J: np.ndarray, A: np.ndarray, W: np.ndarray, v_time: np.ndarray,
                  theta0: np.ndarray, durations: np.ndarray, T: float,
@@ -226,17 +205,28 @@ def analyze_case(cstr: CSTR, lib: ReferenceLibrary, q0: np.ndarray, q_base: np.n
     t_start = time.perf_counter()
     rec = {"label": label, "kind": "transverse_ray", "sign": sign,
            "radius_time_norm": float(radius), "status": "running"}
-    v = np.asarray(v_time, dtype=float)
+    # v_time is a Euclidean-unit RIGHT singular vector of the whitened map
+    # A H^(-1/2).  The physical log-control direction of unit TIME norm is
+    # H^(-1/2) v_time; using v_time directly would give an actual time norm of
+    # r/sqrt(m) for m equal segments.
+    v_whitened = np.asarray(v_time, dtype=float)
+    v = unwhiten_svd_direction(v_whitened, durations, T)
     r_signed = sign * float(radius)
     deta = r_signed * v
     theta = np.asarray(theta0, dtype=float) * np.exp(deta)
     rec["deta_time_norm_coords"] = deta.tolist()
     rec["theta_actual"] = theta.tolist()
     rec["durations"] = durations.tolist()
+    # both radii are derived from deta itself, never from a memorized factor
     rec["norms"] = {"time_norm_of_deta": time_norm(deta, durations, T),
                     "euclidean_norm_of_deta": float(np.linalg.norm(deta)),
                     "radius_time_norm": float(radius),
-                    "radius_euclidean": float(abs(r_signed) / np.sqrt(len(durations)))}
+                    "radius_euclidean": float(np.linalg.norm(deta)),
+                    "whitened_direction_euclidean_norm":
+                        float(np.linalg.norm(v_whitened)),
+                    "unwhitening_note": (
+                        "deta = r H^(-1/2) u for u a Euclidean-unit right singular "
+                        "vector of A H^(-1/2), so ||deta||_time = r exactly")}
     ok, reason = adm.validate(History(theta, durations))
     rec["admissible"] = bool(ok)
     if not ok:
@@ -553,11 +543,14 @@ def main() -> None:
     sv_tot_time = np.linalg.svd(A_time, compute_uv=False)
     sv_perp_time = np.linalg.svd(B_time, compute_uv=False) \
         if B_time is not None else np.full(1, np.nan)
-    # FIXED leading transverse direction for the first sweep; unit TIME norm by
-    # construction (a right singular vector of A H^(-1/2))
+    # FIXED leading transverse direction for the first sweep.  The SVD is taken
+    # in the whitened coordinates, then UNWHITENED to physical log-control
+    # coordinates of unit time norm; the admissible interval is computed on the
+    # converted direction, since r is a time-norm radius.
     Vh_t = np.linalg.svd(A_time, full_matrices=False)[2]
     Bsvd = np.linalg.svd(B_time, full_matrices=False) if B_time is not None else None
-    v_perp_time = Bsvd[2][0] if (Bsvd is not None and Bsvd[2].size) else Vh_t[2]
+    u_perp_whitened = Bsvd[2][0] if (Bsvd is not None and Bsvd[2].size) else Vh_t[2]
+    v_perp_time = unwhiten_svd_direction(u_perp_whitened, durations, T)
     interval = admissible_radius_interval(theta0, v_perp_time, GAMMA_LO, GAMMA_HI)
 
     # ---- the cached continuous reference library -------------------------
@@ -610,8 +603,11 @@ def main() -> None:
             "singular_values_transverse": sv_perp_time.tolist(),
             "reference_basis": ref_basis.to_record(),
             "transverse_direction_time_norm_coords": v_perp_time.tolist(),
+            "whitened_svd_vector_euclidean_unit": u_perp_whitened.tolist(),
             "euclidean_norm_of_transverse_direction":
                 float(np.linalg.norm(v_perp_time)),
+            "time_norm_of_transverse_direction":
+                time_norm(v_perp_time, durations, T),
             "fixed_direction_note": ("the leading transverse direction is FIXED "
                                      "for this sweep; it is not claimed to remain "
                                      "globally optimal as the amplitude grows"),
