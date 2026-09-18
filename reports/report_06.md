@@ -115,14 +115,21 @@ pressure, density, conservation residuals, physical-domain status and solver
 statistics are recorded; the extremes are re-integrated with LSODA at tighter
 tolerances (agreement 5.5e-10, reference distance reproduced to 4 digits).
 
-| r | dist. to family | \|ΔT\| K | max \|ΔY\| | γ* | t* | R/lin |
-|---|---|---|---|---|---|---|
-| 0 | 7.6e-14 | 2.7e-12 | 4.4e-16 | 10000 | 1.00e-6 | — |
-| 0.03 | 4.65e-5 | 2.4e-3 | 2.9e-7 | 9928 | 1.01e-6 | 0.105 |
-| 0.1 | 1.55e-4 | 7.9e-3 | 9.6e-7 | 9780 | 1.02e-6 | 0.35 |
-| 0.3 | 4.61e-4 | 2.4e-2 | 2.9e-6 | 9494 | 1.07e-6 | 1.02 |
-| 0.6 | 9.18e-4 | 4.8e-2 | 5.7e-6 | 9408 | 1.12e-6 | 2.01 |
-| 1.0 | 1.54e-3 | 8.0e-2 | 9.5e-6 | 9855 | 1.17e-6 | 3.30 |
+**Radius relabelling (Revision 7):** the `r` column below is the *requested*
+label. The transverse rays were built from Euclidean-unit right singular vectors
+of `A H^(-1/2)`, so their **measured** time norm is `r/sqrt(m)` = `r/sqrt(3)`
+here; the in-family controls and the 12 random histories were normalized directly
+in the time norm and their labels are exact. Measured norms: 0, 0.0173, 0.0577,
+0.173, 0.346, 0.577.
+
+| r (label) | r measured | dist. to family | |dT| K | max |dY| | g* | t* | R/lin |
+|---|---|---|---|---|---|---|---|
+| 0 | 0 | 7.6e-14 | 2.7e-12 | 4.4e-16 | 10000 | 1.00e-6 | none |
+| 0.03 | 0.0173 | 4.65e-5 | 2.4e-3 | 2.9e-7 | 9928 | 1.01e-6 | 0.105 |
+| 0.1 | 0.0577 | 1.55e-4 | 7.9e-3 | 9.6e-7 | 9780 | 1.02e-6 | 0.35 |
+| 0.3 | 0.173 | 4.61e-4 | 2.4e-2 | 2.9e-6 | 9494 | 1.07e-6 | 1.02 |
+| 0.6 | 0.346 | 9.18e-4 | 4.8e-2 | 5.7e-6 | 9408 | 1.12e-6 | 2.01 |
+| 1.0 | 0.577 | 1.54e-3 | 8.0e-2 | 9.5e-6 | 9855 | 1.17e-6 | 3.30 |
 
 Two separate facts, deliberately not conflated:
 
@@ -130,6 +137,15 @@ Two separate facts, deliberately not conflated:
   increase). The transverse direction is a genuine linear direction, and the
   *curved* family closes part of the gap (at r = 0.1 the distance is 58 % of
   σ_⊥·r = 2.69e-4).
+  **Correction (Revision 7):** that 58 % comparison is **confounded by coordinate
+  conversion**. The rays were built from a *Euclidean-unit* right singular vector
+  `u` of the whitened map `A H^(-1/2)` and then used as `δη = r·u`, so their
+  actual time norm is `r/√m` — the ray labelled r = 1.0 has actual norm 0.577 for
+  m = 3. Recomputed against the *measured* radius (see `results/phase12/`), the
+  r = 0.1 distance is **0.996× σ_⊥·r_measured**, i.e. the family closes
+  essentially none of the gap at that anchor along the transverse direction.
+  The linear-in-r growth and every `R/lin` ratio are unaffected (they compare
+  two quantities built from the same `δη`).
 * **The fixed-anchor linear model does not stay accurate**: `R/lin` — the
   whole-state Taylor residual over the linear prediction — exceeds **1.0 at
   r ≥ 0.3**. This is the review's warning made quantitative: at finite radius the
@@ -162,7 +178,14 @@ Worst case over all radii and all dt (the r = 1.0 ray at dt = 1e-6 s):
 |---|---|---|---|
 | T 1 K / Y 1e-3 | 0.106 | 0.106 | 6.8e-3 |
 | T 1 K / Y 1e-4 | 0.106 | 0.106 | 6.8e-2 |
-| T 10 K / Y 1e-3 | 0.0106 | 0.0106 | 6.8e-4 |
+| T 10 K / Y 1e-3 | 0.0106 | 0.0106 | 6.8e-3 |
+
+**Correction (Revision 7):** the `E_Y` entry in the 10 K row was transcribed as
+6.8e-4, but `E_Y` depends only on `ε_Y`, so the correct value is 6.8e-3 — the
+row above, unchanged. The stored raw records are internally consistent; this
+is verified mechanically in `results/phase12/phase12_summary.json`
+(`e_metric_consistent_in_raw_records: true`), and the tables are now generated
+from the raw records rather than transcribed by hand.
 
 The response difference is temperature-dominated and **decays with dt** (0.106 at
 dt = 1e-6 → 0.023 at dt = 1e-4): the two states relax to the same equilibrium, so
