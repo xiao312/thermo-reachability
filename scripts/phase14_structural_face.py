@@ -186,7 +186,8 @@ def main() -> None:
         loc = located_reference(lib, q, W, cstr)
         if loc.get("q_B") is None:          # success is a located family member
             continue
-        c = {"eta": case["eta"], "q_target": case["q_target"],
+        c = {"label": case.get("label", role),
+             "eta": case["eta"], "q_target": case["q_target"],
              "q_B": loc["q_B"],
              "measured_time_norm": case["measured_time_norm"],
              "located_reference": {

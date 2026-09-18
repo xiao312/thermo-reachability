@@ -698,3 +698,58 @@ measured norm; the confounded "58% closure" comparison is withdrawn, the true
 ratio against the measured radius being 0.996); the E-metric table's E_Y entry
 (6.8e-4 -> 6.8e-3, a transcription error only, the raw records were always
 consistent); the phase-11 expansion branch's rtol=/refine_rtol= signature defect.
+
+
+## Revision 8 (`revision8-structural-face`) — the correction's coefficient was
+never the bottleneck; the feasible set was one-sided
+
+**C41 (established).** The frozen Revision-7 correction direction carried SVD
+numerical noise on the two structurally constant species (n_AR = 9.76e-19,
+n_N2 = 6.92e-19).  AR is the unique carrier of element Ar with b_Ar = 0 and N2 is
+the unique carrier of N with b_N = 0.745124, so E Y = b forces Y_AR = 0 and
+Y_N2 = 0.745124 for every admissible state.  The noise against the exactly zero
+Y_AR imposed a_lo = 0 through (0 - 0)/9.76e-19, making the feasible interval
+ONE-SIDED for 49 of 49 diagnostic cases and truncating every negative correction.
+Embedding the exact zeros and projecting onto the active conservation subspace
+restores a two-sided interval (e.g. [-0.658, +2.668]); the direction itself
+changes by at most 1.73e-18.  Verified both server-free on the committed records
+and on the real mechanism.
+
+**C42 (established).** With the two-sided interval the oracle coefficient is
+negative in 25 of 49 diagnostic cases and 6 of 12 final-test cases, with no
+optimum at an active bound.  The Revision-7 "bimodal" coefficient (zero or
+O(1e-4 - 2e-3)) was this truncation, not a second residual mode; C40's pessimism
+is withdrawn.  On 12 new untouched histories the predicted correction improves the
+scaled state error in 11 of 12 cases (median 4.03e-4 -> 5.29e-5, 7.6x), with
+0 decoder rejections and 0 out-of-interval coefficients.
+
+**C43 (established).** The correction coefficient is not the bottleneck at this
+local class: replacing the predicted coefficient with the oracle coefficient moves
+the median error by only 1.44x (3.68e-5 vs 5.29e-5).  The remaining 14.1x gap to
+the oracle lies in the located reference and the single fixed direction.  There is
+therefore no case for a rank-two correction.
+
+**C44 (established, methodology).** The exposure law cannot identify Gamma at this
+anchor: the initialized hot-HP state has h_0 = h_in and b_0 = b_in identically, so
+both exact balance laws are constant for every control.  The observed
+gamma_B t_B ~ Gamma is an empirical inductive bias, not an invariant match, and
+both coordinates are regressed.  As a diagnostic, the exact first moment
+M1 = int (t_f - s) gamma(s) ds cuts the leave-one-out log-gamma error 6.3x below
+the exposure feature alone (3.62e-2 -> 5.71e-3), and the zero-parameter M1
+asymptotic baseline is already as accurate as the fitted exposure model; adopting
+it as a frozen feature is a Revision-9 decision, not taken here.
+
+**C45 (established).** The frozen predictor is reloadable: frozen_model_v2.json
+carries both coefficient arrays, the feature specification, the direction, the
+species report, the decoder policy, the identities, the selection and a code hash,
+and reproduces predictions without refitting.  The frozen model is 1.74x faster
+than the switched-history integration at the same rtol (1e-10), with a scaled
+state error of 6.18e-6 on the timed case.
+
+Also corrected in this revision (no claim attached): the oracle-reference baseline
+column was silently None in the first protocol run because located_reference
+reports success under the key "q_B", not "resolved" — a regression test now pins
+the contract; the phase-13 validation and test sets are relabelled development
+data (the complexity choice is still made on them, regenerated from their recorded
+seeds); the phase-15 complexity choice scores the canonical prediction
+consistently rather than mixing corrected with uncorrected errors across orders.

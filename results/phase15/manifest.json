@@ -1,0 +1,14 @@
+{
+  "run_id": "phase15",
+  "timestamp_utc": "2026-09-18T10:45:53.142319+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:32e64024cffb74ac",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "script": "scripts/phase15_generator_v2.py",
+    "frozen_model": "frozen_model_v2.json",
+    "test_trajectories": "test_trajectories.json",
+    "protocol": "fit on phase-11 training; complexity on the existing validation set; freeze; then 12 new test histories on new seeds"
+  }
+}

@@ -602,3 +602,16 @@ def test_expansion_branch_does_not_use_a_wrong_keyword():
     assert isinstance(out["expanded_library_failures"], list)
     # the coarse scan on the expanded library must use the NEW domain
     assert out["coarse"]["gamma_domain"][1] > 2.0
+
+
+def test_located_reference_reports_success_as_a_located_q_B():
+    """Regression: located_reference has no 'resolved' key, so a guard written
+    as ``if loc.get('resolved')`` silently returns None for EVERY case and
+    turns the oracle-reference baseline into a missing column.  The success
+    contract is that a located family member appears under 'q_B'."""
+    import inspect
+    from thermoreach.chemresponse import located_reference
+    src = inspect.getsource(located_reference)
+    body = src.split('out["coarse"]', 1)[1]
+    assert 'out["q_B"]' in body
+    assert '"resolved"' not in body

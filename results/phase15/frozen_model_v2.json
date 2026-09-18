@@ -1,0 +1,476 @@
+{
+ "model_kind": "canonical_reference_plus_one_correction",
+ "frozen_at_utc": "2026-09-18T10:44:51.257576+00:00",
+ "feature_specification": {
+  "feature": "generator_features",
+  "durations_s": [
+   3.333333333333333e-07,
+   3.333333333333333e-07,
+   3.333333333333333e-07
+  ],
+  "T_horizon_s": 1e-06,
+  "gamma_ref": 10000.0,
+  "order": 2,
+  "n_features": 15,
+  "n_beta_targets": 2,
+  "n_a_targets": 15
+ },
+ "beta_coefficients": [
+  [
+   3.01205045187615e-07,
+   3.169414649268074e-06
+  ],
+  [
+   -0.028067716252808742,
+   -0.9032465532053385
+  ],
+  [
+   0.008166664573163515,
+   0.5401256251801736
+  ],
+  [
+   0.005159874268130637,
+   0.3109847649332427
+  ],
+  [
+   0.014697982783976613,
+   0.0547181971907108
+  ],
+  [
+   -0.013982925165617534,
+   0.026284695520705868
+  ],
+  [
+   0.0008370265090749676,
+   0.16763155311735856
+  ],
+  [
+   0.0009184620483118879,
+   0.16792337869582863
+  ],
+  [
+   0.0028859026600487354,
+   0.049368428493043855
+  ],
+  [
+   0.008847282795309108,
+   -0.1548186531060364
+  ],
+  [
+   0.011158412807246977,
+   -0.1987484182984416
+  ],
+  [
+   0.005633861591394882,
+   -0.03948792639561551
+  ],
+  [
+   -0.005641432606627602,
+   -0.068520545406325
+  ],
+  [
+   -0.005034918991635001,
+   -0.010349340899925709
+  ],
+  [
+   -0.00547457911051903,
+   0.05127146564385919
+  ]
+ ],
+ "a_coefficients": [
+  6.109517337743775e-07,
+  0.010077924534052358,
+  -0.0031160548325976966,
+  -0.00253589715091152,
+  -0.004398158266736734,
+  0.0040436517802463585,
+  -0.0006077806246928159,
+  -0.0005919504139422023,
+  -0.0006877632929300171,
+  -0.0021715934502940584,
+  -0.0024675167116240226,
+  -0.003684361052932058,
+  0.0018940492815584771,
+  0.0020007113398958463,
+  0.0021614360297906527
+ ],
+ "ridge": 1e-08,
+ "n_Y": [
+  -0.0013944285860192293,
+  0.0009908533589777836,
+  -0.0006136104847999894,
+  0.0005670865253148321,
+  -0.006714533365152473,
+  0.007161753159121904,
+  2.626257615803639e-06,
+  2.5313494136433367e-07,
+  0.0,
+  0.0
+ ],
+ "species_report": {
+  "species_names": [
+   "H2",
+   "H",
+   "O",
+   "O2",
+   "OH",
+   "H2O",
+   "HO2",
+   "H2O2",
+   "AR",
+   "N2"
+  ],
+  "active_indices": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "fixed_indices": [
+   9
+  ],
+  "absent_indices": [
+   8
+  ],
+  "active_mask": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   false,
+   false
+  ],
+  "structurally_zero_mask": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   true
+  ],
+  "n_active": 8,
+  "inert": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   true
+  ],
+  "b_in": [
+   0.22635400697100735,
+   0.028522387527567396,
+   0.0,
+   0.7451236055014253
+  ],
+  "element_carriers": {
+   "O": [
+    "O",
+    "O2",
+    "OH",
+    "H2O",
+    "HO2",
+    "H2O2"
+   ],
+   "H": [
+    "H2",
+    "H",
+    "OH",
+    "H2O",
+    "HO2",
+    "H2O2"
+   ],
+   "Ar": [
+    "AR"
+   ],
+   "N": [
+    "N2"
+   ]
+  },
+  "inconsistent": [],
+  "note": "absent species have zero feed inventory for every element they contain; fixed species are inert with Y0 == Y_in; the remaining active species are what the correction can move"
+ },
+ "state_scaling": {
+  "T_interval_K": 100.0,
+  "Y_interval": 0.01,
+  "n_species": 10,
+  "note": "an increment of T_INTERVAL kelvin and Y_INTERVAL in every mass fraction are declared comparably significant; singular values in the scaled space count such increments"
+ },
+ "decoder_policy": {
+  "y_floor": -1e-12,
+  "sum_atol": 1e-09,
+  "policy": "invalid compositions are REJECTED and counted, never clipped to look admissible; the temperature is solved by enthalpy inversion at the reference's own enthalpy"
+ },
+ "reference_coordinates": {
+  "parametrization": "exposure_constrained empirical inductive bias (log gamma_B = log Gamma - v + u, log t_B = v; u and v are both regressed, u is not forced to zero; at this anchor h0 = h_in and b0 = b_in so the balance law cannot identify Gamma)",
+  "targets": [
+   "u = log(Gamma_B / Gamma)",
+   "v = log(t_B / T)"
+  ],
+  "log_gamma_B_rule": "log gamma_B = log Gamma - v + u",
+  "log_t_B_rule": "log t_B = T_horizon * exp(v)"
+ },
+ "training_domain": {
+  "max_measured_time_norm": 0.6000000000000001,
+  "n_train": 25,
+  "order": 2,
+  "ridge": 1e-08
+ },
+ "normal_report": {
+  "leading_residual_singular_values": [
+   0.003469085851509188,
+   0.00011705988879441405,
+   1.7146679891932695e-06,
+   7.1362372631852e-07,
+   3.7058908456584054e-09,
+   2.2654701717743361e-10,
+   5.262035934343431e-12,
+   6.198873018275315e-13,
+   3.115664858857851e-14,
+   1.067302312994924e-15,
+   0.0
+  ],
+  "retained_fraction": 1.0000000000000002,
+  "subspace": {
+   "dim": 6,
+   "conditioning": 2.2509062704284397,
+   "y_interval": 0.01,
+   "active_count": 8
+  },
+  "residual_cloud_rank_revealed": true
+ },
+ "model_identity": {
+  "kind": "canonical_reference_plus_one_correction",
+  "reference_coordinate_parametrization": "exposure_constrained empirical inductive bias (log gamma_B = log Gamma - v + u, log t_B = v; u and v are both regressed, u is not forced to zero; at this anchor h0 = h_in and b0 = b_in so the balance law cannot identify Gamma)",
+  "mechanism": "h2o2.yaml",
+  "gamma_ref": 10000.0,
+  "T_horizon_s": 1e-06,
+  "n_segments": 3,
+  "order": 2,
+  "ridge": 1e-08,
+  "state_scaling": {
+   "T_interval_K": 100.0,
+   "Y_interval": 0.01,
+   "n_species": 10,
+   "note": "an increment of T_INTERVAL kelvin and Y_INTERVAL in every mass fraction are declared comparably significant; singular values in the scaled space count such increments"
+  },
+  "problem_definition": {
+   "initial_state": "hot HP equilibrium of the feed",
+   "mechanism": "h2o2.yaml",
+   "pressure_Pa": 101325.0,
+   "T_in_K": 1200.0,
+   "fuel": "H2",
+   "oxidizer": "O2:1,N2:3.76",
+   "equivalence_ratio": 1.0,
+   "horizon_s": 1e-06,
+   "durations_s": [
+    3.333333333333333e-07,
+    3.333333333333333e-07,
+    3.333333333333333e-07
+   ],
+   "n_segments": 3,
+   "gamma_ref": 10000.0,
+   "control_bounds": {
+    "gamma_lo": null,
+    "gamma_hi": null
+   },
+   "reactor": "adiabatic fixed-pressure CSTR"
+  },
+  "library_identity": {
+   "mechanism": "h2o2.yaml",
+   "phase": null,
+   "pressure": 101325.0,
+   "q0_sha256_16": "b85e5fd3dc5fd2a1",
+   "gamma_grid": [
+    2231.3016014842983,
+    2592.402606458916,
+    3011.9421191220204,
+    3499.3774911115543,
+    4065.696597405993,
+    4723.665527410143,
+    5488.116360940261,
+    6376.281516217731,
+    7408.18220681718,
+    8607.079764250568,
+    9999.99999999999,
+    11618.342427282825,
+    13498.588075760028,
+    15683.12185490169,
+    18221.188003905067,
+    21170.000166126727,
+    24596.031111569482,
+    28576.51118063163,
+    33201.16922736548,
+    38574.255306969695,
+    44816.89070338061
+   ],
+   "t_max": 9.999999999999999e-05,
+   "t_anchor": 1e-06,
+   "method": "Radau",
+   "rtol": 1e-10,
+   "atol_T": 1e-12,
+   "atol_Y": 1e-16,
+   "n_integrated": 21,
+   "n_failed": 0,
+   "failures": []
+  }
+ },
+ "library_identity": {
+  "mechanism": "h2o2.yaml",
+  "phase": null,
+  "pressure": 101325.0,
+  "q0_sha256_16": "b85e5fd3dc5fd2a1",
+  "gamma_grid": [
+   2231.3016014842983,
+   2592.402606458916,
+   3011.9421191220204,
+   3499.3774911115543,
+   4065.696597405993,
+   4723.665527410143,
+   5488.116360940261,
+   6376.281516217731,
+   7408.18220681718,
+   8607.079764250568,
+   9999.99999999999,
+   11618.342427282825,
+   13498.588075760028,
+   15683.12185490169,
+   18221.188003905067,
+   21170.000166126727,
+   24596.031111569482,
+   28576.51118063163,
+   33201.16922736548,
+   38574.255306969695,
+   44816.89070338061
+  ],
+  "t_max": 9.999999999999999e-05,
+  "t_anchor": 1e-06,
+  "method": "Radau",
+  "rtol": 1e-10,
+  "atol_T": 1e-12,
+  "atol_Y": 1e-16,
+  "n_integrated": 21,
+  "n_failed": 0,
+  "failures": []
+ },
+ "problem_definition": {
+  "initial_state": "hot HP equilibrium of the feed",
+  "mechanism": "h2o2.yaml",
+  "pressure_Pa": 101325.0,
+  "T_in_K": 1200.0,
+  "fuel": "H2",
+  "oxidizer": "O2:1,N2:3.76",
+  "equivalence_ratio": 1.0,
+  "horizon_s": 1e-06,
+  "durations_s": [
+   3.333333333333333e-07,
+   3.333333333333333e-07,
+   3.333333333333333e-07
+  ],
+  "n_segments": 3,
+  "gamma_ref": 10000.0,
+  "control_bounds": {
+   "gamma_lo": null,
+   "gamma_hi": null
+  },
+  "reactor": "adiabatic fixed-pressure CSTR"
+ },
+ "selection": {
+  "selected": 2,
+  "selection_set": "the existing validation set, regenerated from its recorded seeds (development data); fixed low-complexity choice",
+  "orders_tried": [
+   1,
+   2
+  ],
+  "order_scores": {
+   "1": {
+    "n": 8,
+    "min": 8.370830188706848e-05,
+    "q25": 0.00022252825494451932,
+    "median": 0.0003142372270118431,
+    "q75": 0.0006237040745924922,
+    "max": 0.0014258369194722186,
+    "mean": 0.0005261697087408788
+   },
+   "2": {
+    "n": 8,
+    "min": 7.744411966673134e-05,
+    "q25": 0.00015523993905741348,
+    "median": 0.00019807033452736401,
+    "q75": 0.00046187995795568277,
+    "max": 0.001004973051232735,
+    "mean": 0.00037924425482443005
+   }
+  },
+  "n_validation": 8
+ },
+ "config": {
+  "orders_tried": [
+   1,
+   2
+  ],
+  "ridge": 1e-08,
+  "n_test_requested": 12
+ },
+ "training_case_ids": [
+  "transverse_r0.03_s+1",
+  "transverse_r0.03_s-1",
+  "transverse_r0.1_s+1",
+  "transverse_r0.1_s-1",
+  "transverse_r0.3_s+1",
+  "transverse_r0.3_s-1",
+  "transverse_r0.6_s+1",
+  "transverse_r0.6_s-1",
+  "transverse_r1_s+1",
+  "transverse_r1_s-1",
+  "infamily_r0.03",
+  "infamily_r0.1",
+  "infamily_r0.3",
+  "heldout_0",
+  "heldout_1",
+  "heldout_2",
+  "heldout_3",
+  "heldout_4",
+  "heldout_5",
+  "heldout_6",
+  "heldout_7",
+  "heldout_8",
+  "heldout_9",
+  "heldout_10",
+  "heldout_11"
+ ],
+ "validation_case_ids": [
+  "validation_0",
+  "validation_1",
+  "validation_2",
+  "validation_3",
+  "validation_4",
+  "validation_5",
+  "validation_6",
+  "validation_7"
+ ],
+ "code_sha256_16": {
+  "generator.py": "31cb669a540c985f",
+  "reactor.py": "b937f588d82fbd83",
+  "chemresponse.py": "f4b45f6bac644755",
+  "admissibility.py": "c3a8f9b1790c80ff",
+  "controls.py": "a9ce10369124b57c"
+ },
+ "declaration": "the model above - complexity, regularization, the correction direction and both coefficient arrays - was frozen BEFORE any test history of this revision was generated; the test set is disjoint from training and validation"
+}

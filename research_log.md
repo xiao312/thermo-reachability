@@ -545,3 +545,60 @@ Integrity: expansion-branch signature defect fixed and now tested under a stub;
 load_verified checks mechanism content hash, species order, pressure, the hot-HP
 initial state; model frozen to disk before any test history exists; train,
 validation and test label sets are mechanically disjoint.
+
+## Revision 8 — `revision8-structural-face`
+
+In order as it happened:
+
+1. **Root cause of the feasible-set defect.** The frozen Revision-7 correction
+   direction carried `n_AR = 9.76e-19` and `n_N2 = 6.92e-19` (SVD numerical noise;
+   a conservation-compatible direction already forces both to zero to ~1e-18).
+   Against the exactly zero `Y_AR`, that noise imposed `a_lo = 0` via
+   `(0 - 0)/9.76e-19`, making the feasible interval one-sided and truncating every
+   negative correction.  Feed is H2 / O2:1,N2:3.76 at phi = 1, so AR is
+   structurally absent and N2 is a fixed inert.
+2. **Three classification routes** added: no feed material for any element the
+   species contains; inert with `Y0 == Y_in`; and the strongest, the **unique
+   element carrier** (if species k is the only carrier of element e, then
+   `E Y = b` forces `Y_k = b_e/E[e,k]` for every state with that inventory) — this
+   needs no stoichiometry at all and classifies AR and N2 directly from the
+   element matrix and the feed.
+3. **Server-free verification on the committed phase-11 records** while the
+   compute server was unreachable for ~2 h: the records carry the mechanism's
+   species list and both the true and located states, so the fitted direction was
+   recomputed locally.  Confirmed `Y_AR = 0` for all 25 located references,
+   `Y_N2` constant to 3.4e-15, and **one-sided (`a_lo == 0`) intervals for 25 of
+   25** cases; corrected interval e.g. [-0.658, +2.668].  Committed as
+   `results/phase14/face_verify_local.json` and reproducible without Cantera.
+4. **Real-mechanism run** (`phase14`): absent = AR, fixed = N2, active = the 8 H/O
+   species; the frozen direction is bit-identical to a fresh recomputation of the
+   Revision-7 code path; oracle coefficient negative in **25 of 49** diagnostic
+   cases, zero in 0, positive in 24; one-sided intervals 49 of 49 before the
+   repair.
+5. **Two real script bugs found by review before the expensive run**:
+   `located_reference` returns no `resolved` key (success is a located `q_B`), and
+   the phase-15 complexity choice must score the canonical prediction
+   consistently.  The first of these still produced a silent all-None
+   oracle-reference column in the first protocol run and was caught from the
+   results, not from the code; a regression test now pins the key contract.
+6. **Protocol run** (`phase15`): complexity (order 2) selected on the existing
+   validation set regenerated from its recorded seeds — now development data —
+   model frozen to a reloadable artifact, then 12 new untouched histories on a new
+   seed at norms 0.1/0.3/0.6, 12 completed, 0 failed, 0 excluded.  C improves on B
+   in **11 of 12** at a **7.6x** median gain; E vs C is only **1.44x**, so the
+   coefficient is not the bottleneck and C40 is withdrawn; C/D is 14.1x and that
+   gap is the located reference and the fixed direction.  At norm 0.6 the
+   correction stops dominating (B->C only 1.3x) — reported as the boundary of the
+   local class, not repaired.
+7. **Cost**: full prediction 5.94e-2 s vs switched-history integration 1.03e-1 s
+   at the same rtol 1e-10, i.e. 1.74x faster, with a 6.18e-6 scaled error on the
+   timed case.
+8. **Exposure ablation** (`phase16`, diagnostic only): the exact first moment cuts
+   the leave-one-out log-gamma rms from 3.62e-2 (exposure) to 5.71e-3, and the
+   zero-parameter asymptotic baseline is already as good as the fitted exposure
+   model.  Framed as a Revision-9 decision; the frozen model here does not use it.
+
+Outcomes: C41 (one-sided feasible set), C42 (the negative side carries half the
+optima; C40 withdrawn), C43 (coefficient not the bottleneck), C44 (the exposure
+law cannot identify Gamma at this anchor), C45 (reloadable and 1.74x faster).
+`reports/report_08.md`.

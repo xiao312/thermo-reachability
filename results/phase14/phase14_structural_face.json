@@ -1,0 +1,7555 @@
+{
+ "structural_classification": {
+  "species_names": [
+   "H2",
+   "H",
+   "O",
+   "O2",
+   "OH",
+   "H2O",
+   "HO2",
+   "H2O2",
+   "AR",
+   "N2"
+  ],
+  "absent": [
+   "AR"
+  ],
+  "fixed": [
+   "N2"
+  ],
+  "active": [
+   "H2",
+   "H",
+   "O",
+   "O2",
+   "OH",
+   "H2O",
+   "HO2",
+   "H2O2"
+  ],
+  "b_in": [
+   0.22635400697100735,
+   0.028522387527567396,
+   0.0,
+   0.7451236055014253
+  ],
+  "element_carriers": {
+   "O": [
+    "O",
+    "O2",
+    "OH",
+    "H2O",
+    "HO2",
+    "H2O2"
+   ],
+   "H": [
+    "H2",
+    "H",
+    "OH",
+    "H2O",
+    "HO2",
+    "H2O2"
+   ],
+   "Ar": [
+    "AR"
+   ],
+   "N": [
+    "N2"
+   ]
+  },
+  "inconsistent": [],
+  "note": "absent species have zero feed inventory for every element they contain; fixed species are inert with Y0 == Y_in; the remaining active species are what the correction can move"
+ },
+ "directions": {
+  "frozen_revision7": [
+   -0.0013944285860192293,
+   0.0009908533589777834,
+   -0.0006136104847999877,
+   0.000567086525314833,
+   -0.006714533365152473,
+   0.007161753159121904,
+   2.6262576158037994e-06,
+   2.531349413651325e-07,
+   9.759474952003097e-19,
+   6.923631936456039e-19
+  ],
+  "recomputed_revision7_code_path": [
+   -0.0013944285860192293,
+   0.0009908533589777834,
+   -0.0006136104847999877,
+   0.000567086525314833,
+   -0.006714533365152473,
+   0.007161753159121904,
+   2.6262576158037994e-06,
+   2.531349413651325e-07,
+   9.759474952003097e-19,
+   6.923631936456039e-19
+  ],
+  "corrected": [
+   -0.0013944285860192293,
+   0.0009908533589777836,
+   -0.0006136104847999894,
+   0.0005670865253148321,
+   -0.006714533365152473,
+   0.007161753159121904,
+   2.626257615803639e-06,
+   2.5313494136433367e-07,
+   0.0,
+   0.0
+  ],
+  "max_abs_difference_new_vs_old": 1.734723475976807e-18,
+  "noisy_entries": {
+   "AR": {
+    "frozen": 9.759474952003097e-19,
+    "recomputed": 9.759474952003097e-19,
+    "corrected": 0.0
+   },
+   "N2": {
+    "frozen": 6.923631936456039e-19,
+    "recomputed": 6.923631936456039e-19,
+    "corrected": 0.0
+   }
+  },
+  "residual_singular_values": [
+   0.003469085851509188,
+   0.00011705988879441405,
+   1.7146679891932695e-06,
+   7.1362372631852e-07,
+   3.7058908456584054e-09,
+   2.2654701717743361e-10,
+   5.262035934343431e-12,
+   6.198873018275315e-13,
+   3.115664858857851e-14,
+   1.067302312994924e-15,
+   0.0
+  ],
+  "projection_old": {
+   "retained_fraction": 0.9999999999999999,
+   "subspace": {
+    "dim": 6,
+    "conditioning": 3.7876776977598885,
+    "y_interval": 0.01
+   }
+  },
+  "projection_new": {
+   "retained_fraction": 1.0000000000000002,
+   "subspace": {
+    "dim": 6,
+    "conditioning": 2.2509062704284397,
+    "y_interval": 0.01,
+    "active_count": 8
+   }
+  }
+ },
+ "ledger": {
+  "n_diagnostic_cases": 49,
+  "n_negative": 25,
+  "n_zero": 0,
+  "n_positive": 24,
+  "previously_zero_training_optima": 0,
+  "now_negative_among_those": 0,
+  "one_sided_intervals_before_repair": 49
+ },
+ "selected_cases": {
+  "positive_optimum": {
+   "label": "transverse_r0.03_s+1",
+   "role": "train",
+   "measured_time_norm": 0.017320508075688697,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6678133663626395,
+    "bounded": true,
+    "interval_width": 2.6678133663626395,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6578496379050512,
+    "a_hi": 2.6678133663626395,
+    "bounded": true,
+    "interval_width": 3.3256630042676907,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 4.041590456942791e-05,
+   "oracle_active_bound": null,
+   "a_lin": 1.6464924312046086e-06,
+   "dT_over_da": -57.025430456879754,
+   "cp": 1772.5021870909432,
+   "dist_at_oracle": 1.192494882476908e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16628315021338455,
+     "dist": 0.19147002448524275,
+     "rejected": false
+    },
+    {
+     "a": -0.1496548351920461,
+     "dist": 0.1723273592385748,
+     "rejected": false
+    },
+    {
+     "a": -0.13302652017070765,
+     "dist": 0.15318476417421448,
+     "rejected": false
+    },
+    {
+     "a": -0.11639820514936919,
+     "dist": 0.1340422392533379,
+     "rejected": false
+    },
+    {
+     "a": -0.09976989012803072,
+     "dist": 0.11489978443729496,
+     "rejected": false
+    },
+    {
+     "a": -0.08314157510669226,
+     "dist": 0.09575739968727448,
+     "rejected": false
+    },
+    {
+     "a": -0.06651326008535381,
+     "dist": 0.07661508496438899,
+     "rejected": false
+    },
+    {
+     "a": -0.04988494506401536,
+     "dist": 0.057472840229898216,
+     "rejected": false
+    },
+    {
+     "a": -0.0332566300426769,
+     "dist": 0.03833066544608109,
+     "rejected": false
+    },
+    {
+     "a": -0.016628315021338436,
+     "dist": 0.01918856058239213,
+     "rejected": false
+    },
+    {
+     "a": 2.7755575615628914e-17,
+     "dist": 4.654081085438748e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.016628315021338463,
+     "dist": 0.019095439693050945,
+     "rejected": false
+    },
+    {
+     "a": 0.03325663004267693,
+     "dist": 0.03823733507397784,
+     "rejected": false
+    },
+    {
+     "a": 0.04988494506401539,
+     "dist": 0.0573791607207685,
+     "rejected": false
+    },
+    {
+     "a": 0.06651326008535383,
+     "dist": 0.0765209166649061,
+     "rejected": false
+    },
+    {
+     "a": 0.08314157510669229,
+     "dist": 0.09566260294557848,
+     "rejected": false
+    },
+    {
+     "a": 0.09976989012803075,
+     "dist": 0.11480421960341182,
+     "rejected": false
+    },
+    {
+     "a": 0.11639820514936919,
+     "dist": 0.13394576667959188,
+     "rejected": false
+    },
+    {
+     "a": 0.13302652017070768,
+     "dist": 0.15308724421565478,
+     "rejected": false
+    },
+    {
+     "a": 0.14965483519204612,
+     "dist": 0.17222865225340003,
+     "rejected": false
+    },
+    {
+     "a": 0.16628315021338455,
+     "dist": 0.19136999083487113,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  "negative_optimum": {
+   "label": "transverse_r0.03_s-1",
+   "role": "train",
+   "measured_time_norm": 0.01732050807568877,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6682305674395868,
+    "bounded": true,
+    "interval_width": 2.6682305674395868,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6577868591915472,
+    "a_hi": 2.6682305674395868,
+    "bounded": true,
+    "interval_width": 3.326017426631134,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -4.0514569581031874e-05,
+   "oracle_active_bound": null,
+   "a_lin": -1.6505126564543289e-06,
+   "dT_over_da": -57.02543236265034,
+   "cp": 1772.5018899910817,
+   "dist_at_oracle": 1.1028464327628433e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16630087133155672,
+     "dist": 0.19139726204542715,
+     "rejected": false
+    },
+    {
+     "a": -0.14967078419840105,
+     "dist": 0.1722525565117165,
+     "rejected": false
+    },
+    {
+     "a": -0.13304069706524538,
+     "dist": 0.15310792117461144,
+     "rejected": false
+    },
+    {
+     "a": -0.1164106099320897,
+     "dist": 0.13396335599526685,
+     "rejected": false
+    },
+    {
+     "a": -0.09978052279893403,
+     "dist": 0.11481886093500632,
+     "rejected": false
+    },
+    {
+     "a": -0.08315043566577836,
+     "dist": 0.09567443595498792,
+     "rejected": false
+    },
+    {
+     "a": -0.06652034853262268,
+     "dist": 0.07653008101627506,
+     "rejected": false
+    },
+    {
+     "a": -0.049890261399467006,
+     "dist": 0.0573857960800257,
+     "rejected": false
+    },
+    {
+     "a": -0.03326017426631134,
+     "dist": 0.038241581108249476,
+     "rejected": false
+    },
+    {
+     "a": -0.01663008713315567,
+     "dist": 0.019097436069134374,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 4.665217308595785e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.01663008713315567,
+     "dist": 0.01919064449866976,
+     "rejected": false
+    },
+    {
+     "a": 0.033260174266311365,
+     "dist": 0.03833458001269452,
+     "rejected": false
+    },
+    {
+     "a": 0.049890261399467034,
+     "dist": 0.05747844577651473,
+     "rejected": false
+    },
+    {
+     "a": 0.0665203485326227,
+     "dist": 0.07662224182307735,
+     "rejected": false
+    },
+    {
+     "a": 0.08315043566577837,
+     "dist": 0.09576596819184072,
+     "rejected": false
+    },
+    {
+     "a": 0.09978052279893404,
+     "dist": 0.11490962492354256,
+     "rejected": false
+    },
+    {
+     "a": 0.11641060993208971,
+     "dist": 0.13405321205943085,
+     "rejected": false
+    },
+    {
+     "a": 0.13304069706524538,
+     "dist": 0.15319672964106662,
+     "rejected": false
+    },
+    {
+     "a": 0.14967078419840105,
+     "dist": 0.17234017771028035,
+     "rejected": false
+    },
+    {
+     "a": 0.16630087133155672,
+     "dist": 0.19148355630913022,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  "zero_optimum": null
+ },
+ "per_case": [
+  {
+   "label": "transverse_r0.03_s+1",
+   "role": "train",
+   "measured_time_norm": 0.017320508075688697,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6678133663626395,
+    "bounded": true,
+    "interval_width": 2.6678133663626395,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6578496379050512,
+    "a_hi": 2.6678133663626395,
+    "bounded": true,
+    "interval_width": 3.3256630042676907,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 4.041590456942791e-05,
+   "oracle_active_bound": null,
+   "a_lin": 1.6464924312046086e-06,
+   "dT_over_da": -57.025430456879754,
+   "cp": 1772.5021870909432,
+   "dist_at_oracle": 1.192494882476908e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16628315021338455,
+     "dist": 0.19147002448524275,
+     "rejected": false
+    },
+    {
+     "a": -0.1496548351920461,
+     "dist": 0.1723273592385748,
+     "rejected": false
+    },
+    {
+     "a": -0.13302652017070765,
+     "dist": 0.15318476417421448,
+     "rejected": false
+    },
+    {
+     "a": -0.11639820514936919,
+     "dist": 0.1340422392533379,
+     "rejected": false
+    },
+    {
+     "a": -0.09976989012803072,
+     "dist": 0.11489978443729496,
+     "rejected": false
+    },
+    {
+     "a": -0.08314157510669226,
+     "dist": 0.09575739968727448,
+     "rejected": false
+    },
+    {
+     "a": -0.06651326008535381,
+     "dist": 0.07661508496438899,
+     "rejected": false
+    },
+    {
+     "a": -0.04988494506401536,
+     "dist": 0.057472840229898216,
+     "rejected": false
+    },
+    {
+     "a": -0.0332566300426769,
+     "dist": 0.03833066544608109,
+     "rejected": false
+    },
+    {
+     "a": -0.016628315021338436,
+     "dist": 0.01918856058239213,
+     "rejected": false
+    },
+    {
+     "a": 2.7755575615628914e-17,
+     "dist": 4.654081085438748e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.016628315021338463,
+     "dist": 0.019095439693050945,
+     "rejected": false
+    },
+    {
+     "a": 0.03325663004267693,
+     "dist": 0.03823733507397784,
+     "rejected": false
+    },
+    {
+     "a": 0.04988494506401539,
+     "dist": 0.0573791607207685,
+     "rejected": false
+    },
+    {
+     "a": 0.06651326008535383,
+     "dist": 0.0765209166649061,
+     "rejected": false
+    },
+    {
+     "a": 0.08314157510669229,
+     "dist": 0.09566260294557848,
+     "rejected": false
+    },
+    {
+     "a": 0.09976989012803075,
+     "dist": 0.11480421960341182,
+     "rejected": false
+    },
+    {
+     "a": 0.11639820514936919,
+     "dist": 0.13394576667959188,
+     "rejected": false
+    },
+    {
+     "a": 0.13302652017070768,
+     "dist": 0.15308724421565478,
+     "rejected": false
+    },
+    {
+     "a": 0.14965483519204612,
+     "dist": 0.17222865225340003,
+     "rejected": false
+    },
+    {
+     "a": 0.16628315021338455,
+     "dist": 0.19136999083487113,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.03_s-1",
+   "role": "train",
+   "measured_time_norm": 0.01732050807568877,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6682305674395868,
+    "bounded": true,
+    "interval_width": 2.6682305674395868,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6577868591915472,
+    "a_hi": 2.6682305674395868,
+    "bounded": true,
+    "interval_width": 3.326017426631134,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -4.0514569581031874e-05,
+   "oracle_active_bound": null,
+   "a_lin": -1.6505126564543289e-06,
+   "dT_over_da": -57.02543236265034,
+   "cp": 1772.5018899910817,
+   "dist_at_oracle": 1.1028464327628433e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16630087133155672,
+     "dist": 0.19139726204542715,
+     "rejected": false
+    },
+    {
+     "a": -0.14967078419840105,
+     "dist": 0.1722525565117165,
+     "rejected": false
+    },
+    {
+     "a": -0.13304069706524538,
+     "dist": 0.15310792117461144,
+     "rejected": false
+    },
+    {
+     "a": -0.1164106099320897,
+     "dist": 0.13396335599526685,
+     "rejected": false
+    },
+    {
+     "a": -0.09978052279893403,
+     "dist": 0.11481886093500632,
+     "rejected": false
+    },
+    {
+     "a": -0.08315043566577836,
+     "dist": 0.09567443595498792,
+     "rejected": false
+    },
+    {
+     "a": -0.06652034853262268,
+     "dist": 0.07653008101627506,
+     "rejected": false
+    },
+    {
+     "a": -0.049890261399467006,
+     "dist": 0.0573857960800257,
+     "rejected": false
+    },
+    {
+     "a": -0.03326017426631134,
+     "dist": 0.038241581108249476,
+     "rejected": false
+    },
+    {
+     "a": -0.01663008713315567,
+     "dist": 0.019097436069134374,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 4.665217308595785e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.01663008713315567,
+     "dist": 0.01919064449866976,
+     "rejected": false
+    },
+    {
+     "a": 0.033260174266311365,
+     "dist": 0.03833458001269452,
+     "rejected": false
+    },
+    {
+     "a": 0.049890261399467034,
+     "dist": 0.05747844577651473,
+     "rejected": false
+    },
+    {
+     "a": 0.0665203485326227,
+     "dist": 0.07662224182307735,
+     "rejected": false
+    },
+    {
+     "a": 0.08315043566577837,
+     "dist": 0.09576596819184072,
+     "rejected": false
+    },
+    {
+     "a": 0.09978052279893404,
+     "dist": 0.11490962492354256,
+     "rejected": false
+    },
+    {
+     "a": 0.11641060993208971,
+     "dist": 0.13405321205943085,
+     "rejected": false
+    },
+    {
+     "a": 0.13304069706524538,
+     "dist": 0.15319672964106662,
+     "rejected": false
+    },
+    {
+     "a": 0.14967078419840105,
+     "dist": 0.17234017771028035,
+     "rejected": false
+    },
+    {
+     "a": 0.16630087133155672,
+     "dist": 0.19148355630913022,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.1_s+1",
+   "role": "train",
+   "measured_time_norm": 0.05773502691896252,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6675118187340017,
+    "bounded": true,
+    "interval_width": 2.6675118187340017,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.657955073663826,
+    "a_hi": 2.6675118187340017,
+    "bounded": true,
+    "interval_width": 3.3254668923978277,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0001343589147130637,
+   "oracle_active_bound": null,
+   "a_lin": 5.473613838921039e-06,
+   "dT_over_da": -57.02543877971318,
+   "cp": 1772.5011222719468,
+   "dist_at_oracle": 4.2930675816041315e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1662733446198914,
+     "dist": 0.19156688750488315,
+     "rejected": false
+    },
+    {
+     "a": -0.14964601015790227,
+     "dist": 0.17242535044447535,
+     "rejected": false
+    },
+    {
+     "a": -0.13301867569591314,
+     "dist": 0.15328388355866382,
+     "rejected": false
+    },
+    {
+     "a": -0.11639134123392397,
+     "dist": 0.1341424868091542,
+     "rejected": false
+    },
+    {
+     "a": -0.09976400677193484,
+     "dist": 0.11500116015816815,
+     "rejected": false
+    },
+    {
+     "a": -0.0831366723099457,
+     "dist": 0.09585990356847959,
+     "rejected": false
+    },
+    {
+     "a": -0.06650933784795655,
+     "dist": 0.07671871700437387,
+     "rejected": false
+    },
+    {
+     "a": -0.049882003385967405,
+     "dist": 0.05757760043442857,
+     "rejected": false
+    },
+    {
+     "a": -0.03325466892397827,
+     "dist": 0.038436553842913536,
+     "rejected": false
+    },
+    {
+     "a": -0.016627334461989135,
+     "dist": 0.019295577308411832,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00015472948579047104,
+     "rejected": false
+    },
+    {
+     "a": 0.016627334461989163,
+     "dist": 0.01898616766272894,
+     "rejected": false
+    },
+    {
+     "a": 0.0332546689239783,
+     "dist": 0.038126934735530964,
+     "rejected": false
+    },
+    {
+     "a": 0.04988200338596743,
+     "dist": 0.05726763223354483,
+     "rejected": false
+    },
+    {
+     "a": 0.0665093378479566,
+     "dist": 0.07640826007518885,
+     "rejected": false
+    },
+    {
+     "a": 0.08313667230994573,
+     "dist": 0.09554881827717908,
+     "rejected": false
+    },
+    {
+     "a": 0.09976400677193487,
+     "dist": 0.11468930687267184,
+     "rejected": false
+    },
+    {
+     "a": 0.11639134123392403,
+     "dist": 0.13382972589966372,
+     "rejected": false
+    },
+    {
+     "a": 0.13301867569591314,
+     "dist": 0.15297007539808632,
+     "rejected": false
+    },
+    {
+     "a": 0.1496460101579023,
+     "dist": 0.1721103554088523,
+     "rejected": false
+    },
+    {
+     "a": 0.1662733446198914,
+     "dist": 0.1912505659734646,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.1_s-1",
+   "role": "train",
+   "measured_time_norm": 0.05773502691896267,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6689065707163566,
+    "bounded": true,
+    "interval_width": 2.6689065707163566,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6577460620894885,
+    "a_hi": 2.6689065707163566,
+    "bounded": true,
+    "interval_width": 3.3266526328058452,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00013545126248860982,
+   "oracle_active_bound": null,
+   "a_lin": -5.518110493007965e-06,
+   "dT_over_da": -57.025445322133734,
+   "cp": 1772.5001078757045,
+   "dist_at_oracle": 3.2946144938468412e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16633263164029227,
+     "dist": 0.19132454721621842,
+     "rejected": false
+    },
+    {
+     "a": -0.14969936847626306,
+     "dist": 0.17217618424200104,
+     "rejected": false
+    },
+    {
+     "a": -0.1330661053122338,
+     "dist": 0.15302789148969265,
+     "rejected": false
+    },
+    {
+     "a": -0.1164328421482046,
+     "dist": 0.13387966892072128,
+     "rejected": false
+    },
+    {
+     "a": -0.09979957898417537,
+     "dist": 0.11473151649688974,
+     "rejected": false
+    },
+    {
+     "a": -0.08316631582014614,
+     "dist": 0.09558343418022316,
+     "rejected": false
+    },
+    {
+     "a": -0.06653305265611692,
+     "dist": 0.07643542193358405,
+     "rejected": false
+    },
+    {
+     "a": -0.04989978949208769,
+     "dist": 0.05728747972232111,
+     "rejected": false
+    },
+    {
+     "a": -0.03326652632805846,
+     "dist": 0.038139607521145084,
+     "rejected": false
+    },
+    {
+     "a": -0.016633263164029244,
+     "dist": 0.01899180536232063,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00015596212168591606,
+     "rejected": false
+    },
+    {
+     "a": 0.016633263164029216,
+     "dist": 0.019303590130216652,
+     "rejected": false
+    },
+    {
+     "a": 0.03326652632805843,
+     "dist": 0.03845118269422074,
+     "rejected": false
+    },
+    {
+     "a": 0.049899789492087676,
+     "dist": 0.05759870556626104,
+     "rejected": false
+    },
+    {
+     "a": 0.06653305265611689,
+     "dist": 0.07674615871753634,
+     "rejected": false
+    },
+    {
+     "a": 0.08316631582014614,
+     "dist": 0.0958935421750969,
+     "rejected": false
+    },
+    {
+     "a": 0.09979957898417535,
+     "dist": 0.11504085597554685,
+     "rejected": false
+    },
+    {
+     "a": 0.1164328421482046,
+     "dist": 0.1341881001583795,
+     "rejected": false
+    },
+    {
+     "a": 0.13306610531223378,
+     "dist": 0.1533352747642899,
+     "rejected": false
+    },
+    {
+     "a": 0.14969936847626303,
+     "dist": 0.17248237983463868,
+     "rejected": false
+    },
+    {
+     "a": 0.16633263164029227,
+     "dist": 0.19162941541121573,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.3_s+1",
+   "role": "train",
+   "measured_time_norm": 0.17320508075688773,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6677154557587732,
+    "bounded": true,
+    "interval_width": 2.6677154557587732,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6584456393742868,
+    "a_hi": 2.6677154557587732,
+    "bounded": true,
+    "interval_width": 3.32616109513306,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00040051140515924,
+   "oracle_active_bound": null,
+   "a_lin": 1.6316293205932736e-05,
+   "dT_over_da": -57.025523652447305,
+   "cp": 1772.4898947679137,
+   "dist_at_oracle": 1.5125738691952958e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.166308054756653,
+     "dist": 0.19191330314933022,
+     "rejected": false
+    },
+    {
+     "a": -0.1496772492809877,
+     "dist": 0.17276776322893375,
+     "rejected": false
+    },
+    {
+     "a": -0.1330464438053224,
+     "dist": 0.15362229351737297,
+     "rejected": false
+    },
+    {
+     "a": -0.1164156383296571,
+     "dist": 0.13447689398275942,
+     "rejected": false
+    },
+    {
+     "a": -0.0997848328539918,
+     "dist": 0.11533156459800786,
+     "rejected": false
+    },
+    {
+     "a": -0.0831540273783265,
+     "dist": 0.0961863053451365,
+     "rejected": false
+    },
+    {
+     "a": -0.06652322190266119,
+     "dist": 0.07704111622684992,
+     "rejected": false
+    },
+    {
+     "a": -0.04989241642699589,
+     "dist": 0.05789599730106322,
+     "rejected": false
+    },
+    {
+     "a": -0.033261610951330595,
+     "dist": 0.03875094881785885,
+     "rejected": false
+    },
+    {
+     "a": -0.016630805475665283,
+     "dist": 0.019605972158673494,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0004613047056618484,
+     "rejected": false
+    },
+    {
+     "a": 0.01663080547566531,
+     "dist": 0.01868378928990275,
+     "rejected": false
+    },
+    {
+     "a": 0.03326161095133062,
+     "dist": 0.03782855622149004,
+     "rejected": false
+    },
+    {
+     "a": 0.049892416426995906,
+     "dist": 0.05697325547942756,
+     "rejected": false
+    },
+    {
+     "a": 0.06652322190266122,
+     "dist": 0.07611788553328083,
+     "rejected": false
+    },
+    {
+     "a": 0.0831540273783265,
+     "dist": 0.09526244611597523,
+     "rejected": false
+    },
+    {
+     "a": 0.09978483285399181,
+     "dist": 0.11440693716691785,
+     "rejected": false
+    },
+    {
+     "a": 0.11641563832965712,
+     "dist": 0.13355135868415766,
+     "rejected": false
+    },
+    {
+     "a": 0.13304644380532243,
+     "dist": 0.1526957106877429,
+     "rejected": false
+    },
+    {
+     "a": 0.1496772492809877,
+     "dist": 0.1718399932075989,
+     "rejected": false
+    },
+    {
+     "a": 0.166308054756653,
+     "dist": 0.19098420627866974,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.3_s-1",
+   "role": "train",
+   "measured_time_norm": 0.17320508075688773,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.672007743062671,
+    "bounded": true,
+    "interval_width": 2.672007743062671,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6578252233597606,
+    "a_hi": 2.672007743062671,
+    "bounded": true,
+    "interval_width": 3.3298329664224315,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00041000663340931066,
+   "oracle_active_bound": null,
+   "a_lin": -1.6703095652920645e-05,
+   "dT_over_da": -57.02554830858023,
+   "cp": 1772.486214598979,
+   "dist_at_oracle": 5.9557023358744346e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1664916483211216,
+     "dist": 0.1911916332850817,
+     "rejected": false
+    },
+    {
+     "a": -0.14984248348900944,
+     "dist": 0.17202495519799407,
+     "rejected": false
+    },
+    {
+     "a": -0.13319331865689726,
+     "dist": 0.15285834745366894,
+     "rejected": false
+    },
+    {
+     "a": -0.11654415382478511,
+     "dist": 0.13369181001417413,
+     "rejected": false
+    },
+    {
+     "a": -0.09989498899267296,
+     "dist": 0.11452534284245289,
+     "rejected": false
+    },
+    {
+     "a": -0.08324582416056081,
+     "dist": 0.09535894590272646,
+     "rejected": false
+    },
+    {
+     "a": -0.06659665932844865,
+     "dist": 0.07619261916239647,
+     "rejected": false
+    },
+    {
+     "a": -0.04994749449633648,
+     "dist": 0.05702636259769474,
+     "rejected": false
+    },
+    {
+     "a": -0.03329832966422433,
+     "dist": 0.037860176216621515,
+     "rejected": false
+    },
+    {
+     "a": -0.01664916483211218,
+     "dist": 0.018694060222819005,
+     "rejected": false
+    },
+    {
+     "a": -2.7755575615628914e-17,
+     "dist": 0.00047202474978694144,
+     "rejected": false
+    },
+    {
+     "a": 0.01664916483211215,
+     "dist": 0.019637964544745264,
+     "rejected": false
+    },
+    {
+     "a": 0.0332983296642243,
+     "dist": 0.0388038706213692,
+     "rejected": false
+    },
+    {
+     "a": 0.04994749449633645,
+     "dist": 0.05796970709050788,
+     "rejected": false
+    },
+    {
+     "a": 0.06659665932844863,
+     "dist": 0.07713547377332279,
+     "rejected": false
+    },
+    {
+     "a": 0.08324582416056078,
+     "dist": 0.09630117066621742,
+     "rejected": false
+    },
+    {
+     "a": 0.09989498899267293,
+     "dist": 0.11546679779557487,
+     "rejected": false
+    },
+    {
+     "a": 0.11654415382478509,
+     "dist": 0.13463235519656705,
+     "rejected": false
+    },
+    {
+     "a": 0.13319331865689724,
+     "dist": 0.15379784290780824,
+     "rejected": false
+    },
+    {
+     "a": 0.1498424834890094,
+     "dist": 0.17296326096955608,
+     "rejected": false
+    },
+    {
+     "a": 0.1664916483211216,
+     "dist": 0.19212860942301777,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.6_s+1",
+   "role": "train",
+   "measured_time_norm": 0.3464101615137754,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6708624757884865,
+    "bounded": true,
+    "interval_width": 2.6708624757884865,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6597046935644043,
+    "a_hi": 2.6708624757884865,
+    "bounded": true,
+    "interval_width": 3.3305671693528907,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0007972117497974669,
+   "oracle_active_bound": null,
+   "a_lin": 3.247706335199461e-05,
+   "dT_over_da": -57.025816165206415,
+   "cp": 1772.4509053198442,
+   "dist_at_oracle": 3.486543952139e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16652835846764455,
+     "dist": 0.19262383184382914,
+     "rejected": false
+    },
+    {
+     "a": -0.1498755226208801,
+     "dist": 0.1734529059411321,
+     "rejected": false
+    },
+    {
+     "a": -0.13322268677411564,
+     "dist": 0.15428205046577598,
+     "rejected": false
+    },
+    {
+     "a": -0.11656985092735118,
+     "dist": 0.1351112654154511,
+     "rejected": false
+    },
+    {
+     "a": -0.09991701508058673,
+     "dist": 0.11594055081240592,
+     "rejected": false
+    },
+    {
+     "a": -0.08326417923382227,
+     "dist": 0.0967699067272079,
+     "rejected": false
+    },
+    {
+     "a": -0.06661134338705782,
+     "dist": 0.07759933333880698,
+     "rejected": false
+    },
+    {
+     "a": -0.049958507540293365,
+     "dist": 0.058428831112580126,
+     "rejected": false
+    },
+    {
+     "a": -0.03330567169352891,
+     "dist": 0.03925840150020281,
+     "rejected": false
+    },
+    {
+     "a": -0.01665283584676444,
+     "dist": 0.020088051646909418,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0009183888349036296,
+     "rejected": false
+    },
+    {
+     "a": 0.01665283584676444,
+     "dist": 0.018252531135108344,
+     "rejected": false
+    },
+    {
+     "a": 0.03330567169352891,
+     "dist": 0.037422668756072454,
+     "rejected": false
+    },
+    {
+     "a": 0.04995850754029338,
+     "dist": 0.056592748032063024,
+     "rejected": false
+    },
+    {
+     "a": 0.06661134338705782,
+     "dist": 0.07576276023194542,
+     "rejected": false
+    },
+    {
+     "a": 0.08326417923382226,
+     "dist": 0.09493270371048901,
+     "rejected": false
+    },
+    {
+     "a": 0.09991701508058673,
+     "dist": 0.1141025779561165,
+     "rejected": false
+    },
+    {
+     "a": 0.1165698509273512,
+     "dist": 0.13327238277573,
+     "rejected": false
+    },
+    {
+     "a": 0.13322268677411567,
+     "dist": 0.15244211809460426,
+     "rejected": false
+    },
+    {
+     "a": 0.14987552262088008,
+     "dist": 0.17161178389037998,
+     "rejected": false
+    },
+    {
+     "a": 0.16652835846764455,
+     "dist": 0.19078138016686205,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r0.6_s-1",
+   "role": "train",
+   "measured_time_norm": 0.34641016151377546,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6801864148292975,
+    "bounded": true,
+    "interval_width": 2.6801864148292975,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6585086599538427,
+    "a_hi": 2.6801864148292975,
+    "bounded": true,
+    "interval_width": 3.33869507478314,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0008306455102986152,
+   "oracle_active_bound": null,
+   "a_lin": -3.3839015701035604e-05,
+   "dT_over_da": -57.02590000496991,
+   "cp": 1772.4391827905308,
+   "dist_at_oracle": 4.278400313765762e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.166934753739157,
+     "dist": 0.19121780175249797,
+     "rejected": false
+    },
+    {
+     "a": -0.15024127836524132,
+     "dist": 0.17200008253603638,
+     "rejected": false
+    },
+    {
+     "a": -0.1335478029913256,
+     "dist": 0.15278243398620173,
+     "rejected": false
+    },
+    {
+     "a": -0.11685432761740991,
+     "dist": 0.133564856064071,
+     "rejected": false
+    },
+    {
+     "a": -0.1001608522434942,
+     "dist": 0.11434734873125965,
+     "rejected": false
+    },
+    {
+     "a": -0.0834673768695785,
+     "dist": 0.09512991194994992,
+     "rejected": false
+    },
+    {
+     "a": -0.06677390149566281,
+     "dist": 0.0759125456838793,
+     "rejected": false
+    },
+    {
+     "a": -0.05008042612174711,
+     "dist": 0.056695249901376525,
+     "rejected": false
+    },
+    {
+     "a": -0.033386950747831406,
+     "dist": 0.03747802458762405,
+     "rejected": false
+    },
+    {
+     "a": -0.016693475373915717,
+     "dist": 0.01826086983450587,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0009562249024274932,
+     "rejected": false
+    },
+    {
+     "a": 0.01669347537391569,
+     "dist": 0.02017323014415424,
+     "rejected": false
+    },
+    {
+     "a": 0.03338695074783138,
+     "dist": 0.03939017401839359,
+     "rejected": false
+    },
+    {
+     "a": 0.050080426121747096,
+     "dist": 0.05860704781521554,
+     "rejected": false
+    },
+    {
+     "a": 0.06677390149566279,
+     "dist": 0.07782385146858671,
+     "rejected": false
+    },
+    {
+     "a": 0.0834673768695785,
+     "dist": 0.09704058499785284,
+     "rejected": false
+    },
+    {
+     "a": 0.10016085224349419,
+     "dist": 0.11625724843736754,
+     "rejected": false
+    },
+    {
+     "a": 0.11685432761740988,
+     "dist": 0.13547384182597452,
+     "rejected": false
+    },
+    {
+     "a": 0.13354780299132557,
+     "dist": 0.1546903652043737,
+     "rejected": false
+    },
+    {
+     "a": 0.15024127836524132,
+     "dist": 0.1739068186141908,
+     "rejected": false
+    },
+    {
+     "a": 0.166934753739157,
+     "dist": 0.19312320209764489,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r1_s+1",
+   "role": "train",
+   "measured_time_norm": 0.5773502691896257,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6802032269552996,
+    "bounded": true,
+    "interval_width": 2.6802032269552996,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.662377799311051,
+    "a_hi": 2.6802032269552996,
+    "bounded": true,
+    "interval_width": 3.3425810262663505,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0013361400276101127,
+   "oracle_active_bound": null,
+   "a_lin": 5.443109798192557e-05,
+   "dT_over_da": -57.02651256574771,
+   "cp": 1772.357916679652,
+   "dist_at_oracle": 6.384098511339357e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16712905131331754,
+     "dist": 0.19393634014278754,
+     "rejected": false
+    },
+    {
+     "a": -0.1504161461819858,
+     "dist": 0.17469620339234027,
+     "rejected": false
+    },
+    {
+     "a": -0.13370324105065404,
+     "dist": 0.15545613768467462,
+     "rejected": false
+    },
+    {
+     "a": -0.11699033591932227,
+     "dist": 0.13621614310126906,
+     "rejected": false
+    },
+    {
+     "a": -0.10027743078799052,
+     "dist": 0.11697621980360333,
+     "rejected": false
+    },
+    {
+     "a": -0.08356452565665877,
+     "dist": 0.09773636811139921,
+     "rejected": false
+    },
+    {
+     "a": -0.066851620525327,
+     "dist": 0.07849658869679633,
+     "rejected": false
+    },
+    {
+     "a": -0.05013871539399525,
+     "dist": 0.059256883156851674,
+     "rejected": false
+    },
+    {
+     "a": -0.0334258102626635,
+     "dist": 0.040017256237445835,
+     "rejected": false
+    },
+    {
+     "a": -0.01671290513133175,
+     "dist": 0.0207777304127633,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0015394540982179442,
+     "rejected": false
+    },
+    {
+     "a": 0.01671290513133175,
+     "dist": 0.017701417486546814,
+     "rejected": false
+    },
+    {
+     "a": 0.03342581026266353,
+     "dist": 0.03694071933047094,
+     "rejected": false
+    },
+    {
+     "a": 0.05013871539399528,
+     "dist": 0.056179991931531434,
+     "rejected": false
+    },
+    {
+     "a": 0.06685162052532703,
+     "dist": 0.07541920390378008,
+     "rejected": false
+    },
+    {
+     "a": 0.08356452565665876,
+     "dist": 0.09465834941227136,
+     "rejected": false
+    },
+    {
+     "a": 0.10027743078799053,
+     "dist": 0.11389742659320957,
+     "rejected": false
+    },
+    {
+     "a": 0.11699033591932231,
+     "dist": 0.133136434684822,
+     "rejected": false
+    },
+    {
+     "a": 0.13370324105065404,
+     "dist": 0.15237537333175097,
+     "rejected": false
+    },
+    {
+     "a": 0.15041614618198582,
+     "dist": 0.1716142423573785,
+     "rejected": false
+    },
+    {
+     "a": 0.16712905131331754,
+     "dist": 0.19085304167384262,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "transverse_r1_s-1",
+   "role": "train",
+   "measured_time_norm": 0.5773502691896257,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6987694048714057,
+    "bounded": true,
+    "interval_width": 2.6987694048714057,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.660563055320611,
+    "a_hi": 2.6987694048714057,
+    "bounded": true,
+    "interval_width": 3.3593324601920167,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0013988246939453763,
+   "oracle_active_bound": null,
+   "a_lin": -5.698426953962559e-05,
+   "dT_over_da": -57.02679483193663,
+   "cp": 1772.3204889214178,
+   "dist_at_oracle": 6.0167256151184406e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16796662300960086,
+     "dist": 0.19175237459893674,
+     "rejected": false
+    },
+    {
+     "a": -0.15116996070864078,
+     "dist": 0.1724157889268929,
+     "rejected": false
+    },
+    {
+     "a": -0.1343732984076807,
+     "dist": 0.15307927493846352,
+     "rejected": false
+    },
+    {
+     "a": -0.11757663610672059,
+     "dist": 0.13374283270906,
+     "rejected": false
+    },
+    {
+     "a": -0.10077997380576051,
+     "dist": 0.11440646239267216,
+     "rejected": false
+    },
+    {
+     "a": -0.08398331150480043,
+     "dist": 0.09507016430123445,
+     "rejected": false
+    },
+    {
+     "a": -0.06718664920384033,
+     "dist": 0.07573393910655334,
+     "rejected": false
+    },
+    {
+     "a": -0.05038998690288024,
+     "dist": 0.056397788457601995,
+     "rejected": false
+    },
+    {
+     "a": -0.03359332460192016,
+     "dist": 0.037061717530110214,
+     "rejected": false
+    },
+    {
+     "a": -0.01679666230096008,
+     "dist": 0.01772575426338113,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0016114169628128365,
+     "rejected": false
+    },
+    {
+     "a": 0.016796662300960108,
+     "dist": 0.020946254127945485,
+     "rejected": false
+    },
+    {
+     "a": 0.03359332460192019,
+     "dist": 0.04028201605285563,
+     "rejected": false
+    },
+    {
+     "a": 0.05038998690288027,
+     "dist": 0.05961773392258803,
+     "rejected": false
+    },
+    {
+     "a": 0.06718664920384038,
+     "dist": 0.0789533880117026,
+     "rejected": false
+    },
+    {
+     "a": 0.08398331150480043,
+     "dist": 0.09828897415032026,
+     "rejected": false
+    },
+    {
+     "a": 0.10077997380576054,
+     "dist": 0.11762449093881591,
+     "rejected": false
+    },
+    {
+     "a": 0.11757663610672064,
+     "dist": 0.1369599377924685,
+     "rejected": false
+    },
+    {
+     "a": 0.1343732984076807,
+     "dist": 0.15629531443753478,
+     "rejected": false
+    },
+    {
+     "a": 0.1511699607086408,
+     "dist": 0.1756306207401952,
+     "rejected": false
+    },
+    {
+     "a": 0.16796662300960086,
+     "dist": 0.194965856637267,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "infamily_r0.03",
+   "role": "train",
+   "measured_time_norm": 0.03000000000000008,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.671393052497372,
+    "bounded": true,
+    "interval_width": 2.671393052497372,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6585475961618843,
+    "a_hi": 2.671393052497372,
+    "bounded": true,
+    "interval_width": 3.329940648659256,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -7.053674467977072e-14,
+   "oracle_active_bound": null,
+   "a_lin": -2.696439133239744e-15,
+   "dT_over_da": -57.02564307515811,
+   "cp": 1772.473602048291,
+   "dist_at_oracle": 3.717072073359299e-14,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16649703243296282,
+     "dist": 0.19166989637843254,
+     "rejected": false
+    },
+    {
+     "a": -0.14984732918966653,
+     "dist": 0.17250259070839113,
+     "rejected": false
+    },
+    {
+     "a": -0.13319762594637025,
+     "dist": 0.15333535537232762,
+     "rejected": false
+    },
+    {
+     "a": -0.11654792270307399,
+     "dist": 0.13416819033114416,
+     "rejected": false
+    },
+    {
+     "a": -0.0998982194597777,
+     "dist": 0.11500109554587383,
+     "rejected": false
+    },
+    {
+     "a": -0.08324851621648141,
+     "dist": 0.09583407097734159,
+     "rejected": false
+    },
+    {
+     "a": -0.06659881297318514,
+     "dist": 0.0766671165861706,
+     "rejected": false
+    },
+    {
+     "a": -0.04994910972988886,
+     "dist": 0.05750023233275444,
+     "rejected": false
+    },
+    {
+     "a": -0.033299406486592575,
+     "dist": 0.03833341817728999,
+     "rejected": false
+    },
+    {
+     "a": -0.016649703243296288,
+     "dist": 0.019166674079754198,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 8.671884797091586e-14,
+     "rejected": false
+    },
+    {
+     "a": 0.01664970324329626,
+     "dist": 0.019166604102650454,
+     "rejected": false
+    },
+    {
+     "a": 0.03329940648659255,
+     "dist": 0.03833313826861969,
+     "rejected": false
+    },
+    {
+     "a": 0.049949109729888835,
+     "dist": 0.05749960253883977,
+     "rejected": false
+    },
+    {
+     "a": 0.0665988129731851,
+     "dist": 0.07666599695438803,
+     "rejected": false
+    },
+    {
+     "a": 0.08324851621648138,
+     "dist": 0.09583232155654357,
+     "rejected": false
+    },
+    {
+     "a": 0.09989821945977767,
+     "dist": 0.11499857638680383,
+     "rejected": false
+    },
+    {
+     "a": 0.11654792270307396,
+     "dist": 0.13416476148686962,
+     "rejected": false
+    },
+    {
+     "a": 0.13319762594637025,
+     "dist": 0.15333087689865485,
+     "rejected": false
+    },
+    {
+     "a": 0.14984732918966653,
+     "dist": 0.17249692266428265,
+     "rejected": false
+    },
+    {
+     "a": 0.16649703243296282,
+     "dist": 0.191662898826084,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "infamily_r0.1",
+   "role": "train",
+   "measured_time_norm": 0.10000000000000007,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6797042297835283,
+    "bounded": true,
+    "interval_width": 2.6797042297835283,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6603435777354408,
+    "a_hi": 2.6797042297835283,
+    "bounded": true,
+    "interval_width": 3.3400478075189692,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -5.553725737100061e-14,
+   "oracle_active_bound": null,
+   "a_lin": -2.111194390433212e-15,
+   "dT_over_da": -57.026165771674826,
+   "cp": 1772.4034815031437,
+   "dist_at_oracle": 5.6073195466852365e-14,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16700239037594847,
+     "dist": 0.19225209937853646,
+     "rejected": false
+    },
+    {
+     "a": -0.15030215133835362,
+     "dist": 0.1730265718103279,
+     "rejected": false
+    },
+    {
+     "a": -0.13360191230075877,
+     "dist": 0.1538011149327578,
+     "rejected": false
+    },
+    {
+     "a": -0.11690167326316393,
+     "dist": 0.13457572870614845,
+     "rejected": false
+    },
+    {
+     "a": -0.10020143422556908,
+     "dist": 0.11535041309098097,
+     "rejected": false
+    },
+    {
+     "a": -0.08350119518797423,
+     "dist": 0.09612516804751582,
+     "rejected": false
+    },
+    {
+     "a": -0.0668009561503794,
+     "dist": 0.07689999353580716,
+     "rejected": false
+    },
+    {
+     "a": -0.05010071711278455,
+     "dist": 0.057674889515672935,
+     "rejected": false
+    },
+    {
+     "a": -0.0334004780751897,
+     "dist": 0.03844985594675021,
+     "rejected": false
+    },
+    {
+     "a": -0.01670023903759485,
+     "dist": 0.01922489278844535,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 8.341836612554795e-14,
+     "rejected": false
+    },
+    {
+     "a": 0.01670023903759485,
+     "dist": 0.01922482245977683,
+     "rejected": false
+    },
+    {
+     "a": 0.03340047807518967,
+     "dist": 0.03844957463194253,
+     "rejected": false
+    },
+    {
+     "a": 0.05010071711278452,
+     "dist": 0.05767425655800283,
+     "rejected": false
+    },
+    {
+     "a": 0.06680095615037937,
+     "dist": 0.0768988682796101,
+     "rejected": false
+    },
+    {
+     "a": 0.08350119518797425,
+     "dist": 0.09612340983864165,
+     "rejected": false
+    },
+    {
+     "a": 0.10020143422556907,
+     "dist": 0.11534788127717888,
+     "rejected": false
+    },
+    {
+     "a": 0.11690167326316389,
+     "dist": 0.13457228263752125,
+     "rejected": false
+    },
+    {
+     "a": 0.13360191230075877,
+     "dist": 0.15379661396217395,
+     "rejected": false
+    },
+    {
+     "a": 0.1503021513383536,
+     "dist": 0.17302087529386137,
+     "rejected": false
+    },
+    {
+     "a": 0.16700239037594847,
+     "dist": 0.19224506667550983,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "infamily_r0.3",
+   "role": "train",
+   "measured_time_norm": 0.30000000000000004,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.7068751738516195,
+    "bounded": true,
+    "interval_width": 2.7068751738516195,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6662130699589204,
+    "a_hi": 2.7068751738516195,
+    "bounded": true,
+    "interval_width": 3.37308824381054,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -7.9173040734577e-14,
+   "oracle_active_bound": null,
+   "a_lin": -3.1874518048563116e-15,
+   "dT_over_da": -57.02788570558239,
+   "cp": 1772.1737461497205,
+   "dist_at_oracle": 6.717693869574844e-14,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16865441219052701,
+     "dist": 0.194155356436194,
+     "rejected": false
+    },
+    {
+     "a": -0.1517889709714743,
+     "dist": 0.17473949793129856,
+     "rejected": false
+    },
+    {
+     "a": -0.1349235297524216,
+     "dist": 0.15532371128449102,
+     "rejected": false
+    },
+    {
+     "a": -0.11805808853336891,
+     "dist": 0.13590799645423074,
+     "rejected": false
+    },
+    {
+     "a": -0.10119264731431621,
+     "dist": 0.11649235339910707,
+     "rejected": false
+    },
+    {
+     "a": -0.08432720609526351,
+     "dist": 0.09707678207750352,
+     "rejected": false
+    },
+    {
+     "a": -0.0674617648762108,
+     "dist": 0.07766128244756967,
+     "rejected": false
+    },
+    {
+     "a": -0.050596323657158104,
+     "dist": 0.058245854467246,
+     "rejected": false
+    },
+    {
+     "a": -0.0337308824381054,
+     "dist": 0.038830498094237303,
+     "rejected": false
+    },
+    {
+     "a": -0.0168654412190527,
+     "dist": 0.019415213286035387,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 1.1244780639745366e-13,
+     "rejected": false
+    },
+    {
+     "a": 0.0168654412190527,
+     "dist": 0.019415141807095956,
+     "rejected": false
+    },
+    {
+     "a": 0.0337308824381054,
+     "dist": 0.038830212178156694,
+     "rejected": false
+    },
+    {
+     "a": 0.050596323657158104,
+     "dist": 0.0582452111566643,
+     "rejected": false
+    },
+    {
+     "a": 0.0674617648762108,
+     "dist": 0.07766013878623505,
+     "rejected": false
+    },
+    {
+     "a": 0.08432720609526351,
+     "dist": 0.09707499511070959,
+     "rejected": false
+    },
+    {
+     "a": 0.10119264731431621,
+     "dist": 0.11648978017414152,
+     "rejected": false
+    },
+    {
+     "a": 0.11805808853336891,
+     "dist": 0.13590449402081278,
+     "rejected": false
+    },
+    {
+     "a": 0.1349235297524216,
+     "dist": 0.15531913669521763,
+     "rejected": false
+    },
+    {
+     "a": 0.1517889709714743,
+     "dist": 0.17473370824207973,
+     "rejected": false
+    },
+    {
+     "a": 0.16865441219052701,
+     "dist": 0.1941482087063341,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_0",
+   "role": "train",
+   "measured_time_norm": 0.10000000000000003,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.671764564165203,
+    "bounded": true,
+    "interval_width": 2.671764564165203,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6587530268562856,
+    "a_hi": 2.671764564165203,
+    "bounded": true,
+    "interval_width": 3.3305175910214886,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00012424398881061556,
+   "oracle_active_bound": null,
+   "a_lin": -5.06150425950597e-06,
+   "dT_over_da": -57.02568631014961,
+   "cp": 1772.467831136751,
+   "dist_at_oracle": 3.6990403604657774e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16652587955107445,
+     "dist": 0.19156011497484682,
+     "rejected": false
+    },
+    {
+     "a": -0.14987329159596702,
+     "dist": 0.17238948477976956,
+     "rejected": false
+    },
+    {
+     "a": -0.13322070364085956,
+     "dist": 0.15321892493852154,
+     "rejected": false
+    },
+    {
+     "a": -0.11656811568575212,
+     "dist": 0.13404843541239755,
+     "rejected": false
+    },
+    {
+     "a": -0.09991552773064467,
+     "dist": 0.1148780161630994,
+     "rejected": false
+    },
+    {
+     "a": -0.08326293977553723,
+     "dist": 0.09570766715270361,
+     "rejected": false
+    },
+    {
+     "a": -0.06661035182042979,
+     "dist": 0.07653738834434852,
+     "rejected": false
+    },
+    {
+     "a": -0.049957763865322344,
+     "dist": 0.057367179704384604,
+     "rejected": false
+    },
+    {
+     "a": -0.033305175910214896,
+     "dist": 0.038197041210987194,
+     "rejected": false
+    },
+    {
+     "a": -0.016652587955107462,
+     "dist": 0.019026972914723262,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00014307371096476803,
+     "rejected": false
+    },
+    {
+     "a": 0.016652587955107434,
+     "dist": 0.019312954684245334,
+     "rejected": false
+    },
+    {
+     "a": 0.03330517591021487,
+     "dist": 0.03848281299738845,
+     "rejected": false
+    },
+    {
+     "a": 0.04995776386532233,
+     "dist": 0.05765260151370092,
+     "rejected": false
+    },
+    {
+     "a": 0.06661035182042976,
+     "dist": 0.07682232018643716,
+     "rejected": false
+    },
+    {
+     "a": 0.08326293977553723,
+     "dist": 0.09599196903925312,
+     "rejected": false
+    },
+    {
+     "a": 0.09991552773064466,
+     "dist": 0.11516154810777135,
+     "rejected": false
+    },
+    {
+     "a": 0.1165681156857521,
+     "dist": 0.13433105743119736,
+     "rejected": false
+    },
+    {
+     "a": 0.13322070364085953,
+     "dist": 0.1535004970502191,
+     "rejected": false
+    },
+    {
+     "a": 0.14987329159596702,
+     "dist": 0.17266986700629672,
+     "rejected": false
+    },
+    {
+     "a": 0.16652587955107445,
+     "dist": 0.1918391673413715,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_1",
+   "role": "train",
+   "measured_time_norm": 0.3,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6505864005818105,
+    "bounded": true,
+    "interval_width": 2.6505864005818105,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.653228393791717,
+    "a_hi": 2.6505864005818105,
+    "bounded": true,
+    "interval_width": 3.3038147943735274,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -3.042424742626096e-05,
+   "oracle_active_bound": null,
+   "a_lin": -1.2394846982999184e-06,
+   "dT_over_da": -57.024214018142594,
+   "cp": 1772.6659131699469,
+   "dist_at_oracle": 4.5408297504139926e-07,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16519073971867637,
+     "dist": 0.19012989356235424,
+     "rejected": false
+    },
+    {
+     "a": -0.14867166574680873,
+     "dist": 0.171113089932079,
+     "rejected": false
+    },
+    {
+     "a": -0.1321525917749411,
+     "dist": 0.15209635572437682,
+     "rejected": false
+    },
+    {
+     "a": -0.11563351780307346,
+     "dist": 0.1330796909016313,
+     "rejected": false
+    },
+    {
+     "a": -0.09911444383120582,
+     "dist": 0.11406309542634831,
+     "rejected": false
+    },
+    {
+     "a": -0.08259536985933819,
+     "dist": 0.0950465692608467,
+     "rejected": false
+    },
+    {
+     "a": -0.06607629588747055,
+     "dist": 0.07603011236725378,
+     "rejected": false
+    },
+    {
+     "a": -0.04955722191560291,
+     "dist": 0.05701372470753612,
+     "rejected": false
+    },
+    {
+     "a": -0.033038147943735274,
+     "dist": 0.037997406243654476,
+     "rejected": false
+    },
+    {
+     "a": -0.016519073971867637,
+     "dist": 0.018981156938436897,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 3.502620031829061e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.016519073971867637,
+     "dist": 0.019051134372842643,
+     "rejected": false
+    },
+    {
+     "a": 0.033038147943735274,
+     "dist": 0.038067176440719906,
+     "rejected": false
+    },
+    {
+     "a": 0.04955722191560291,
+     "dist": 0.057083149509694876,
+     "rejected": false
+    },
+    {
+     "a": 0.06607629588747055,
+     "dist": 0.07609905361796383,
+     "rejected": false
+    },
+    {
+     "a": 0.08259536985933819,
+     "dist": 0.09511488880501875,
+     "rejected": false
+    },
+    {
+     "a": 0.09911444383120582,
+     "dist": 0.11413065511071485,
+     "rejected": false
+    },
+    {
+     "a": 0.11563351780307346,
+     "dist": 0.13314635257517946,
+     "rejected": false
+    },
+    {
+     "a": 0.1321525917749411,
+     "dist": 0.15216198123875646,
+     "rejected": false
+    },
+    {
+     "a": 0.14867166574680873,
+     "dist": 0.17117754114200434,
+     "rejected": false
+    },
+    {
+     "a": 0.16519073971867637,
+     "dist": 0.19019303232569,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_2",
+   "role": "train",
+   "measured_time_norm": 0.6,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.67716647869363,
+    "bounded": true,
+    "interval_width": 2.67716647869363,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6558319981432157,
+    "a_hi": 2.67716647869363,
+    "bounded": true,
+    "interval_width": 3.3329984768368455,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0009485213202345051,
+   "oracle_active_bound": null,
+   "a_lin": -3.86415461070628e-05,
+   "dT_over_da": -57.0254332838931,
+   "cp": 1772.5033721667771,
+   "dist_at_oracle": 6.0972044538902235e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1666499238418423,
+     "dist": 0.19075383747549743,
+     "rejected": false
+    },
+    {
+     "a": -0.14998493145765807,
+     "dist": 0.1715689482276006,
+     "rejected": false
+    },
+    {
+     "a": -0.13331993907347384,
+     "dist": 0.15238412973932972,
+     "rejected": false
+    },
+    {
+     "a": -0.11665494668928961,
+     "dist": 0.13319938209012833,
+     "rejected": false
+    },
+    {
+     "a": -0.09998995430510538,
+     "dist": 0.1140147054393685,
+     "rejected": false
+    },
+    {
+     "a": -0.08332496192092115,
+     "dist": 0.09483010010672141,
+     "rejected": false
+    },
+    {
+     "a": -0.06665996953673692,
+     "dist": 0.07564556677561683,
+     "rejected": false
+    },
+    {
+     "a": -0.04999497715255269,
+     "dist": 0.05646110711172357,
+     "rejected": false
+    },
+    {
+     "a": -0.03332998476836846,
+     "dist": 0.037276726290901854,
+     "rejected": false
+    },
+    {
+     "a": -0.01666499238418423,
+     "dist": 0.018092451610401496,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.001093609525307327,
+     "rejected": false
+    },
+    {
+     "a": 0.01666499238418423,
+     "dist": 0.02027618744549021,
+     "rejected": false
+    },
+    {
+     "a": 0.03332998476836846,
+     "dist": 0.03946026004629969,
+     "rejected": false
+    },
+    {
+     "a": 0.04999497715255269,
+     "dist": 0.05864429175915084,
+     "rejected": false
+    },
+    {
+     "a": 0.06665996953673692,
+     "dist": 0.07782826106267692,
+     "rejected": false
+    },
+    {
+     "a": 0.08332496192092115,
+     "dist": 0.09701216349149758,
+     "rejected": false
+    },
+    {
+     "a": 0.09998995430510538,
+     "dist": 0.11619599755666543,
+     "rejected": false
+    },
+    {
+     "a": 0.11665494668928961,
+     "dist": 0.13537976263692533,
+     "rejected": false
+    },
+    {
+     "a": 0.13331993907347384,
+     "dist": 0.1545634584403772,
+     "rejected": false
+    },
+    {
+     "a": 0.14998493145765807,
+     "dist": 0.17374708482276285,
+     "rejected": false
+    },
+    {
+     "a": 0.1666499238418423,
+     "dist": 0.19293064171416693,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_3",
+   "role": "train",
+   "measured_time_norm": 0.09999999999999996,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.671377473022199,
+    "bounded": true,
+    "interval_width": 2.671377473022199,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6589502132842584,
+    "a_hi": 2.671377473022199,
+    "bounded": true,
+    "interval_width": 3.3303276863064575,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00022506635944561496,
+   "oracle_active_bound": null,
+   "a_lin": 9.168853917033404e-06,
+   "dT_over_da": -57.02570700574469,
+   "cp": 1772.4651456471518,
+   "dist_at_oracle": 7.553158292163378e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1665163843153229,
+     "dist": 0.19195131698403556,
+     "rejected": false
+    },
+    {
+     "a": -0.14986474588379062,
+     "dist": 0.17278177822613722,
+     "rejected": false
+    },
+    {
+     "a": -0.1332131074522583,
+     "dist": 0.15361230981513174,
+     "rejected": false
+    },
+    {
+     "a": -0.11656146902072603,
+     "dist": 0.13444291171363904,
+     "rejected": false
+    },
+    {
+     "a": -0.09990983058919374,
+     "dist": 0.11527358388558792,
+     "rejected": false
+    },
+    {
+     "a": -0.08325819215766145,
+     "dist": 0.0961043262970307,
+     "rejected": false
+    },
+    {
+     "a": -0.06660655372612917,
+     "dist": 0.07693513891905981,
+     "rejected": false
+    },
+    {
+     "a": -0.04995491529459688,
+     "dist": 0.05776602173653312,
+     "rejected": false
+    },
+    {
+     "a": -0.033303276863064585,
+     "dist": 0.038596974782717515,
+     "rejected": false
+    },
+    {
+     "a": -0.016651638431532306,
+     "dist": 0.019427998379302345,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00025919987858320586,
+     "rejected": false
+    },
+    {
+     "a": 0.01665163843153228,
+     "dist": 0.0189097488246117,
+     "rejected": false
+    },
+    {
+     "a": 0.03330327686306456,
+     "dist": 0.03807851524097565,
+     "rejected": false
+    },
+    {
+     "a": 0.04995491529459686,
+     "dist": 0.05724721226178735,
+     "rejected": false
+    },
+    {
+     "a": 0.06660655372612914,
+     "dist": 0.07641583954545639,
+     "rejected": false
+    },
+    {
+     "a": 0.08325819215766145,
+     "dist": 0.09558439705759691,
+     "rejected": false
+    },
+    {
+     "a": 0.09990983058919373,
+     "dist": 0.11475288481462308,
+     "rejected": false
+    },
+    {
+     "a": 0.116561469020726,
+     "dist": 0.13392130284753914,
+     "rejected": false
+    },
+    {
+     "a": 0.13321310745225828,
+     "dist": 0.15308965119293608,
+     "rejected": false
+    },
+    {
+     "a": 0.14986474588379062,
+     "dist": 0.17225792989001112,
+     "rejected": false
+    },
+    {
+     "a": 0.1665163843153229,
+     "dist": 0.1914261389793501,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_4",
+   "role": "train",
+   "measured_time_norm": 0.3,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.652485615996233,
+    "bounded": true,
+    "interval_width": 2.652485615996233,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6558720503635042,
+    "a_hi": 2.652485615996233,
+    "bounded": true,
+    "interval_width": 3.308357666359737,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0003018666357958121,
+   "oracle_active_bound": null,
+   "a_lin": 1.2297903754578459e-05,
+   "dT_over_da": -57.024690185791904,
+   "cp": 1772.6025400416247,
+   "dist_at_oracle": 1.5041266322500332e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16541788331798687,
+     "dist": 0.19077429220746273,
+     "rejected": false
+    },
+    {
+     "a": -0.1488760949861882,
+     "dist": 0.17173130040245851,
+     "rejected": false
+    },
+    {
+     "a": -0.1323343066543895,
+     "dist": 0.15268837817011532,
+     "rejected": false
+    },
+    {
+     "a": -0.11579251832259081,
+     "dist": 0.1336455254794686,
+     "rejected": false
+    },
+    {
+     "a": -0.09925072999079212,
+     "dist": 0.11460274230434295,
+     "rejected": false
+    },
+    {
+     "a": -0.08270894165899344,
+     "dist": 0.09556002862764894,
+     "rejected": false
+    },
+    {
+     "a": -0.06616715332719475,
+     "dist": 0.07651738445298263,
+     "rejected": false
+    },
+    {
+     "a": -0.04962536499539606,
+     "dist": 0.057474809839177396,
+     "rejected": false
+    },
+    {
+     "a": -0.033083576663597375,
+     "dist": 0.03843230503773311,
+     "rejected": false
+    },
+    {
+     "a": -0.016541788331798674,
+     "dist": 0.01938987143981582,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00034782374027088727,
+     "rejected": false
+    },
+    {
+     "a": 0.016541788331798674,
+     "dist": 0.018694805714331877,
+     "rejected": false
+    },
+    {
+     "a": 0.033083576663597375,
+     "dist": 0.03773703152060499,
+     "rejected": false
+    },
+    {
+     "a": 0.049625364995396076,
+     "dist": 0.056779190244335934,
+     "rejected": false
+    },
+    {
+     "a": 0.06616715332719475,
+     "dist": 0.07582128038240718,
+     "rejected": false
+    },
+    {
+     "a": 0.08270894165899342,
+     "dist": 0.09486330167083766,
+     "rejected": false
+    },
+    {
+     "a": 0.09925072999079212,
+     "dist": 0.11390525404921145,
+     "rejected": false
+    },
+    {
+     "a": 0.11579251832259083,
+     "dist": 0.13294713751502424,
+     "rejected": false
+    },
+    {
+     "a": 0.13233430665438953,
+     "dist": 0.1519889520875344,
+     "rejected": false
+    },
+    {
+     "a": 0.14887609498618817,
+     "dist": 0.17103069779577615,
+     "rejected": false
+    },
+    {
+     "a": 0.16541788331798687,
+     "dist": 0.19007237467374294,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_5",
+   "role": "train",
+   "measured_time_norm": 0.6000000000000001,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.7264710758636865,
+    "bounded": true,
+    "interval_width": 2.7264710758636865,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_4",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6702289634275408,
+    "a_hi": 2.7264710758636865,
+    "bounded": true,
+    "interval_width": 3.396700039291227,
+    "binding_name_low": "H",
+    "binding_name_high": "OH"
+   },
+   "oracle_a": -0.001431585073581533,
+   "oracle_active_bound": null,
+   "a_lin": -5.831488709141391e-05,
+   "dT_over_da": -57.02935373892427,
+   "cp": 1771.9789703725942,
+   "dist_at_oracle": 2.2625870772076617e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16983500196456136,
+     "dist": 0.1938676793048137,
+     "rejected": false
+    },
+    {
+     "a": -0.15285150176810522,
+     "dist": 0.17431578250336588,
+     "rejected": false
+    },
+    {
+     "a": -0.13586800157164908,
+     "dist": 0.15476395835887785,
+     "rejected": false
+    },
+    {
+     "a": -0.11888450137519296,
+     "dist": 0.1352122068284919,
+     "rejected": false
+    },
+    {
+     "a": -0.10190100117873682,
+     "dist": 0.11566052786961248,
+     "rejected": false
+    },
+    {
+     "a": -0.08491750098228068,
+     "dist": 0.09610892143963659,
+     "rejected": false
+    },
+    {
+     "a": -0.06793400078582455,
+     "dist": 0.07655738749624755,
+     "rejected": false
+    },
+    {
+     "a": -0.050950500589368425,
+     "dist": 0.057005925998258884,
+     "rejected": false
+    },
+    {
+     "a": -0.03396700039291228,
+     "dist": 0.03745453690919952,
+     "rejected": false
+    },
+    {
+     "a": -0.01698350019645614,
+     "dist": 0.017903220224286597,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0016480259226687426,
+     "rejected": false
+    },
+    {
+     "a": 0.016983500196456114,
+     "dist": 0.021199196676797916,
+     "rejected": false
+    },
+    {
+     "a": 0.033967000392912255,
+     "dist": 0.04075029658584154,
+     "rejected": false
+    },
+    {
+     "a": 0.0509505005893684,
+     "dist": 0.0603013243577787,
+     "rejected": false
+    },
+    {
+     "a": 0.06793400078582451,
+     "dist": 0.07985228001016081,
+     "rejected": false
+    },
+    {
+     "a": 0.08491750098228068,
+     "dist": 0.09940316358246654,
+     "rejected": false
+    },
+    {
+     "a": 0.1019010011787368,
+     "dist": 0.11895397511826696,
+     "rejected": false
+    },
+    {
+     "a": 0.11888450137519291,
+     "dist": 0.13850471466251296,
+     "rejected": false
+    },
+    {
+     "a": 0.13586800157164908,
+     "dist": 0.158055382260796,
+     "rejected": false
+    },
+    {
+     "a": 0.1528515017681052,
+     "dist": 0.1776059779591425,
+     "rejected": false
+    },
+    {
+     "a": 0.16983500196456136,
+     "dist": 0.19715650180389774,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_6",
+   "role": "train",
+   "measured_time_norm": 0.09999999999999998,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6606227836008807,
+    "bounded": true,
+    "interval_width": 2.6606227836008807,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6558700884599405,
+    "a_hi": 2.6606227836008807,
+    "bounded": true,
+    "interval_width": 3.316492872060821,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00011496463384227976,
+   "oracle_active_bound": null,
+   "a_lin": -4.683577939435399e-06,
+   "dT_over_da": -57.024913072152536,
+   "cp": 1772.5716916454987,
+   "dist_at_oracle": 2.6784741715025225e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16582464360304106,
+     "dist": 0.19076289607771532,
+     "rejected": false
+    },
+    {
+     "a": -0.14924217924273694,
+     "dist": 0.1716730582027731,
+     "rejected": false
+    },
+    {
+     "a": -0.13265971488243283,
+     "dist": 0.15258329019224365,
+     "rejected": false
+    },
+    {
+     "a": -0.11607725052212875,
+     "dist": 0.1334935920080124,
+     "rejected": false
+    },
+    {
+     "a": -0.09949478616182464,
+     "dist": 0.11440396361224837,
+     "rejected": false
+    },
+    {
+     "a": -0.08291232180152053,
+     "dist": 0.09531440496720271,
+     "rejected": false
+    },
+    {
+     "a": -0.06632985744121643,
+     "dist": 0.07622491603560445,
+     "rejected": false
+    },
+    {
+     "a": -0.04974739308091233,
+     "dist": 0.05713549678177271,
+     "rejected": false
+    },
+    {
+     "a": -0.03316492872060822,
+     "dist": 0.03804614717614286,
+     "rejected": false
+    },
+    {
+     "a": -0.01658246436030411,
+     "dist": 0.018956867227132065,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00013237055411418418,
+     "rejected": false
+    },
+    {
+     "a": 0.016582464360304083,
+     "dist": 0.019221484615112156,
+     "rejected": false
+    },
+    {
+     "a": 0.033164928720608194,
+     "dist": 0.038310556024111736,
+     "rejected": false
+    },
+    {
+     "a": 0.049747393080912305,
+     "dist": 0.05739955806085112,
+     "rejected": false
+    },
+    {
+     "a": 0.06632985744121639,
+     "dist": 0.0764884907193157,
+     "rejected": false
+    },
+    {
+     "a": 0.0829123218015205,
+     "dist": 0.09557735403067963,
+     "rejected": false
+    },
+    {
+     "a": 0.09949478616182461,
+     "dist": 0.11466614803253816,
+     "rejected": false
+    },
+    {
+     "a": 0.1160772505221287,
+     "dist": 0.13375487276445774,
+     "rejected": false
+    },
+    {
+     "a": 0.13265971488243283,
+     "dist": 0.15284352826688954,
+     "rejected": false
+    },
+    {
+     "a": 0.14924217924273692,
+     "dist": 0.17193211458077645,
+     "rejected": false
+    },
+    {
+     "a": 0.16582464360304106,
+     "dist": 0.19102063174742964,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_7",
+   "role": "train",
+   "measured_time_norm": 0.29999999999999993,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6599471061202933,
+    "bounded": true,
+    "interval_width": 2.6599471061202933,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6576270991234165,
+    "a_hi": 2.6599471061202933,
+    "bounded": true,
+    "interval_width": 3.3175742052437096,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00018971897149022354,
+   "oracle_active_bound": null,
+   "a_lin": 7.728966887791714e-06,
+   "dT_over_da": -57.02517956916937,
+   "cp": 1772.536687611156,
+   "dist_at_oracle": 9.383338990880812e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16587871026218548,
+     "dist": 0.1911760979696827,
+     "rejected": false
+    },
+    {
+     "a": -0.14929083923596692,
+     "dist": 0.17208001407971077,
+     "rejected": false
+    },
+    {
+     "a": -0.1327029682097484,
+     "dist": 0.15298400007527316,
+     "rejected": false
+    },
+    {
+     "a": -0.11611509718352983,
+     "dist": 0.13388805592060532,
+     "rejected": false
+    },
+    {
+     "a": -0.09952722615731129,
+     "dist": 0.11479218158190607,
+     "rejected": false
+    },
+    {
+     "a": -0.08293935513109274,
+     "dist": 0.09569637702877895,
+     "rejected": false
+    },
+    {
+     "a": -0.06635148410487418,
+     "dist": 0.0766006422387765,
+     "rejected": false
+    },
+    {
+     "a": -0.049763613078655636,
+     "dist": 0.05750497721092797,
+     "rejected": false
+    },
+    {
+     "a": -0.03317574205243709,
+     "dist": 0.03840938201963929,
+     "rejected": false
+    },
+    {
+     "a": -0.01658787102621853,
+     "dist": 0.019313857188352938,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00021859999363196017,
+     "rejected": false
+    },
+    {
+     "a": 0.01658787102621856,
+     "dist": 0.01887699068856907,
+     "rejected": false
+    },
+    {
+     "a": 0.03317574205243712,
+     "dist": 0.037972306896562114,
+     "rejected": false
+    },
+    {
+     "a": 0.04976361307865565,
+     "dist": 0.05706755444166769,
+     "rejected": false
+    },
+    {
+     "a": 0.06635148410487421,
+     "dist": 0.07616273277399596,
+     "rejected": false
+    },
+    {
+     "a": 0.08293935513109274,
+     "dist": 0.09525784181722402,
+     "rejected": false
+    },
+    {
+     "a": 0.0995272261573113,
+     "dist": 0.1143528815733449,
+     "rejected": false
+    },
+    {
+     "a": 0.11611509718352986,
+     "dist": 0.13344785206682153,
+     "rejected": false
+    },
+    {
+     "a": 0.13270296820974842,
+     "dist": 0.15254275333060924,
+     "rejected": false
+    },
+    {
+     "a": 0.14929083923596692,
+     "dist": 0.17163758540159035,
+     "rejected": false
+    },
+    {
+     "a": 0.16587871026218548,
+     "dist": 0.19073234831867428,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_8",
+   "role": "train",
+   "measured_time_norm": 0.5999999999999999,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6233610052034138,
+    "bounded": true,
+    "interval_width": 2.6233610052034138,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6473848235602436,
+    "a_hi": 2.6233610052034138,
+    "bounded": true,
+    "interval_width": 3.2707458287636575,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0002295877125606274,
+   "oracle_active_bound": null,
+   "a_lin": -9.353827772402849e-06,
+   "dT_over_da": -57.02253391924635,
+   "cp": 1772.8935587665517,
+   "dist_at_oracle": 2.163810611393857e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16353729143818288,
+     "dist": 0.18799581873081456,
+     "rejected": false
+    },
+    {
+     "a": -0.14718356229436458,
+     "dist": 0.16916950103196235,
+     "rejected": false
+    },
+    {
+     "a": -0.1308298331505463,
+     "dist": 0.1503432515922012,
+     "rejected": false
+    },
+    {
+     "a": -0.11447610400672802,
+     "dist": 0.13151707037579852,
+     "rejected": false
+    },
+    {
+     "a": -0.09812237486290973,
+     "dist": 0.11269095734724618,
+     "rejected": false
+    },
+    {
+     "a": -0.08176864571909144,
+     "dist": 0.0938649124710514,
+     "rejected": false
+    },
+    {
+     "a": -0.06541491657527315,
+     "dist": 0.07503893571196242,
+     "rejected": false
+    },
+    {
+     "a": -0.049061187431454864,
+     "dist": 0.05621302703572584,
+     "rejected": false
+    },
+    {
+     "a": -0.032707458287636576,
+     "dist": 0.03738718641213757,
+     "rejected": false
+    },
+    {
+     "a": -0.016353729143818302,
+     "dist": 0.018561413836471235,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00026429981803996114,
+     "rejected": false
+    },
+    {
+     "a": 0.016353729143818302,
+     "dist": 0.019089927822432635,
+     "rejected": false
+    },
+    {
+     "a": 0.032707458287636576,
+     "dist": 0.03791549660698174,
+     "rejected": false
+    },
+    {
+     "a": 0.04906118743145485,
+     "dist": 0.05674099757548696,
+     "rejected": false
+    },
+    {
+     "a": 0.06541491657527315,
+     "dist": 0.07556643073547188,
+     "rejected": false
+    },
+    {
+     "a": 0.08176864571909145,
+     "dist": 0.09439179611875106,
+     "rejected": false
+    },
+    {
+     "a": 0.09812237486290973,
+     "dist": 0.11321709376140097,
+     "rejected": false
+    },
+    {
+     "a": 0.114476104006728,
+     "dist": 0.13204232370085042,
+     "rejected": false
+    },
+    {
+     "a": 0.13082983315054628,
+     "dist": 0.1508674859751777,
+     "rejected": false
+    },
+    {
+     "a": 0.1471835622943646,
+     "dist": 0.16969258062283588,
+     "rejected": false
+    },
+    {
+     "a": 0.16353729143818288,
+     "dist": 0.18851760768258666,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_9",
+   "role": "train",
+   "measured_time_norm": 0.10000000000000003,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6647203636771533,
+    "bounded": true,
+    "interval_width": 2.6647203636771533,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6566119916447296,
+    "a_hi": 2.6647203636771533,
+    "bounded": true,
+    "interval_width": 3.321332355321883,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00019073304190533598,
+   "oracle_active_bound": null,
+   "a_lin": -7.770278018643565e-06,
+   "dT_over_da": -57.025147134201596,
+   "cp": 1772.5401661420976,
+   "dist_at_oracle": 3.950384357511649e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16606661776609416,
+     "dist": 0.19095442748260008,
+     "rejected": false
+    },
+    {
+     "a": -0.14945995598948475,
+     "dist": 0.17183671347973253,
+     "rejected": false
+    },
+    {
+     "a": -0.13285329421287534,
+     "dist": 0.15271906951416575,
+     "rejected": false
+    },
+    {
+     "a": -0.1162466324362659,
+     "dist": 0.13360149554778827,
+     "rejected": false
+    },
+    {
+     "a": -0.09963997065965649,
+     "dist": 0.11448399154295759,
+     "rejected": false
+    },
+    {
+     "a": -0.08303330888304708,
+     "dist": 0.09536655746245361,
+     "rejected": false
+    },
+    {
+     "a": -0.06642664710643766,
+     "dist": 0.07624919327034667,
+     "rejected": false
+    },
+    {
+     "a": -0.04981998532982823,
+     "dist": 0.057131898934406095,
+     "rejected": false
+    },
+    {
+     "a": -0.03321332355321882,
+     "dist": 0.0380146744360469,
+     "rejected": false
+    },
+    {
+     "a": -0.01660666177660941,
+     "dist": 0.018897519840277575,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00021960118653913317,
+     "rejected": false
+    },
+    {
+     "a": 0.016606661776609438,
+     "dist": 0.019336581451180494,
+     "rejected": false
+    },
+    {
+     "a": 0.03321332355321885,
+     "dist": 0.03845352700226362,
+     "rejected": false
+    },
+    {
+     "a": 0.04981998532982826,
+     "dist": 0.05757040308308789,
+     "rejected": false
+    },
+    {
+     "a": 0.0664266471064377,
+     "dist": 0.07668720963456982,
+     "rejected": false
+    },
+    {
+     "a": 0.08303330888304711,
+     "dist": 0.09580394667736541,
+     "rejected": false
+    },
+    {
+     "a": 0.09963997065965652,
+     "dist": 0.1149206142457133,
+     "rejected": false
+    },
+    {
+     "a": 0.11624663243626593,
+     "dist": 0.13403721237791139,
+     "rejected": false
+    },
+    {
+     "a": 0.13285329421287534,
+     "dist": 0.15315374111389726,
+     "rejected": false
+    },
+    {
+     "a": 0.14945995598948475,
+     "dist": 0.17227020049445962,
+     "rejected": false
+    },
+    {
+     "a": 0.16606661776609416,
+     "dist": 0.19138659056092383,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_10",
+   "role": "train",
+   "measured_time_norm": 0.3,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6474830342737024,
+    "bounded": true,
+    "interval_width": 2.6474830342737024,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6541658355395948,
+    "a_hi": 2.6474830342737024,
+    "bounded": true,
+    "interval_width": 3.301648869813297,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00041003128113766777,
+   "oracle_active_bound": null,
+   "a_lin": 1.6704662312727653e-05,
+   "dT_over_da": -57.02427506885585,
+   "cp": 1772.6581571442553,
+   "dist_at_oracle": 1.764824171620479e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16508244349066487,
+     "dist": 0.19051230950351064,
+     "rejected": false
+    },
+    {
+     "a": -0.1485741991415984,
+     "dist": 0.17150796848827723,
+     "rejected": false
+    },
+    {
+     "a": -0.1320659547925319,
+     "dist": 0.15250369682326897,
+     "rejected": false
+    },
+    {
+     "a": -0.11555771044346541,
+     "dist": 0.13349949448053994,
+     "rejected": false
+    },
+    {
+     "a": -0.09904946609439892,
+     "dist": 0.11449536143867958,
+     "rejected": false
+    },
+    {
+     "a": -0.08254122174533243,
+     "dist": 0.09549129768882209,
+     "rejected": false
+    },
+    {
+     "a": -0.06603297739626596,
+     "dist": 0.07648730325055733,
+     "rejected": false
+    },
+    {
+     "a": -0.04952473304719947,
+     "dist": 0.057483378219217125,
+     "rejected": false
+    },
+    {
+     "a": -0.03301648869813298,
+     "dist": 0.03847952295345457,
+     "rejected": false
+    },
+    {
+     "a": -0.016508244349066503,
+     "dist": 0.01947573936101307,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00047234265969574036,
+     "rejected": false
+    },
+    {
+     "a": 0.016508244349066475,
+     "dist": 0.018531645089695823,
+     "rejected": false
+    },
+    {
+     "a": 0.03301648869813295,
+     "dist": 0.03753522142275908,
+     "rejected": false
+    },
+    {
+     "a": 0.049524733047199454,
+     "dist": 0.0565387317095875,
+     "rejected": false
+    },
+    {
+     "a": 0.06603297739626593,
+     "dist": 0.07554217383123356,
+     "rejected": false
+    },
+    {
+     "a": 0.08254122174533243,
+     "dist": 0.09454554740434311,
+     "rejected": false
+    },
+    {
+     "a": 0.09904946609439891,
+     "dist": 0.11354885232896147,
+     "rejected": false
+    },
+    {
+     "a": 0.11555771044346541,
+     "dist": 0.13255208858554907,
+     "rejected": false
+    },
+    {
+     "a": 0.13206595479253186,
+     "dist": 0.1515552561846871,
+     "rejected": false
+    },
+    {
+     "a": 0.14857419914159836,
+     "dist": 0.170558355150412,
+     "rejected": false
+    },
+    {
+     "a": 0.16508244349066487,
+     "dist": 0.18956138551357446,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "heldout_11",
+   "role": "train",
+   "measured_time_norm": 0.6,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6557889164103203,
+    "bounded": true,
+    "interval_width": 2.6557889164103203,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6542583522514867,
+    "a_hi": 2.6557889164103203,
+    "bounded": true,
+    "interval_width": 3.310047268661807,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00048154924910057676,
+   "oracle_active_bound": null,
+   "a_lin": 1.9618176795538883e-05,
+   "dT_over_da": -57.02452395131073,
+   "cp": 1772.6240884821536,
+   "dist_at_oracle": 5.834408930830415e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16550236343309035,
+     "dist": 0.19107825413502666,
+     "rejected": false
+    },
+    {
+     "a": -0.1489521270897813,
+     "dist": 0.1720255500405706,
+     "rejected": false
+    },
+    {
+     "a": -0.1324018907464723,
+     "dist": 0.15297291559176943,
+     "rejected": false
+    },
+    {
+     "a": -0.11585165440316325,
+     "dist": 0.1339203507517033,
+     "rejected": false
+    },
+    {
+     "a": -0.09930141805985421,
+     "dist": 0.11486785548428599,
+     "rejected": false
+    },
+    {
+     "a": -0.08275118171654516,
+     "dist": 0.09581542975461185,
+     "rejected": false
+    },
+    {
+     "a": -0.06620094537323613,
+     "dist": 0.07676307353067628,
+     "rejected": false
+    },
+    {
+     "a": -0.049650709029927104,
+     "dist": 0.05771078678850428,
+     "rejected": false
+    },
+    {
+     "a": -0.03310047268661806,
+     "dist": 0.03865856953248501,
+     "rejected": false
+    },
+    {
+     "a": -0.016550236343309016,
+     "dist": 0.019606421934077498,
+     "rejected": false
+    },
+    {
+     "a": 2.7755575615628914e-17,
+     "dist": 0.0005543730783093928,
+     "rejected": false
+    },
+    {
+     "a": 0.016550236343309044,
+     "dist": 0.01849766793768925,
+     "rejected": false
+    },
+    {
+     "a": 0.03310047268661809,
+     "dist": 0.03754960760691665,
+     "rejected": false
+    },
+    {
+     "a": 0.04965070902992713,
+     "dist": 0.05660147837281722,
+     "rejected": false
+    },
+    {
+     "a": 0.06620094537323615,
+     "dist": 0.07565328003784366,
+     "rejected": false
+    },
+    {
+     "a": 0.08275118171654519,
+     "dist": 0.09470501259572556,
+     "rejected": false
+    },
+    {
+     "a": 0.09930141805985424,
+     "dist": 0.11375667607145115,
+     "rejected": false
+    },
+    {
+     "a": 0.11585165440316328,
+     "dist": 0.13280827049902277,
+     "rejected": false
+    },
+    {
+     "a": 0.13240189074647232,
+     "dist": 0.15185979591589294,
+     "rejected": false
+    },
+    {
+     "a": 0.14895212708978137,
+     "dist": 0.17091125236119634,
+     "rejected": false
+    },
+    {
+     "a": 0.16550236343309035,
+     "dist": 0.18996263987497344,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_0",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.09999999999999995,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6763383567356183,
+    "bounded": true,
+    "interval_width": 2.6763383567356183,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6590572752951287,
+    "a_hi": 2.6763383567356183,
+    "bounded": true,
+    "interval_width": 3.335395632030747,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00016588128848154854,
+   "oracle_active_bound": null,
+   "a_lin": -6.757713016967253e-06,
+   "dT_over_da": -57.0258661070465,
+   "cp": 1772.4435682222745,
+   "dist_at_oracle": 3.230305248835623e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16676978160153735,
+     "dist": 0.1917931134114515,
+     "rejected": false
+    },
+    {
+     "a": -0.15009280344138362,
+     "dist": 0.17259438938078897,
+     "rejected": false
+    },
+    {
+     "a": -0.1334158252812299,
+     "dist": 0.15339573588392882,
+     "rejected": false
+    },
+    {
+     "a": -0.11673884712107614,
+     "dist": 0.13419715288180925,
+     "rejected": false
+    },
+    {
+     "a": -0.10006186896092241,
+     "dist": 0.11499864033574321,
+     "rejected": false
+    },
+    {
+     "a": -0.08338489080076868,
+     "dist": 0.09580019820724948,
+     "rejected": false
+    },
+    {
+     "a": -0.06670791264061493,
+     "dist": 0.07660182645862257,
+     "rejected": false
+    },
+    {
+     "a": -0.0500309344804612,
+     "dist": 0.057403525054558154,
+     "rejected": false
+    },
+    {
+     "a": -0.033353956320307465,
+     "dist": 0.03820529396872468,
+     "rejected": false
+    },
+    {
+     "a": -0.016676978160153733,
+     "dist": 0.019007133230193367,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00019098502676415753,
+     "rejected": false
+    },
+    {
+     "a": 0.016676978160153733,
+     "dist": 0.019388978463486816,
+     "rejected": false
+    },
+    {
+     "a": 0.03335395632030749,
+     "dist": 0.038586928684896576,
+     "rejected": false
+    },
+    {
+     "a": 0.050030934480461225,
+     "dist": 0.05778480890355945,
+     "rejected": false
+    },
+    {
+     "a": 0.06670791264061496,
+     "dist": 0.0769826190942795,
+     "rejected": false
+    },
+    {
+     "a": 0.08338489080076869,
+     "dist": 0.09618035928521956,
+     "rejected": false
+    },
+    {
+     "a": 0.10006186896092242,
+     "dist": 0.11537802951367461,
+     "rejected": false
+    },
+    {
+     "a": 0.11673884712107616,
+     "dist": 0.1345756298197189,
+     "rejected": false
+    },
+    {
+     "a": 0.1334158252812299,
+     "dist": 0.15377316024459387,
+     "rejected": false
+    },
+    {
+     "a": 0.15009280344138362,
+     "dist": 0.17297062083018205,
+     "rejected": false
+    },
+    {
+     "a": 0.16676978160153735,
+     "dist": 0.1921680116187906,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_1",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.09999999999999998,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6641181608043554,
+    "bounded": true,
+    "interval_width": 2.6641181608043554,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6569645297665686,
+    "a_hi": 2.6641181608043554,
+    "bounded": true,
+    "interval_width": 3.321082690570924,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.000150319782343816,
+   "oracle_active_bound": null,
+   "a_lin": 6.123876598908672e-06,
+   "dT_over_da": -57.025185145882375,
+   "cp": 1772.53514840098,
+   "dist_at_oracle": 4.296753187048941e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16605413452854623,
+     "dist": 0.1913326968674751,
+     "rejected": false
+    },
+    {
+     "a": -0.1494487210756916,
+     "dist": 0.172216416885979,
+     "rejected": false
+    },
+    {
+     "a": -0.13284330762283697,
+     "dist": 0.15310020692754997,
+     "rejected": false
+    },
+    {
+     "a": -0.11623789416998237,
+     "dist": 0.13398406695414813,
+     "rejected": false
+    },
+    {
+     "a": -0.09963248071712774,
+     "dist": 0.11486799692825803,
+     "rejected": false
+    },
+    {
+     "a": -0.08302706726427311,
+     "dist": 0.09575199681290568,
+     "rejected": false
+    },
+    {
+     "a": -0.0664216538114185,
+     "dist": 0.07663606657262437,
+     "rejected": false
+    },
+    {
+     "a": -0.049816240358563885,
+     "dist": 0.05752020617629442,
+     "rejected": false
+    },
+    {
+     "a": -0.033210826905709256,
+     "dist": 0.038404415608464436,
+     "rejected": false
+    },
+    {
+     "a": -0.016605413452854628,
+     "dist": 0.019288694948098196,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0001730966174265882,
+     "rejected": false
+    },
+    {
+     "a": 0.0166054134528546,
+     "dist": 0.018942538726669244,
+     "rejected": false
+    },
+    {
+     "a": 0.03321082690570923,
+     "dist": 0.03805805037228629,
+     "rejected": false
+    },
+    {
+     "a": 0.04981624035856386,
+     "dist": 0.05717349259261384,
+     "rejected": false
+    },
+    {
+     "a": 0.06642165381141846,
+     "dist": 0.07628886530518218,
+     "rejected": false
+    },
+    {
+     "a": 0.08302706726427309,
+     "dist": 0.09540416852633232,
+     "rejected": false
+    },
+    {
+     "a": 0.09963248071712771,
+     "dist": 0.11451940228892707,
+     "rejected": false
+    },
+    {
+     "a": 0.11623789416998231,
+     "dist": 0.13363456663067594,
+     "rejected": false
+    },
+    {
+     "a": 0.13284330762283697,
+     "dist": 0.15274966159124972,
+     "rejected": false
+    },
+    {
+     "a": 0.14944872107569157,
+     "dist": 0.17186468721128115,
+     "rejected": false
+    },
+    {
+     "a": 0.16605413452854623,
+     "dist": 0.19097964353200533,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_2",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.09999999999999996,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.674855986865564,
+    "bounded": true,
+    "interval_width": 2.674855986865564,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6594451079038651,
+    "a_hi": 2.674855986865564,
+    "bounded": true,
+    "interval_width": 3.334301094769429,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0001779258879273482,
+   "oracle_active_bound": null,
+   "a_lin": 7.248387748677815e-06,
+   "dT_over_da": -57.025884408068805,
+   "cp": 1772.4412496019488,
+   "dist_at_oracle": 5.293434272456288e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16671505473847148,
+     "dist": 0.19212590731921375,
+     "rejected": false
+    },
+    {
+     "a": -0.15004354926462432,
+     "dist": 0.17293348220528784,
+     "rejected": false
+    },
+    {
+     "a": -0.1333720437907772,
+     "dist": 0.1537411275794241,
+     "rejected": false
+    },
+    {
+     "a": -0.11670053831693003,
+     "dist": 0.13454884340312617,
+     "rejected": false
+    },
+    {
+     "a": -0.10002903284308289,
+     "dist": 0.1153566296386286,
+     "rejected": false
+    },
+    {
+     "a": -0.08335752736923574,
+     "dist": 0.09616448624909985,
+     "rejected": false
+    },
+    {
+     "a": -0.06668602189538858,
+     "dist": 0.07697241320007593,
+     "rejected": false
+    },
+    {
+     "a": -0.050014516421541436,
+     "dist": 0.0577804104637481,
+     "rejected": false
+    },
+    {
+     "a": -0.03334301094769429,
+     "dist": 0.03858847803606557,
+     "rejected": false
+    },
+    {
+     "a": -0.01667150547384713,
+     "dist": 0.019396616055256933,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00020489155079932828,
+     "rejected": false
+    },
+    {
+     "a": 0.01667150547384716,
+     "dist": 0.018986899622474438,
+     "rejected": false
+    },
+    {
+     "a": 0.03334301094769432,
+     "dist": 0.03817855121065348,
+     "rejected": false
+    },
+    {
+     "a": 0.05001451642154145,
+     "dist": 0.05737013300197603,
+     "rejected": false
+    },
+    {
+     "a": 0.06668602189538861,
+     "dist": 0.07656164485114836,
+     "rejected": false
+    },
+    {
+     "a": 0.08335752736923574,
+     "dist": 0.09575308676271307,
+     "rejected": false
+    },
+    {
+     "a": 0.1000290328430829,
+     "dist": 0.11494445876613214,
+     "rejected": false
+    },
+    {
+     "a": 0.11670053831693006,
+     "dist": 0.13413576089811122,
+     "rejected": false
+    },
+    {
+     "a": 0.13337204379077722,
+     "dist": 0.15332699319820553,
+     "rejected": false
+    },
+    {
+     "a": 0.15004354926462432,
+     "dist": 0.17251815570734239,
+     "rejected": false
+    },
+    {
+     "a": 0.16671505473847148,
+     "dist": 0.19170924846724444,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_3",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.30000000000000004,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6389183895928077,
+    "bounded": true,
+    "interval_width": 2.6389183895928077,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6516523204944487,
+    "a_hi": 2.6389183895928077,
+    "bounded": true,
+    "interval_width": 3.2905707100872563,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 3.6368841442465877e-05,
+   "oracle_active_bound": null,
+   "a_lin": 1.4816891033462701e-06,
+   "dT_over_da": -57.02363577000339,
+   "cp": 1772.7442679285052,
+   "dist_at_oracle": 1.222183205496883e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16452853550436283,
+     "dist": 0.18944398329562964,
+     "rejected": false
+    },
+    {
+     "a": -0.14807568195392656,
+     "dist": 0.17050346178794104,
+     "rejected": false
+    },
+    {
+     "a": -0.13162282840349027,
+     "dist": 0.1515630092259643,
+     "rejected": false
+    },
+    {
+     "a": -0.11516997485305398,
+     "dist": 0.13262262557280444,
+     "rejected": false
+    },
+    {
+     "a": -0.0987171213026177,
+     "dist": 0.1136823107916862,
+     "rejected": false
+    },
+    {
+     "a": -0.08226426775218142,
+     "dist": 0.09474206484572642,
+     "rejected": false
+    },
+    {
+     "a": -0.06581141420174513,
+     "dist": 0.075801887697958,
+     "rejected": false
+    },
+    {
+     "a": -0.04935856065130885,
+     "dist": 0.056861779311604584,
+     "rejected": false
+    },
+    {
+     "a": -0.03290570710087257,
+     "dist": 0.037921739650982465,
+     "rejected": false
+    },
+    {
+     "a": -0.01645285355043627,
+     "dist": 0.01898176868806194,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 4.188414821432726e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.01645285355043627,
+     "dist": 0.01889796745450409,
+     "rejected": false
+    },
+    {
+     "a": 0.03290570710087257,
+     "dist": 0.03783773259254788,
+     "rejected": false
+    },
+    {
+     "a": 0.049358560651308864,
+     "dist": 0.056777429212573984,
+     "rejected": false
+    },
+    {
+     "a": 0.06581141420174513,
+     "dist": 0.07571705734352852,
+     "rejected": false
+    },
+    {
+     "a": 0.0822642677521814,
+     "dist": 0.09465661702249058,
+     "rejected": false
+    },
+    {
+     "a": 0.0987171213026177,
+     "dist": 0.11359610828805536,
+     "rejected": false
+    },
+    {
+     "a": 0.115169974853054,
+     "dist": 0.13253553117939634,
+     "rejected": false
+    },
+    {
+     "a": 0.1316228284034903,
+     "dist": 0.151474885736021,
+     "rejected": false
+    },
+    {
+     "a": 0.14807568195392654,
+     "dist": 0.17041417199771267,
+     "rejected": false
+    },
+    {
+     "a": 0.16452853550436283,
+     "dist": 0.18935339000448528,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_4",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.3,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6453921360673234,
+    "bounded": true,
+    "interval_width": 2.6453921360673234,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6528029177621882,
+    "a_hi": 2.6453921360673234,
+    "bounded": true,
+    "interval_width": 3.2981950538295117,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00024309654899061067,
+   "oracle_active_bound": null,
+   "a_lin": -9.903819156570053e-06,
+   "dT_over_da": -57.02399849460984,
+   "cp": 1772.6951245895573,
+   "dist_at_oracle": 6.844895875134297e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1649097526914756,
+     "dist": 0.18956142517571778,
+     "rejected": false
+    },
+    {
+     "a": -0.14841877742232804,
+     "dist": 0.17057698730957657,
+     "rejected": false
+    },
+    {
+     "a": -0.13192780215318048,
+     "dist": 0.151592618663655,
+     "rejected": false
+    },
+    {
+     "a": -0.11543682688403291,
+     "dist": 0.13260831920207106,
+     "rejected": false
+    },
+    {
+     "a": -0.09894585161488535,
+     "dist": 0.11362408889006405,
+     "rejected": false
+    },
+    {
+     "a": -0.0824548763457378,
+     "dist": 0.09463992769465014,
+     "rejected": false
+    },
+    {
+     "a": -0.06596390107659023,
+     "dist": 0.07565583558710404,
+     "rejected": false
+    },
+    {
+     "a": -0.04947292580744267,
+     "dist": 0.05667181255044049,
+     "rejected": false
+    },
+    {
+     "a": -0.03298195053829511,
+     "dist": 0.037687858609498026,
+     "rejected": false
+    },
+    {
+     "a": -0.016490975269147556,
+     "dist": 0.018703974044200267,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0002799271895677396,
+     "rejected": false
+    },
+    {
+     "a": 0.016490975269147556,
+     "dist": 0.01926359211181949,
+     "rejected": false
+    },
+    {
+     "a": 0.03298195053829514,
+     "dist": 0.03824727007700602,
+     "rejected": false
+    },
+    {
+     "a": 0.0494729258074427,
+     "dist": 0.057230879644677136,
+     "rejected": false
+    },
+    {
+     "a": 0.06596390107659025,
+     "dist": 0.0762144205548742,
+     "rejected": false
+    },
+    {
+     "a": 0.08245487634573781,
+     "dist": 0.09519789278651565,
+     "rejected": false
+    },
+    {
+     "a": 0.09894585161488537,
+     "dist": 0.11418129635899787,
+     "rejected": false
+    },
+    {
+     "a": 0.11543682688403292,
+     "dist": 0.13316463130346884,
+     "rejected": false
+    },
+    {
+     "a": 0.13192780215318048,
+     "dist": 0.15214789765564868,
+     "rejected": false
+    },
+    {
+     "a": 0.14841877742232804,
+     "dist": 0.17113109545337932,
+     "rejected": false
+    },
+    {
+     "a": 0.1649097526914756,
+     "dist": 0.19011422473567807,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_5",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.30000000000000004,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.638948595383715,
+    "bounded": true,
+    "interval_width": 2.638948595383715,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6517340206383618,
+    "a_hi": 2.638948595383715,
+    "bounded": true,
+    "interval_width": 3.290682616022077,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 6.647830895015559e-05,
+   "oracle_active_bound": null,
+   "a_lin": 2.708367245096515e-06,
+   "dT_over_da": -57.02364964451718,
+   "cp": 1772.7424204201668,
+   "dist_at_oracle": 2.3297451741650445e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16453413080110385,
+     "dist": 0.18948509667913377,
+     "rejected": false
+    },
+    {
+     "a": -0.14808071772099346,
+     "dist": 0.17054392990216763,
+     "rejected": false
+    },
+    {
+     "a": -0.13162730464088307,
+     "dist": 0.15160283207427266,
+     "rejected": false
+    },
+    {
+     "a": -0.1151738915607727,
+     "dist": 0.13266180315865317,
+     "rejected": false
+    },
+    {
+     "a": -0.09872047848066232,
+     "dist": 0.11372084311874699,
+     "rejected": false
+    },
+    {
+     "a": -0.08226706540055193,
+     "dist": 0.0947799519180203,
+     "rejected": false
+    },
+    {
+     "a": -0.06581365232044155,
+     "dist": 0.07583912952024212,
+     "rejected": false
+    },
+    {
+     "a": -0.04936023924033117,
+     "dist": 0.056898375890341996,
+     "rejected": false
+    },
+    {
+     "a": -0.03290682616022078,
+     "dist": 0.03795769099779252,
+     "rejected": false
+    },
+    {
+     "a": -0.01645341308011039,
+     "dist": 0.01901707484026189,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 7.656257283241818e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.016453413080110363,
+     "dist": 0.018863951993382057,
+     "rejected": false
+    },
+    {
+     "a": 0.03290682616022075,
+     "dist": 0.03780436231635179,
+     "rejected": false
+    },
+    {
+     "a": 0.049360239240331144,
+     "dist": 0.05674470415326904,
+     "rejected": false
+    },
+    {
+     "a": 0.0658136523204415,
+     "dist": 0.07568497750685833,
+     "rejected": false
+    },
+    {
+     "a": 0.0822670654005519,
+     "dist": 0.09462518240898665,
+     "rejected": false
+    },
+    {
+     "a": 0.09872047848066229,
+     "dist": 0.11356531889652267,
+     "rejected": false
+    },
+    {
+     "a": 0.11517389156077268,
+     "dist": 0.1325053870078986,
+     "rejected": false
+    },
+    {
+     "a": 0.13162730464088307,
+     "dist": 0.1514453867822726,
+     "rejected": false
+    },
+    {
+     "a": 0.14808071772099346,
+     "dist": 0.17038531825922054,
+     "rejected": false
+    },
+    {
+     "a": 0.16453413080110385,
+     "dist": 0.1893251814786386,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_6",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.6000000000000001,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6600326587684995,
+    "bounded": true,
+    "interval_width": 2.6600326587684995,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6530254075168647,
+    "a_hi": 2.6600326587684995,
+    "bounded": true,
+    "interval_width": 3.313058066285364,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0008476294715425024,
+   "oracle_active_bound": null,
+   "a_lin": -3.4532203726603134e-05,
+   "dT_over_da": -57.02448399425178,
+   "cp": 1772.630512935695,
+   "dist_at_oracle": 4.200032092735628e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1656529033142682,
+     "dist": 0.18972142621538038,
+     "rejected": false
+    },
+    {
+     "a": -0.1490876129828414,
+     "dist": 0.17065139498324575,
+     "rejected": false
+    },
+    {
+     "a": -0.13252232265141456,
+     "dist": 0.15158143365396357,
+     "rejected": false
+    },
+    {
+     "a": -0.11595703231998775,
+     "dist": 0.1325115422459347,
+     "rejected": false
+    },
+    {
+     "a": -0.09939174198856093,
+     "dist": 0.11344172081563583,
+     "rejected": false
+    },
+    {
+     "a": -0.08282645165713412,
+     "dist": 0.09437196949561294,
+     "rejected": false
+    },
+    {
+     "a": -0.0662611613257073,
+     "dist": 0.07530228859108275,
+     "rejected": false
+    },
+    {
+     "a": -0.04969587099428047,
+     "dist": 0.056232678873059515,
+     "rejected": false
+    },
+    {
+     "a": -0.033130580662853654,
+     "dist": 0.0371631427739261,
+     "rejected": false
+    },
+    {
+     "a": -0.01656529033142684,
+     "dist": 0.01809369314337911,
+     "rejected": false
+    },
+    {
+     "a": -2.7755575615628914e-17,
+     "dist": 0.000976664288937196,
+     "rejected": false
+    },
+    {
+     "a": 0.016565290331426813,
+     "dist": 0.020045140539356604,
+     "rejected": false
+    },
+    {
+     "a": 0.033130580662853626,
+     "dist": 0.03911438545665432,
+     "rejected": false
+    },
+    {
+     "a": 0.04969587099428044,
+     "dist": 0.05818357508958412,
+     "rejected": false
+    },
+    {
+     "a": 0.06626116132570728,
+     "dist": 0.07725269906532058,
+     "rejected": false
+    },
+    {
+     "a": 0.08282645165713409,
+     "dist": 0.09632175525709001,
+     "rejected": false
+    },
+    {
+     "a": 0.0993917419885609,
+     "dist": 0.11539074297074368,
+     "rejected": false
+    },
+    {
+     "a": 0.11595703231998775,
+     "dist": 0.13445966192903386,
+     "rejected": false
+    },
+    {
+     "a": 0.13252232265141453,
+     "dist": 0.15352851201282325,
+     "rejected": false
+    },
+    {
+     "a": 0.14908761298284137,
+     "dist": 0.17259729317386555,
+     "rejected": false
+    },
+    {
+     "a": 0.1656529033142682,
+     "dist": 0.19166600539964332,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "validation_7",
+   "role": "phase13-validation",
+   "measured_time_norm": 0.5999999999999999,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.720593887443485,
+    "bounded": true,
+    "interval_width": 2.720593887443485,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_4",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6746305101267684,
+    "a_hi": 2.720593887443485,
+    "bounded": true,
+    "interval_width": 3.3952243975702534,
+    "binding_name_low": "H",
+    "binding_name_high": "OH"
+   },
+   "oracle_a": 0.0003943305121197949,
+   "oracle_active_bound": null,
+   "a_lin": 1.6062318275145944e-05,
+   "dT_over_da": -57.03062855610032,
+   "cp": 1771.8105765190348,
+   "dist_at_oracle": 2.059892967037366e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16976121987851267,
+     "dist": 0.1958857777416494,
+     "rejected": false
+    },
+    {
+     "a": -0.15278509789066141,
+     "dist": 0.1763422697612149,
+     "rejected": false
+    },
+    {
+     "a": -0.13580897590281013,
+     "dist": 0.15679883419370608,
+     "rejected": false
+    },
+    {
+     "a": -0.11883285391495887,
+     "dist": 0.13725547099576804,
+     "rejected": false
+    },
+    {
+     "a": -0.1018567319271076,
+     "dist": 0.1177121801242669,
+     "rejected": false
+    },
+    {
+     "a": -0.08488060993925634,
+     "dist": 0.09816896153603183,
+     "rejected": false
+    },
+    {
+     "a": -0.06790448795140508,
+     "dist": 0.07862581518802751,
+     "rejected": false
+    },
+    {
+     "a": -0.05092836596355381,
+     "dist": 0.05908274103800619,
+     "rejected": false
+    },
+    {
+     "a": -0.03395224397570254,
+     "dist": 0.03953973904699578,
+     "rejected": false
+    },
+    {
+     "a": -0.016976121987851284,
+     "dist": 0.01999680919638921,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0004539559218334039,
+     "rejected": false
+    },
+    {
+     "a": 0.016976121987851256,
+     "dist": 0.019088834688797133,
+     "rejected": false
+    },
+    {
+     "a": 0.03395224397570251,
+     "dist": 0.03863154848755568,
+     "rejected": false
+    },
+    {
+     "a": 0.050928365963553796,
+     "dist": 0.05817419039852101,
+     "rejected": false
+    },
+    {
+     "a": 0.06790448795140505,
+     "dist": 0.07771676043879476,
+     "rejected": false
+    },
+    {
+     "a": 0.08488060993925634,
+     "dist": 0.09725925864861555,
+     "rejected": false
+    },
+    {
+     "a": 0.10185673192710759,
+     "dist": 0.11680168507218781,
+     "rejected": false
+    },
+    {
+     "a": 0.11883285391495885,
+     "dist": 0.13634403975499337,
+     "rejected": false
+    },
+    {
+     "a": 0.1358089759028101,
+     "dist": 0.15588632274315684,
+     "rejected": false
+    },
+    {
+     "a": 0.15278509789066141,
+     "dist": 0.1754285340831799,
+     "rejected": false
+    },
+    {
+     "a": 0.16976121987851267,
+     "dist": 0.1949706738218894,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_0",
+   "role": "phase13-test",
+   "measured_time_norm": 0.10000000000000003,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6741221016822196,
+    "bounded": true,
+    "interval_width": 2.6741221016822196,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6590147024249474,
+    "a_hi": 2.6741221016822196,
+    "bounded": true,
+    "interval_width": 3.333136804107167,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00012348557111602803,
+   "oracle_active_bound": null,
+   "a_lin": 5.0305972405707595e-06,
+   "dT_over_da": -57.02579511173763,
+   "cp": 1772.4531623788862,
+   "dist_at_oracle": 3.220256150407111e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16665684020535837,
+     "dist": 0.19199614657038852,
+     "rejected": false
+    },
+    {
+     "a": -0.14999115618482253,
+     "dist": 0.1728104306742569,
+     "rejected": false
+    },
+    {
+     "a": -0.1333254721642867,
+     "dist": 0.15362478522707063,
+     "rejected": false
+    },
+    {
+     "a": -0.11665978814375086,
+     "dist": 0.1344392101898743,
+     "rejected": false
+    },
+    {
+     "a": -0.09999410412321502,
+     "dist": 0.11525370552407108,
+     "rejected": false
+    },
+    {
+     "a": -0.08332842010267918,
+     "dist": 0.09606827119127034,
+     "rejected": false
+    },
+    {
+     "a": -0.06666273608214335,
+     "dist": 0.07688290715384233,
+     "rejected": false
+    },
+    {
+     "a": -0.04999705206160751,
+     "dist": 0.05769761337647998,
+     "rejected": false
+    },
+    {
+     "a": -0.033331368041071674,
+     "dist": 0.03851238983258955,
+     "rejected": false
+    },
+    {
+     "a": -0.016665684020535837,
+     "dist": 0.01932723654851546,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00014218946333337476,
+     "rejected": false
+    },
+    {
+     "a": 0.016665684020535837,
+     "dist": 0.019042860476508616,
+     "rejected": false
+    },
+    {
+     "a": 0.033331368041071674,
+     "dist": 0.03822780348805552,
+     "rejected": false
+    },
+    {
+     "a": 0.04999705206160751,
+     "dist": 0.057412676582882745,
+     "rejected": false
+    },
+    {
+     "a": 0.06666273608214335,
+     "dist": 0.07659747973362074,
+     "rejected": false
+    },
+    {
+     "a": 0.08332842010267918,
+     "dist": 0.09578221296809349,
+     "rejected": false
+    },
+    {
+     "a": 0.09999410412321502,
+     "dist": 0.1149668763234356,
+     "rejected": false
+    },
+    {
+     "a": 0.11665978814375083,
+     "dist": 0.13415146983959253,
+     "rejected": false
+    },
+    {
+     "a": 0.1333254721642867,
+     "dist": 0.1533359935576869,
+     "rejected": false
+    },
+    {
+     "a": 0.14999115618482256,
+     "dist": 0.1725204475194877,
+     "rejected": false
+    },
+    {
+     "a": 0.16665684020535837,
+     "dist": 0.19170483176718775,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_1",
+   "role": "phase13-test",
+   "measured_time_norm": 0.09999999999999994,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6694949802020473,
+    "bounded": true,
+    "interval_width": 2.6694949802020473,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6583277317777677,
+    "a_hi": 2.6694949802020473,
+    "bounded": true,
+    "interval_width": 3.327822711979815,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00021455783636322486,
+   "oracle_active_bound": null,
+   "a_lin": 8.740786177445177e-06,
+   "dT_over_da": -57.02555423366053,
+   "cp": 1772.4855898184653,
+   "dist_at_oracle": 6.6362905184701024e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16639113559899077,
+     "dist": 0.1917949068264697,
+     "rejected": false
+    },
+    {
+     "a": -0.1497520220390917,
+     "dist": 0.17263979972869156,
+     "rejected": false
+    },
+    {
+     "a": -0.1331129084791926,
+     "dist": 0.15348476289109908,
+     "rejected": false
+    },
+    {
+     "a": -0.11647379491929355,
+     "dist": 0.1343297962760735,
+     "rejected": false
+    },
+    {
+     "a": -0.09983468135939447,
+     "dist": 0.11517489984701317,
+     "rejected": false
+    },
+    {
+     "a": -0.08319556779949538,
+     "dist": 0.09602007356892642,
+     "rejected": false
+    },
+    {
+     "a": -0.06655645423959632,
+     "dist": 0.07686531741067724,
+     "rejected": false
+    },
+    {
+     "a": -0.04991734067969725,
+     "dist": 0.0577106313516942,
+     "rejected": false
+    },
+    {
+     "a": -0.033278227119798165,
+     "dist": 0.0385560154088251,
+     "rejected": false
+    },
+    {
+     "a": -0.016639113559899082,
+     "dist": 0.019401469821977938,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0002470816150539319,
+     "rejected": false
+    },
+    {
+     "a": 0.016639113559899055,
+     "dist": 0.018907414994526014,
+     "rejected": false
+    },
+    {
+     "a": 0.03327822711979814,
+     "dist": 0.03806175085549916,
+     "rejected": false
+    },
+    {
+     "a": 0.04991734067969722,
+     "dist": 0.0572160172888937,
+     "rejected": false
+    },
+    {
+     "a": 0.06655645423959627,
+     "dist": 0.07637021404041465,
+     "rejected": false
+    },
+    {
+     "a": 0.08319556779949536,
+     "dist": 0.09552434109277858,
+     "rejected": false
+    },
+    {
+     "a": 0.09983468135939444,
+     "dist": 0.11467839846797179,
+     "rejected": false
+    },
+    {
+     "a": 0.1164737949192935,
+     "dist": 0.13383238619929333,
+     "rejected": false
+    },
+    {
+     "a": 0.1331129084791926,
+     "dist": 0.15298630432439325,
+     "rejected": false
+    },
+    {
+     "a": 0.14975202203909166,
+     "dist": 0.17214015288299042,
+     "rejected": false
+    },
+    {
+     "a": 0.16639113559899077,
+     "dist": 0.19129393191591998,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_2",
+   "role": "phase13-test",
+   "measured_time_norm": 0.10000000000000005,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6668945547262846,
+    "bounded": true,
+    "interval_width": 2.6668945547262846,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6581955026466436,
+    "a_hi": 2.6668945547262846,
+    "bounded": true,
+    "interval_width": 3.325090057372928,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00017267980890872862,
+   "oracle_active_bound": null,
+   "a_lin": 7.034750269208451e-06,
+   "dT_over_da": -57.02546036356103,
+   "cp": 1772.4983680185433,
+   "dist_at_oracle": 6.391738333359867e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1662545028686464,
+     "dist": 0.19158932819754207,
+     "rejected": false
+    },
+    {
+     "a": -0.14962905258178177,
+     "dist": 0.17244995853371006,
+     "rejected": false
+    },
+    {
+     "a": -0.13300360229491712,
+     "dist": 0.15331065902832275,
+     "rejected": false
+    },
+    {
+     "a": -0.11637815200805249,
+     "dist": 0.13417142964377463,
+     "rejected": false
+    },
+    {
+     "a": -0.09975270172118784,
+     "dist": 0.11503227034345068,
+     "rejected": false
+    },
+    {
+     "a": -0.0831272514343232,
+     "dist": 0.09589318109220563,
+     "rejected": false
+    },
+    {
+     "a": -0.06650180114745857,
+     "dist": 0.07675416185845808,
+     "rejected": false
+    },
+    {
+     "a": -0.04987635086059393,
+     "dist": 0.05761521262046513,
+     "rejected": false
+    },
+    {
+     "a": -0.033250900573729286,
+     "dist": 0.038476333391321484,
+     "rejected": false
+    },
+    {
+     "a": -0.016625450286864657,
+     "dist": 0.01933752439240005,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00019888638703216078,
+     "rejected": false
+    },
+    {
+     "a": 0.01662545028686463,
+     "dist": 0.018939887307989983,
+     "rejected": false
+    },
+    {
+     "a": 0.03325090057372926,
+     "dist": 0.038078486887651204,
+     "rejected": false
+    },
+    {
+     "a": 0.049876350860593915,
+     "dist": 0.0572170171100224,
+     "rejected": false
+    },
+    {
+     "a": 0.06650180114745854,
+     "dist": 0.0763554777432376,
+     "rejected": false
+    },
+    {
+     "a": 0.0831272514343232,
+     "dist": 0.0954938687742464,
+     "rejected": false
+    },
+    {
+     "a": 0.09975270172118783,
+     "dist": 0.1146321902263204,
+     "rejected": false
+    },
+    {
+     "a": 0.11637815200805246,
+     "dist": 0.13377044213322675,
+     "rejected": false
+    },
+    {
+     "a": 0.1330036022949171,
+     "dist": 0.15290862453278592,
+     "rejected": false
+    },
+    {
+     "a": 0.14962905258178177,
+     "dist": 0.17204673746474067,
+     "rejected": false
+    },
+    {
+     "a": 0.1662545028686464,
+     "dist": 0.19118478096987657,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_3",
+   "role": "phase13-test",
+   "measured_time_norm": 0.1000000000000001,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.669383095573337,
+    "bounded": true,
+    "interval_width": 2.669383095573337,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6579847952800146,
+    "a_hi": 2.669383095573337,
+    "bounded": true,
+    "interval_width": 3.3273678908533517,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00019219374079336898,
+   "oracle_active_bound": null,
+   "a_lin": -7.829714580366856e-06,
+   "dT_over_da": -57.025496584678066,
+   "cp": 1772.4932478959156,
+   "dist_at_oracle": 5.066132337727042e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1663683945426676,
+     "dist": 0.19130043955717863,
+     "rejected": false
+    },
+    {
+     "a": -0.14973155508840086,
+     "dist": 0.17214795522958193,
+     "rejected": false
+    },
+    {
+     "a": -0.13309471563413408,
+     "dist": 0.1529955411485953,
+     "rejected": false
+    },
+    {
+     "a": -0.11645787617986733,
+     "dist": 0.13384319727607896,
+     "rejected": false
+    },
+    {
+     "a": -0.09982103672560057,
+     "dist": 0.11469092357455138,
+     "rejected": false
+    },
+    {
+     "a": -0.0831841972713338,
+     "dist": 0.09553872000739806,
+     "rejected": false
+    },
+    {
+     "a": -0.06654735781706705,
+     "dist": 0.076386586540209,
+     "rejected": false
+    },
+    {
+     "a": -0.04991051836280029,
+     "dist": 0.05723452314482969,
+     "rejected": false
+    },
+    {
+     "a": -0.03327367890853353,
+     "dist": 0.0380825298156093,
+     "rejected": false
+    },
+    {
+     "a": -0.016636839454266777,
+     "dist": 0.018930606684288306,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.00022130553079132624,
+     "rejected": false
+    },
+    {
+     "a": 0.01663683945426675,
+     "dist": 0.019373031851769574,
+     "rejected": false
+    },
+    {
+     "a": 0.0332736789085335,
+     "dist": 0.03852474532677927,
+     "rejected": false
+    },
+    {
+     "a": 0.04991051836280028,
+     "dist": 0.05767638921231007,
+     "rejected": false
+    },
+    {
+     "a": 0.06654735781706703,
+     "dist": 0.07682796338573404,
+     "rejected": false
+    },
+    {
+     "a": 0.0831841972713338,
+     "dist": 0.095979467855167,
+     "rejected": false
+    },
+    {
+     "a": 0.09982103672560055,
+     "dist": 0.1151309026509064,
+     "rejected": false
+    },
+    {
+     "a": 0.1164578761798673,
+     "dist": 0.13428226780974595,
+     "rejected": false
+    },
+    {
+     "a": 0.13309471563413405,
+     "dist": 0.1534335633710749,
+     "rejected": false
+    },
+    {
+     "a": 0.14973155508840086,
+     "dist": 0.17258478937553354,
+     "rejected": false
+    },
+    {
+     "a": 0.1663683945426676,
+     "dist": 0.19173594586450535,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_4",
+   "role": "phase13-test",
+   "measured_time_norm": 0.10000000000000005,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.672508046801015,
+    "bounded": true,
+    "interval_width": 2.672508046801015,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6585018833411387,
+    "a_hi": 2.672508046801015,
+    "bounded": true,
+    "interval_width": 3.331009930142154,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 7.480170165509105e-05,
+   "oracle_active_bound": null,
+   "a_lin": 3.0473069831165014e-06,
+   "dT_over_da": -57.02566786847058,
+   "cp": 1772.4702104068872,
+   "dist_at_oracle": 1.780588441022803e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1665504965071077,
+     "dist": 0.191817574647689,
+     "rejected": false
+    },
+    {
+     "a": -0.14989544685639694,
+     "dist": 0.1726441119161604,
+     "rejected": false
+    },
+    {
+     "a": -0.13324039720568617,
+     "dist": 0.15347071955994762,
+     "rejected": false
+    },
+    {
+     "a": -0.11658534755497539,
+     "dist": 0.13429739754000986,
+     "rejected": false
+    },
+    {
+     "a": -0.09993029790426462,
+     "dist": 0.1151241458174975,
+     "rejected": false
+    },
+    {
+     "a": -0.08327524825355385,
+     "dist": 0.09595096435348476,
+     "rejected": false
+    },
+    {
+     "a": -0.06662019860284307,
+     "dist": 0.07677785310912577,
+     "rejected": false
+    },
+    {
+     "a": -0.049965148952132304,
+     "dist": 0.05760481204615641,
+     "rejected": false
+    },
+    {
+     "a": -0.033310099301421536,
+     "dist": 0.038431841128828144,
+     "rejected": false
+    },
+    {
+     "a": -0.016655049650710768,
+     "dist": 0.019258940337549327,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 8.612788904137447e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.016655049650710768,
+     "dist": 0.01908665135767097,
+     "rejected": false
+    },
+    {
+     "a": 0.033310099301421564,
+     "dist": 0.038259342094749564,
+     "rejected": false
+    },
+    {
+     "a": 0.04996514895213233,
+     "dist": 0.057431962923272975,
+     "rejected": false
+    },
+    {
+     "a": 0.0666201986028431,
+     "dist": 0.07660451386350256,
+     "rejected": false
+    },
+    {
+     "a": 0.08327524825355387,
+     "dist": 0.09577699495260845,
+     "rejected": false
+    },
+    {
+     "a": 0.09993029790426464,
+     "dist": 0.11494940623075425,
+     "rejected": false
+    },
+    {
+     "a": 0.11658534755497543,
+     "dist": 0.13412174773909225,
+     "rejected": false
+    },
+    {
+     "a": 0.13324039720568617,
+     "dist": 0.15329401951929214,
+     "rejected": false
+    },
+    {
+     "a": 0.14989544685639697,
+     "dist": 0.17246622161336347,
+     "rejected": false
+    },
+    {
+     "a": 0.1665504965071077,
+     "dist": 0.1916383540635865,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_5",
+   "role": "phase13-test",
+   "measured_time_norm": 0.10000000000000003,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6728930360909127,
+    "bounded": true,
+    "interval_width": 2.6728930360909127,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6593715791468079,
+    "a_hi": 2.6728930360909127,
+    "bounded": true,
+    "interval_width": 3.3322646152377207,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 4.981445932038433e-05,
+   "oracle_active_bound": null,
+   "a_lin": 2.029355465411099e-06,
+   "dT_over_da": -57.02581734112921,
+   "cp": 1772.4503690709184,
+   "dist_at_oracle": 1.7273143595075892e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16661323076188606,
+     "dist": 0.19186115295956027,
+     "rejected": false
+    },
+    {
+     "a": -0.14995190768569744,
+     "dist": 0.17268045578415478,
+     "rejected": false
+    },
+    {
+     "a": -0.13329058460950885,
+     "dist": 0.15349982901893258,
+     "rejected": false
+    },
+    {
+     "a": -0.11662926153332023,
+     "dist": 0.13431927262473034,
+     "rejected": false
+    },
+    {
+     "a": -0.09996793845713163,
+     "dist": 0.11513878656259174,
+     "rejected": false
+    },
+    {
+     "a": -0.08330661538094303,
+     "dist": 0.09595837079346219,
+     "rejected": false
+    },
+    {
+     "a": -0.06664529230475441,
+     "dist": 0.07677802527836154,
+     "rejected": false
+    },
+    {
+     "a": -0.04998396922856581,
+     "dist": 0.057597749978834524,
+     "rejected": false
+    },
+    {
+     "a": -0.033322646152377206,
+     "dist": 0.03841754485878235,
+     "rejected": false
+    },
+    {
+     "a": -0.01666132307618859,
+     "dist": 0.01923740989736631,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 5.7370920889990675e-05,
+     "rejected": false
+    },
+    {
+     "a": 0.016661323076188617,
+     "dist": 0.01912265002167983,
+     "rejected": false
+    },
+    {
+     "a": 0.03332264615237723,
+     "dist": 0.038302574827372704,
+     "rejected": false
+    },
+    {
+     "a": 0.04998396922856582,
+     "dist": 0.0574824296890984,
+     "rejected": false
+    },
+    {
+     "a": 0.06664529230475444,
+     "dist": 0.07666221462851891,
+     "rejected": false
+    },
+    {
+     "a": 0.08330661538094303,
+     "dist": 0.09584192968317244,
+     "rejected": false
+    },
+    {
+     "a": 0.09996793845713164,
+     "dist": 0.11502157489341137,
+     "rejected": false
+    },
+    {
+     "a": 0.11662926153332026,
+     "dist": 0.13420115030054397,
+     "rejected": false
+    },
+    {
+     "a": 0.13329058460950888,
+     "dist": 0.1533806559463627,
+     "rejected": false
+    },
+    {
+     "a": 0.14995190768569744,
+     "dist": 0.17256009187299517,
+     "rejected": false
+    },
+    {
+     "a": 0.16661323076188606,
+     "dist": 0.19173945812284218,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_6",
+   "role": "phase13-test",
+   "measured_time_norm": 0.30000000000000004,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.65493192233511,
+    "bounded": true,
+    "interval_width": 2.65493192233511,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6548069805062559,
+    "a_hi": 2.65493192233511,
+    "bounded": true,
+    "interval_width": 3.309738902841366,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00037765520192760155,
+   "oracle_active_bound": null,
+   "a_lin": -1.538553940103364e-05,
+   "dT_over_da": -57.02458368792616,
+   "cp": 1772.6161105829542,
+   "dist_at_oracle": 9.999019877819656e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1654869451420683,
+     "dist": 0.19007146709652994,
+     "rejected": false
+    },
+    {
+     "a": -0.14893825062786148,
+     "dist": 0.17102053324491318,
+     "rejected": false
+    },
+    {
+     "a": -0.13238955611365463,
+     "dist": 0.15196966902459963,
+     "rejected": false
+    },
+    {
+     "a": -0.11584086159944781,
+     "dist": 0.13291887440075983,
+     "rejected": false
+    },
+    {
+     "a": -0.09929216708524098,
+     "dist": 0.11386814934082258,
+     "rejected": false
+    },
+    {
+     "a": -0.08274347257103415,
+     "dist": 0.09481749381624296,
+     "rejected": false
+    },
+    {
+     "a": -0.06619477805682733,
+     "dist": 0.0757669078078237,
+     "rejected": false
+    },
+    {
+     "a": -0.0496460835426205,
+     "dist": 0.05671639132180383,
+     "rejected": false
+    },
+    {
+     "a": -0.033097389028413665,
+     "dist": 0.037665944454618475,
+     "rejected": false
+    },
+    {
+     "a": -0.016548694514206846,
+     "dist": 0.01861556785562623,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0004348584428750223,
+     "rejected": false
+    },
+    {
+     "a": 0.01654869451420682,
+     "dist": 0.019484985398938903,
+     "rejected": false
+    },
+    {
+     "a": 0.03309738902841364,
+     "dist": 0.03853515425581845,
+     "rejected": false
+    },
+    {
+     "a": 0.049646083542620484,
+     "dist": 0.05758525475365767,
+     "rejected": false
+    },
+    {
+     "a": 0.0661947780568273,
+     "dist": 0.0766352863065692,
+     "rejected": false
+    },
+    {
+     "a": 0.08274347257103415,
+     "dist": 0.09568524882724326,
+     "rejected": false
+    },
+    {
+     "a": 0.09929216708524097,
+     "dist": 0.11473514231318585,
+     "rejected": false
+    },
+    {
+     "a": 0.11584086159944779,
+     "dist": 0.13378496678651652,
+     "rejected": false
+    },
+    {
+     "a": 0.1323895561136546,
+     "dist": 0.15283472227871878,
+     "rejected": false
+    },
+    {
+     "a": 0.14893825062786148,
+     "dist": 0.17188440882559597,
+     "rejected": false
+    },
+    {
+     "a": 0.1654869451420683,
+     "dist": 0.1909340264651962,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_7",
+   "role": "phase13-test",
+   "measured_time_norm": 0.29999999999999993,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6594342471605983,
+    "bounded": true,
+    "interval_width": 2.6594342471605983,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6563639895705814,
+    "a_hi": 2.6594342471605983,
+    "bounded": true,
+    "interval_width": 3.3157982367311796,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0005536304293744077,
+   "oracle_active_bound": null,
+   "a_lin": 2.2554476750601868e-05,
+   "dT_over_da": -57.02495788300744,
+   "cp": 1772.5658787272594,
+   "dist_at_oracle": 1.9521296297633173e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.165789911836559,
+     "dist": 0.1914926147668415,
+     "rejected": false
+    },
+    {
+     "a": -0.1492109206529031,
+     "dist": 0.17240677178683686,
+     "rejected": false
+    },
+    {
+     "a": -0.1326319294692472,
+     "dist": 0.15332099866485438,
+     "rejected": false
+    },
+    {
+     "a": -0.1160529382855913,
+     "dist": 0.13423529537424625,
+     "rejected": false
+    },
+    {
+     "a": -0.0994739471019354,
+     "dist": 0.11514966189627075,
+     "rejected": false
+    },
+    {
+     "a": -0.0828949559182795,
+     "dist": 0.09606409822741177,
+     "rejected": false
+    },
+    {
+     "a": -0.06631596473462359,
+     "dist": 0.07697860439858782,
+     "rejected": false
+    },
+    {
+     "a": -0.04973697355096769,
+     "dist": 0.05789318053219134,
+     "rejected": false
+    },
+    {
+     "a": -0.033157982367311795,
+     "dist": 0.03880782706754888,
+     "rejected": false
+    },
+    {
+     "a": -0.016578991183655883,
+     "dist": 0.0197225462954195,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0006376195325767667,
+     "rejected": false
+    },
+    {
+     "a": 0.01657899118365591,
+     "dist": 0.01844783621921577,
+     "rejected": false
+    },
+    {
+     "a": 0.03315798236731182,
+     "dist": 0.03753290804838339,
+     "rejected": false
+    },
+    {
+     "a": 0.049736973550967706,
+     "dist": 0.056617914017430576,
+     "rejected": false
+    },
+    {
+     "a": 0.06631596473462362,
+     "dist": 0.07570285148873514,
+     "rejected": false
+    },
+    {
+     "a": 0.0828949559182795,
+     "dist": 0.09478771998160139,
+     "rejected": false
+    },
+    {
+     "a": 0.09947394710193541,
+     "dist": 0.11387251936494244,
+     "rejected": false
+    },
+    {
+     "a": 0.11605293828559132,
+     "dist": 0.13295724960651648,
+     "rejected": false
+    },
+    {
+     "a": 0.13263192946924723,
+     "dist": 0.15204191071100448,
+     "rejected": false
+    },
+    {
+     "a": 0.1492109206529031,
+     "dist": 0.1711265026995466,
+     "rejected": false
+    },
+    {
+     "a": 0.165789911836559,
+     "dist": 0.19021102560158754,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_8",
+   "role": "phase13-test",
+   "measured_time_norm": 0.3,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6617791692807278,
+    "bounded": true,
+    "interval_width": 2.6617791692807278,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6549674238180767,
+    "a_hi": 2.6617791692807278,
+    "bounded": true,
+    "interval_width": 3.3167465930988045,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0005420529369655058,
+   "oracle_active_bound": null,
+   "a_lin": -2.208290757363417e-05,
+   "dT_over_da": -57.02481055712662,
+   "cp": 1772.5855343792618,
+   "dist_at_oracle": 1.9624500788439183e-07,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16583732965494025,
+     "dist": 0.19028576732652994,
+     "rejected": false
+    },
+    {
+     "a": -0.1492535966894462,
+     "dist": 0.1711944772789699,
+     "rejected": false
+    },
+    {
+     "a": -0.1326698637239522,
+     "dist": 0.15210325711726536,
+     "rejected": false
+    },
+    {
+     "a": -0.11608613075845817,
+     "dist": 0.13301210680311357,
+     "rejected": false
+    },
+    {
+     "a": -0.09950239779296415,
+     "dist": 0.1139210262983555,
+     "rejected": false
+    },
+    {
+     "a": -0.08291866482747012,
+     "dist": 0.09483001556460204,
+     "rejected": false
+    },
+    {
+     "a": -0.06633493186197609,
+     "dist": 0.07573907456328172,
+     "rejected": false
+    },
+    {
+     "a": -0.049751198896482066,
+     "dist": 0.05664820325561277,
+     "rejected": false
+    },
+    {
+     "a": -0.033167465930988044,
+     "dist": 0.037557401602645805,
+     "rejected": false
+    },
+    {
+     "a": -0.016583732965494008,
+     "dist": 0.01846666956543978,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0006239929282128212,
+     "rejected": false
+    },
+    {
+     "a": 0.016583732965494036,
+     "dist": 0.019714585823730032,
+     "rejected": false
+    },
+    {
+     "a": 0.03316746593098807,
+     "dist": 0.03880510925212447,
+     "rejected": false
+    },
+    {
+     "a": 0.04975119889648208,
+     "dist": 0.05789556322436157,
+     "rejected": false
+    },
+    {
+     "a": 0.06633493186197612,
+     "dist": 0.07698594778044869,
+     "rejected": false
+    },
+    {
+     "a": 0.08291866482747012,
+     "dist": 0.09607626296079752,
+     "rejected": false
+    },
+    {
+     "a": 0.09950239779296416,
+     "dist": 0.11516650880605274,
+     "rejected": false
+    },
+    {
+     "a": 0.1160861307584582,
+     "dist": 0.13425668535708327,
+     "rejected": false
+    },
+    {
+     "a": 0.13266986372395223,
+     "dist": 0.1533467926549591,
+     "rejected": false
+    },
+    {
+     "a": 0.1492535966894462,
+     "dist": 0.17243683074096403,
+     "rejected": false
+    },
+    {
+     "a": 0.16583732965494025,
+     "dist": 0.19152679965658256,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_9",
+   "role": "phase13-test",
+   "measured_time_norm": 0.30000000000000004,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.681012284621113,
+    "bounded": true,
+    "interval_width": 2.681012284621113,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6599754972694896,
+    "a_hi": 2.681012284621113,
+    "bounded": true,
+    "interval_width": 3.340987781890602,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.000620634742572594,
+   "oracle_active_bound": null,
+   "a_lin": -2.5283390115077553e-05,
+   "dT_over_da": -57.026146079162054,
+   "cp": 1772.4060216729936,
+   "dist_at_oracle": 1.1163532664424441e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16704938909453013,
+     "dist": 0.191591731065671,
+     "rejected": false
+    },
+    {
+     "a": -0.1503444501850771,
+     "dist": 0.17236079443943791,
+     "rejected": false
+    },
+    {
+     "a": -0.1336395112756241,
+     "dist": 0.15312992855383087,
+     "rejected": false
+    },
+    {
+     "a": -0.1169345723661711,
+     "dist": 0.13389913337310128,
+     "rejected": false
+    },
+    {
+     "a": -0.10022963345671808,
+     "dist": 0.11466840886426324,
+     "rejected": false
+    },
+    {
+     "a": -0.08352469454726506,
+     "dist": 0.0954377549994029,
+     "rejected": false
+    },
+    {
+     "a": -0.06681975563781206,
+     "dist": 0.0762071717623544,
+     "rejected": false
+    },
+    {
+     "a": -0.050114816728359046,
+     "dist": 0.05697665916888594,
+     "rejected": false
+    },
+    {
+     "a": -0.03340987781890603,
+     "dist": 0.037746217348577596,
+     "rejected": false
+    },
+    {
+     "a": -0.016704938909453015,
+     "dist": 0.018515847136960185,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0007145449548100608,
+     "rejected": false
+    },
+    {
+     "a": 0.016704938909453015,
+     "dist": 0.019944692014429326,
+     "rejected": false
+    },
+    {
+     "a": 0.033409877818906,
+     "dist": 0.039174851298747274,
+     "rejected": false
+    },
+    {
+     "a": 0.05011481672835902,
+     "dist": 0.05840494130623714,
+     "rejected": false
+    },
+    {
+     "a": 0.06681975563781203,
+     "dist": 0.07763496132811806,
+     "rejected": false
+    },
+    {
+     "a": 0.08352469454726505,
+     "dist": 0.09686491125176987,
+     "rejected": false
+    },
+    {
+     "a": 0.10022963345671806,
+     "dist": 0.11609479106714926,
+     "rejected": false
+    },
+    {
+     "a": 0.11693457236617108,
+     "dist": 0.13532460079409084,
+     "rejected": false
+    },
+    {
+     "a": 0.1336395112756241,
+     "dist": 0.15455434046381317,
+     "rejected": false
+    },
+    {
+     "a": 0.1503444501850771,
+     "dist": 0.17378401011276606,
+     "rejected": false
+    },
+    {
+     "a": 0.16704938909453013,
+     "dist": 0.1930136097801157,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_10",
+   "role": "phase13-test",
+   "measured_time_norm": 0.30000000000000004,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.6488421425544106,
+    "bounded": true,
+    "interval_width": 2.6488421425544106,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6526915006535056,
+    "a_hi": 2.6488421425544106,
+    "bounded": true,
+    "interval_width": 3.3015336432079163,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.00025319033852130385,
+   "oracle_active_bound": null,
+   "a_lin": -1.0315018724051764e-05,
+   "dT_over_da": -57.02408134546335,
+   "cp": 1772.6838395092009,
+   "dist_at_oracle": 2.436892747063493e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16507668216039584,
+     "dist": 0.18974204243371148,
+     "rejected": false
+    },
+    {
+     "a": -0.14856901394435626,
+     "dist": 0.17073838028343505,
+     "rejected": false
+    },
+    {
+     "a": -0.13206134572831668,
+     "dist": 0.15173478747758443,
+     "rejected": false
+    },
+    {
+     "a": -0.11555367751227708,
+     "dist": 0.1327312639788577,
+     "rejected": false
+    },
+    {
+     "a": -0.0990460092962375,
+     "dist": 0.11372780975019758,
+     "rejected": false
+    },
+    {
+     "a": -0.08253834108019792,
+     "dist": 0.09472442475459104,
+     "rejected": false
+    },
+    {
+     "a": -0.06603067286415833,
+     "dist": 0.07572110895537823,
+     "rejected": false
+    },
+    {
+     "a": -0.049523004648118735,
+     "dist": 0.05671786231723025,
+     "rejected": false
+    },
+    {
+     "a": -0.033015336432079156,
+     "dist": 0.03771468480991524,
+     "rejected": false
+    },
+    {
+     "a": -0.016507668216039578,
+     "dist": 0.018711576435383213,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.000291473324310401,
+     "rejected": false
+    },
+    {
+     "a": 0.016507668216039606,
+     "dist": 0.019294433703159076,
+     "rejected": false
+    },
+    {
+     "a": 0.033015336432079184,
+     "dist": 0.038297335076080595,
+     "rejected": false
+    },
+    {
+     "a": 0.04952300464811876,
+     "dist": 0.057300167576061906,
+     "rejected": false
+    },
+    {
+     "a": 0.06603067286415837,
+     "dist": 0.07630293120467986,
+     "rejected": false
+    },
+    {
+     "a": 0.08253834108019795,
+     "dist": 0.09530562599388705,
+     "rejected": false
+    },
+    {
+     "a": 0.09904600929623752,
+     "dist": 0.11430825198093685,
+     "rejected": false
+    },
+    {
+     "a": 0.11555367751227713,
+     "dist": 0.13331080920475605,
+     "rejected": false
+    },
+    {
+     "a": 0.13206134572831668,
+     "dist": 0.15231329770501567,
+     "rejected": false
+    },
+    {
+     "a": 0.1485690139443563,
+     "dist": 0.17131571752183122,
+     "rejected": false
+    },
+    {
+     "a": 0.16507668216039584,
+     "dist": 0.19031806869566686,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_11",
+   "role": "phase13-test",
+   "measured_time_norm": 0.6000000000000001,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.676407759700441,
+    "bounded": true,
+    "interval_width": 2.676407759700441,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6605328421074826,
+    "a_hi": 2.676407759700441,
+    "bounded": true,
+    "interval_width": 3.3369406018079237,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.00133911028342072,
+   "oracle_active_bound": null,
+   "a_lin": 5.455269605581437e-05,
+   "dT_over_da": -57.02610363273156,
+   "cp": 1772.41213428051,
+   "dist_at_oracle": 5.172192773689152e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1668470300903962,
+     "dist": 0.19361475023333016,
+     "rejected": false
+    },
+    {
+     "a": -0.15016232708135657,
+     "dist": 0.17440711422780192,
+     "rejected": false
+    },
+    {
+     "a": -0.13347762407231695,
+     "dist": 0.1551995489806638,
+     "rejected": false
+    },
+    {
+     "a": -0.11679292106327735,
+     "dist": 0.13599205453217228,
+     "rejected": false
+    },
+    {
+     "a": -0.10010821805423772,
+     "dist": 0.11678463097521277,
+     "rejected": false
+    },
+    {
+     "a": -0.0834235150451981,
+     "dist": 0.09757727850664279,
+     "rejected": false
+    },
+    {
+     "a": -0.06673881203615849,
+     "dist": 0.07836999755486189,
+     "rejected": false
+    },
+    {
+     "a": -0.050054109027118876,
+     "dist": 0.05916278915613705,
+     "rejected": false
+    },
+    {
+     "a": -0.03336940601807925,
+     "dist": 0.039955656416025276,
+     "rejected": false
+    },
+    {
+     "a": -0.016684703009039625,
+     "dist": 0.020748614088187213,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0015424139974657902,
+     "rejected": false
+    },
+    {
+     "a": 0.016684703009039598,
+     "dist": 0.01766546201971787,
+     "rejected": false
+    },
+    {
+     "a": 0.03336940601807922,
+     "dist": 0.036872285267617044,
+     "rejected": false
+    },
+    {
+     "a": 0.05005410902711885,
+     "dist": 0.056079065405477434,
+     "rejected": false
+    },
+    {
+     "a": 0.06673881203615845,
+     "dist": 0.07528578179720888,
+     "rejected": false
+    },
+    {
+     "a": 0.08342351504519807,
+     "dist": 0.09449243061886918,
+     "rejected": false
+    },
+    {
+     "a": 0.1001082180542377,
+     "dist": 0.11369901065879248,
+     "rejected": false
+    },
+    {
+     "a": 0.11679292106327732,
+     "dist": 0.13290552143017126,
+     "rejected": false
+    },
+    {
+     "a": 0.13347762407231695,
+     "dist": 0.15211196271357844,
+     "rejected": false
+    },
+    {
+     "a": 0.15016232708135657,
+     "dist": 0.17131833440719538,
+     "rejected": false
+    },
+    {
+     "a": 0.1668470300903962,
+     "dist": 0.19052463646763734,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_12",
+   "role": "phase13-test",
+   "measured_time_norm": 0.6,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.716258768362772,
+    "bounded": true,
+    "interval_width": 2.716258768362772,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_4",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6727305538115145,
+    "a_hi": 2.716258768362772,
+    "bounded": true,
+    "interval_width": 3.3889893221742864,
+    "binding_name_low": "H",
+    "binding_name_high": "OH"
+   },
+   "oracle_a": -0.0014944280250632307,
+   "oracle_active_bound": null,
+   "a_lin": -6.0873037652501734e-05,
+   "dT_over_da": -57.0304245537223,
+   "cp": 1771.83848590384,
+   "dist_at_oracle": 3.661235976394218e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16944946610871434,
+     "dist": 0.19335238184316716,
+     "rejected": false
+    },
+    {
+     "a": -0.1525045194978429,
+     "dist": 0.1738447825060755,
+     "rejected": false
+    },
+    {
+     "a": -0.13555957288697146,
+     "dist": 0.15433725543819954,
+     "rejected": false
+    },
+    {
+     "a": -0.11861462627610003,
+     "dist": 0.13482980063905237,
+     "rejected": false
+    },
+    {
+     "a": -0.10166967966522861,
+     "dist": 0.11532241813718946,
+     "rejected": false
+    },
+    {
+     "a": -0.08472473305435718,
+     "dist": 0.09581510801921475,
+     "rejected": false
+    },
+    {
+     "a": -0.06777978644348574,
+     "dist": 0.07630787050423679,
+     "rejected": false
+    },
+    {
+     "a": -0.050834839832614304,
+     "dist": 0.056800706171870205,
+     "rejected": false
+    },
+    {
+     "a": -0.03388989322174288,
+     "dist": 0.037293616905576,
+     "rejected": false
+    },
+    {
+     "a": -0.016944946610871453,
+     "dist": 0.017786613043665436,
+     "rejected": false
+    },
+    {
+     "a": -2.7755575615628914e-17,
+     "dist": 0.0017207659289331177,
+     "rejected": false
+    },
+    {
+     "a": 0.016944946610871425,
+     "dist": 0.02122728793502235,
+     "rejected": false
+    },
+    {
+     "a": 0.03388989322174285,
+     "dist": 0.040734081054795875,
+     "rejected": false
+    },
+    {
+     "a": 0.050834839832614276,
+     "dist": 0.06024081227929982,
+     "rejected": false
+    },
+    {
+     "a": 0.06777978644348573,
+     "dist": 0.07974747446799843,
+     "rejected": false
+    },
+    {
+     "a": 0.08472473305435715,
+     "dist": 0.09925406612956449,
+     "rejected": false
+    },
+    {
+     "a": 0.10166967966522858,
+     "dist": 0.11876058678259378,
+     "rejected": false
+    },
+    {
+     "a": 0.1186146262761,
+     "dist": 0.13826703624335526,
+     "rejected": false
+    },
+    {
+     "a": 0.13555957288697143,
+     "dist": 0.15777341444192408,
+     "rejected": false
+    },
+    {
+     "a": 0.15250451949784286,
+     "dist": 0.17727972135967726,
+     "rejected": false
+    },
+    {
+     "a": 0.16944946610871434,
+     "dist": 0.19678595700399587,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_13",
+   "role": "phase13-test",
+   "measured_time_norm": 0.6,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.644930206431558,
+    "bounded": true,
+    "interval_width": 2.644930206431558,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6517066737907378,
+    "a_hi": 2.644930206431558,
+    "bounded": true,
+    "interval_width": 3.296636880222296,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.000193771253064645,
+   "oracle_active_bound": null,
+   "a_lin": 7.894332397693125e-06,
+   "dT_over_da": -57.023817454450615,
+   "cp": 1772.7195296787345,
+   "dist_at_oracle": 1.030932019749844e-06,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1648318440111148,
+     "dist": 0.1899744951843381,
+     "rejected": false
+    },
+    {
+     "a": -0.14834865961000332,
+     "dist": 0.17099904102815883,
+     "rejected": false
+    },
+    {
+     "a": -0.13186547520889186,
+     "dist": 0.15202365604514964,
+     "rejected": false
+    },
+    {
+     "a": -0.11538229080778037,
+     "dist": 0.13304834019810846,
+     "rejected": false
+    },
+    {
+     "a": -0.09889910640666888,
+     "dist": 0.11407309344998881,
+     "rejected": false
+    },
+    {
+     "a": -0.08241592200555739,
+     "dist": 0.09509791576358814,
+     "rejected": false
+    },
+    {
+     "a": -0.06593273760444592,
+     "dist": 0.07612280710158649,
+     "rejected": false
+    },
+    {
+     "a": -0.04944955320333444,
+     "dist": 0.057147767426736405,
+     "rejected": false
+    },
+    {
+     "a": -0.03296636880222295,
+     "dist": 0.03817279670250424,
+     "rejected": false
+    },
+    {
+     "a": -0.01648318440111146,
+     "dist": 0.019197894897604213,
+     "rejected": false
+    },
+    {
+     "a": 2.7755575615628914e-17,
+     "dist": 0.00022306430545346371,
+     "rejected": false
+    },
+    {
+     "a": 0.01648318440111149,
+     "dist": 0.0187517022186671,
+     "rejected": false
+    },
+    {
+     "a": 0.03296636880222298,
+     "dist": 0.03772639752325586,
+     "rejected": false
+    },
+    {
+     "a": 0.04944955320333447,
+     "dist": 0.05670102408170559,
+     "rejected": false
+    },
+    {
+     "a": 0.06593273760444593,
+     "dist": 0.0756755819259677,
+     "rejected": false
+    },
+    {
+     "a": 0.08241592200555742,
+     "dist": 0.09465007109396117,
+     "rejected": false
+    },
+    {
+     "a": 0.09889910640666891,
+     "dist": 0.11362449162475503,
+     "rejected": false
+    },
+    {
+     "a": 0.11538229080778037,
+     "dist": 0.13259884355788926,
+     "rejected": false
+    },
+    {
+     "a": 0.13186547520889189,
+     "dist": 0.15157312693319844,
+     "rejected": false
+    },
+    {
+     "a": 0.14834865961000335,
+     "dist": 0.17054734179078365,
+     "rejected": false
+    },
+    {
+     "a": 0.1648318440111148,
+     "dist": 0.18952148817095216,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_14",
+   "role": "phase13-test",
+   "measured_time_norm": 0.6000000000000001,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.627549450485407,
+    "bounded": true,
+    "interval_width": 2.627549450485407,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6480092480768271,
+    "a_hi": 2.627549450485407,
+    "bounded": true,
+    "interval_width": 3.275558698562234,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": -0.0003758812098492943,
+   "oracle_active_bound": null,
+   "a_lin": -1.5314008242590454e-05,
+   "dT_over_da": -57.022750726329996,
+   "cp": 1772.8641297743502,
+   "dist_at_oracle": 3.9703309628834315e-07,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.1637779349281117,
+     "dist": 0.188104614170865,
+     "rejected": false
+    },
+    {
+     "a": -0.14740014143530053,
+     "dist": 0.1692505754653799,
+     "rejected": false
+    },
+    {
+     "a": -0.13102234794248938,
+     "dist": 0.15039660519079093,
+     "rejected": false
+    },
+    {
+     "a": -0.1146445544496782,
+     "dist": 0.13154270331098694,
+     "rejected": false
+    },
+    {
+     "a": -0.09826676095686702,
+     "dist": 0.11268886978998748,
+     "rejected": false
+    },
+    {
+     "a": -0.08188896746405586,
+     "dist": 0.09383510459161085,
+     "rejected": false
+    },
+    {
+     "a": -0.06551117397124467,
+     "dist": 0.07498140767950369,
+     "rejected": false
+    },
+    {
+     "a": -0.049133380478433505,
+     "dist": 0.05612777901714667,
+     "rejected": false
+    },
+    {
+     "a": -0.03275558698562234,
+     "dist": 0.03727421856797193,
+     "rejected": false
+    },
+    {
+     "a": -0.016377793492811155,
+     "dist": 0.018420726296085144,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0004326980257425636,
+     "rejected": false
+    },
+    {
+     "a": 0.016377793492811182,
+     "dist": 0.019286053881798913,
+     "rejected": false
+    },
+    {
+     "a": 0.032755586985622365,
+     "dist": 0.03813934185021044,
+     "rejected": false
+    },
+    {
+     "a": 0.04913338047843352,
+     "dist": 0.05699256179404151,
+     "rejected": false
+    },
+    {
+     "a": 0.0655111739712447,
+     "dist": 0.07584571375027131,
+     "rejected": false
+    },
+    {
+     "a": 0.08188896746405586,
+     "dist": 0.09469879775686639,
+     "rejected": false
+    },
+    {
+     "a": 0.09826676095686704,
+     "dist": 0.11355181385213482,
+     "rejected": false
+    },
+    {
+     "a": 0.1146445544496782,
+     "dist": 0.13240476207460936,
+     "rejected": false
+    },
+    {
+     "a": 0.1310223479424894,
+     "dist": 0.15125764246304296,
+     "rejected": false
+    },
+    {
+     "a": 0.14740014143530056,
+     "dist": 0.17011045505638883,
+     "rejected": false
+    },
+    {
+     "a": 0.1637779349281117,
+     "dist": 0.18896319989379876,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  },
+  {
+   "label": "test_15",
+   "role": "phase13-test",
+   "measured_time_norm": 0.6,
+   "interval_old": {
+    "a_lo": 0.0,
+    "a_hi": 2.722682863944759,
+    "bounded": true,
+    "interval_width": 2.722682863944759,
+    "binding_name_low": "species_8",
+    "binding_name_high": "species_0",
+    "inconsistent": [
+     {
+      "index": 8,
+      "name": "species_8",
+      "Y_B": 0.0,
+      "n_Y": 9.759474952003097e-19,
+      "bound_imposed": 0.0,
+      "note": "a zero species mass fraction with a nonzero direction entry makes the interval one-sided; the structural mask should have zeroed this direction entry"
+     }
+    ]
+   },
+   "interval_new": {
+    "a_lo": -0.6742971857155077,
+    "a_hi": 2.722682863944759,
+    "bounded": true,
+    "interval_width": 3.3969800496602667,
+    "binding_name_low": "H",
+    "binding_name_high": "H2"
+   },
+   "oracle_a": 0.0009492919975554673,
+   "oracle_active_bound": null,
+   "a_lin": 3.866861757603653e-05,
+   "dT_over_da": -57.029675874553305,
+   "cp": 1771.9384489451222,
+   "dist_at_oracle": 5.160457769139241e-05,
+   "signed_objective_near_zero": [
+    {
+     "a": -0.16984900248301335,
+     "dist": 0.19662491475515423,
+     "rejected": false
+    },
+    {
+     "a": -0.15286410223471203,
+     "dist": 0.17707137988092375,
+     "rejected": false
+    },
+    {
+     "a": -0.13587920198641068,
+     "dist": 0.15751791783480867,
+     "rejected": false
+    },
+    {
+     "a": -0.11889430173810935,
+     "dist": 0.13796452865254405,
+     "rejected": false
+    },
+    {
+     "a": -0.10190940148980801,
+     "dist": 0.118411212422172,
+     "rejected": false
+    },
+    {
+     "a": -0.08492450124150668,
+     "dist": 0.0988579693352013,
+     "rejected": false
+    },
+    {
+     "a": -0.06793960099320534,
+     "dist": 0.07930479981445322,
+     "rejected": false
+    },
+    {
+     "a": -0.050954700744904005,
+     "dist": 0.05975170489289105,
+     "rejected": false
+    },
+    {
+     "a": -0.03396980049660267,
+     "dist": 0.04019868769807253,
+     "rejected": false
+    },
+    {
+     "a": -0.01698490024830132,
+     "dist": 0.02064576337181527,
+     "rejected": false
+    },
+    {
+     "a": 0.0,
+     "dist": 0.0010940332239431122,
+     "rejected": false
+    },
+    {
+     "a": 0.01698490024830132,
+     "dist": 0.018460067809116024,
+     "rejected": false
+    },
+    {
+     "a": 0.03396980049660267,
+     "dist": 0.03801276965836146,
+     "rejected": false
+    },
+    {
+     "a": 0.05095470074490402,
+     "dist": 0.05756542455281869,
+     "rejected": false
+    },
+    {
+     "a": 0.06793960099320534,
+     "dist": 0.07711801336702115,
+     "rejected": false
+    },
+    {
+     "a": 0.08492450124150666,
+     "dist": 0.09667053248572065,
+     "rejected": false
+    },
+    {
+     "a": 0.10190940148980801,
+     "dist": 0.11622298075735983,
+     "rejected": false
+    },
+    {
+     "a": 0.11889430173810936,
+     "dist": 0.13577535772029312,
+     "rejected": false
+    },
+    {
+     "a": 0.1358792019864107,
+     "dist": 0.1553276631687109,
+     "rejected": false
+    },
+    {
+     "a": 0.152864102234712,
+     "dist": 0.17487989700973025,
+     "rejected": false
+    },
+    {
+     "a": 0.16984900248301335,
+     "dist": 0.1944320592067494,
+     "rejected": false
+    }
+   ],
+   "n_candidates": 50
+  }
+ ],
+ "protocol_note": "diagnostic only; no model fit and no new untouched history.  The phase-13 validation/test histories were regenerated from their recorded fixed seeds and are development data from this point on.  The oracle values are conditional on the fixed located reference and are NOT a joint optimum over (beta, a); a local optimizer is not a certified global one."
+}

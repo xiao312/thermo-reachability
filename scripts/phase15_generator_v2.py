@@ -131,7 +131,7 @@ def evaluate_case(cstr, lib, scaling, gamma_ref, T, durations, gen, case,
         "gamma_B": refA.get("gamma_best"), "t_B": refA.get("t_best"),
         "resolved": resolved,
         "error": (state_error(q_true, np.asarray(refA["q_B"], dtype=float),
-                              scaling) if refA.get("resolved") else None),
+                              scaling) if resolved else None),
         "dist_note": refA.get("dist_note", "")}
 
     pred = gen.predict(eta, durations)

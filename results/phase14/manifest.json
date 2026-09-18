@@ -1,0 +1,16 @@
+{
+  "run_id": "phase14",
+  "timestamp_utc": "2026-09-18T10:21:04.372096+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:66b9d4db79c5d76c",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "script": "scripts/phase14_structural_face.py",
+    "inputs": [
+      "results/phase11/phase11_results.json",
+      "results/phase13/frozen_model.json"
+    ],
+    "diagnostic_only": true
+  }
+}
