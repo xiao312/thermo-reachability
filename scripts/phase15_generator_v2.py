@@ -126,9 +126,10 @@ def evaluate_case(cstr, lib, scaling, gamma_ref, T, durations, gen, case,
            "stratified_radius": case["stratified_radius"]}
 
     refA = located_reference(lib, q_true, scaling, cstr)
+    resolved = refA.get("q_B") is not None    # success is a located family member
     res["A_oracle_reference"] = {
         "gamma_B": refA.get("gamma_best"), "t_B": refA.get("t_best"),
-        "resolved": refA.get("resolved"),
+        "resolved": resolved,
         "error": (state_error(q_true, np.asarray(refA["q_B"], dtype=float),
                               scaling) if refA.get("resolved") else None),
         "dist_note": refA.get("dist_note", "")}
@@ -156,7 +157,7 @@ def evaluate_case(cstr, lib, scaling, gamma_ref, T, durations, gen, case,
     fixed_mask = gen.species_report["structurally_zero_mask"]
 
     # ---- D: oracle reference + oracle correction --------------------------
-    if refA.get("resolved"):
+    if resolved:
         balA = exact_balances_from_controls(
             cstr, lib.q0, [float(refA["gamma_best"])],
             [float(refA["t_best"])])
@@ -220,7 +221,7 @@ def evaluate_case(cstr, lib, scaling, gamma_ref, T, durations, gen, case,
     if q_hat_C is not None:
         chem["predicted_corrected"] = chemistry_response(cstr, q_true, q_hat_C,
                                                          chem_cfg)
-    if refA.get("resolved"):
+    if resolved:
         chem["oracle_canonical"] = chemistry_response(
             cstr, q_true, np.asarray(refA["q_B"], dtype=float), chem_cfg)
     res["chemistry"] = chem
@@ -350,17 +351,15 @@ def main() -> None:
                  and h.get("status") == "completed"]
     print(f"validation histories regenerated from their seeds: {len(val_cases)}")
     order_scores = {o: [] for o in args.orders}
+    # the complexity choice is made on the CANONICAL prediction (the B variant):
+    # it is the model's core output, and mixing corrected with uncorrected errors
+    # here would compare different quantities across orders
     for case in val_cases:
         eta = np.asarray(case["eta"], dtype=float)
         q_true = np.asarray(case["q_target"], dtype=float)
         for order in args.orders:
             pred = models[order].predict(eta, durations)
-            q_hat = pred["decoded_state"].get("q_hat")
-            if q_hat is None:
-                ref = models[order].reference_state(
-                    pred["predicted_reference"]["log_gamma_B"],
-                    pred["predicted_reference"]["t_B_s"])
-                q_hat = ref.get("q_B")
+            q_hat = pred["canonical_state_before_correction"].get("q_B")
             order_scores[order].append(None if q_hat is None else
                                       state_error(q_true,
                                                   np.asarray(q_hat, dtype=float),

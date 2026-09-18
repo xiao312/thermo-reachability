@@ -195,13 +195,20 @@ def active_species_report(cstr, q0, drift_tol: float = 1e-15) -> dict:
     absent, fixed, active, inconsistent = [], [], [], []
     for k in range(n_sp):
         elems = np.flatnonzero(E[:, k] > 0.0)
-        # TWO independent rigorous routes to structural absence:
-        #  (a) the species takes part in no reaction AND the feed carries none of
+        # THREE independent rigorous routes to a structurally constant species:
+        #  (a) the feed carries none of ANY element the species is built from, so
+        #      no admissible trajectory has the material to form it from;
+        #  (b) the species takes part in no reaction AND the feed carries none of
         #      it, so both the chemistry and the exchange term vanish exactly;
-        #  (b) the feed carries none of ANY element the species is built from, so
-        #      no admissible trajectory has material to form it from.
+        #  (c) the species is the UNIQUE carrier of some element e: then E Y = b
+        #      forces Y_k = b_e / E[e,k] for EVERY state with that inventory, so
+        #      the mass fraction is determined by the inventory alone (zero when
+        #      b_e = 0, constant otherwise).  Route (c) uses no stoichiometry.
         no_feed_material = bool(elems.size and np.all(b_in[elems] == 0.0))
         no_feed_species = bool(inert[k] and Y_in[k] == 0.0)
+        unique_carrier = any(
+            int(np.flatnonzero(E[e, :] > 0.0).size) == 1
+            for e in elems)
         if no_feed_material or no_feed_species:
             absent.append(k)
             which = ("no_feed_material" if no_feed_material else
@@ -211,7 +218,8 @@ def active_species_report(cstr, q0, drift_tol: float = 1e-15) -> dict:
                     "index": k, "name": names[k], "kind": which,
                     "Y_in": float(Y_in[k]), "Y0": float(Y0[k])})
             continue
-        if inert[k] and abs(float(Y_in[k]) - float(Y0[k])) <= drift_tol:
+        if unique_carrier or (inert[k] and abs(float(Y_in[k])
+                                              - float(Y0[k])) <= drift_tol):
             fixed.append(k)
             continue
         active.append(k)

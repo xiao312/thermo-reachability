@@ -184,7 +184,7 @@ def main() -> None:
             continue
         q = np.asarray(case["q_target"], dtype=float)
         loc = located_reference(lib, q, W, cstr)
-        if not loc.get("resolved"):
+        if loc.get("q_B") is None:          # success is a located family member
             continue
         c = {"eta": case["eta"], "q_target": case["q_target"],
              "q_B": loc["q_B"],
