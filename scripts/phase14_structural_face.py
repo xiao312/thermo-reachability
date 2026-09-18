@@ -140,13 +140,19 @@ def main() -> None:
         iv_new = feasible_a_interval(Y_B, n_z, names,
                                      fixed_mask=report["structurally_zero_mask"])
         orc = oracle_correction_coefficient(q, Y_B, n_z, h_B, decoder, scaling=W)
-        # a small signed scan of the objective near zero, both signs
+        # a small signed scan of the objective near zero, both signs; a REJECTED
+        # decode is infinite distance, never a finite-looking number
         width = (iv_new["interval_width"] or 1.0)
-        scan = [{"a": float(a),
-                 "dist": float(np.linalg.norm(
-                     W * (q - np.asarray(decoder.decode(Y_B + a * n_z, h_B)
-                                         .get("q_hat", np.zeros(q.size)),
-                                         dtype=float))))}
+
+        def _dist_at(a):
+            dec = decoder.decode(Y_B + a * n_z, h_B)
+            if dec.get("status") != "admissible":
+                return None                      # rejected, not infinite-looking
+            return float(np.linalg.norm(
+                W * (q - np.asarray(dec["q_hat"], dtype=float))))
+
+        scan = [{"a": float(a), "dist": _dist_at(a),
+                 "rejected": _dist_at(a) is None}
                 for a in np.linspace(-0.05 * width, 0.05 * width, 21)]
         return {"label": label, "role": role,
                 "measured_time_norm": float(case["measured_time_norm"]),
@@ -284,8 +290,20 @@ def main() -> None:
             "are NOT a joint optimum over (beta, a); a local optimizer is not a "
             "certified global one."),
     }
+    def _sanitize(o):
+        """Non-finite numbers are replaced by null with a marker, so the strict
+        JSON dump never silently encodes an infinity as a finite-looking value."""
+        if isinstance(o, dict):
+            return {k: _sanitize(v) for k, v in o.items()}
+        if isinstance(o, (list, tuple)):
+            return [_sanitize(v) for v in o]
+        if isinstance(o, float) and not math.isfinite(o):
+            return None
+        return o
+
     (OUT / "phase14_structural_face.json").write_text(
-        json.dumps(payload, indent=1, allow_nan=False), encoding="utf-8")
+        json.dumps(_sanitize(payload), indent=1, allow_nan=False),
+        encoding="utf-8")
     manifest("phase14", OUT,
              {"script": "scripts/phase14_structural_face.py",
               "inputs": ["results/phase11/phase11_results.json",

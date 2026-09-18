@@ -59,6 +59,7 @@ from thermoreach.generator import (  # noqa: E402
     exact_balances_from_controls, feasible_a_interval, fit_local_generator,
     load_local_generator, model_record, oracle_correction_coefficient)
 from thermoreach.io_utils import manifest, utc_now  # noqa: E402
+from thermoreach.summary_utils import quantiles as _quantiles,     same_pair_gain as _same_pair_gain  # noqa: E402
 from thermoreach.reactor import hot_hp_state  # noqa: E402
 from thermoreach.sensitivity import StateScaling  # noqa: E402
 
@@ -227,32 +228,8 @@ def evaluate_case(cstr, lib, scaling, gamma_ref, T, durations, gen, case,
     return res
 
 
-def _same_pair_gain(chem_row) -> dict:
-    """The future-state difference at each dt relative to the SAME pair's
-    difference at dt = 0.  A common equilibrium does not imply monotone decay, so
-    gains above 1 (AMPLIFICATION) are preserved and reported as such."""
-    if not chem_row:
-        return {}
-    d0 = chem_row.get("state_difference", {})
-    denom_T = float(d0.get("dT_K", 0.0))
-    dY0 = np.asarray(d0.get("dY", []), dtype=float)
-    denom_Y = float(np.max(np.abs(dY0))) if dY0.size else 0.0
-    out = []
-    for row in chem_row.get("dt_results", []):
-        if not row.get("success"):
-            out.append({"dt": row.get("dt"), "success": False})
-            continue
-        num_T = float(row["future_state_dT_K"])
-        dY = np.asarray(row.get("future_state_dY", []), dtype=float)
-        num_Y = float(np.max(np.abs(dY))) if dY.size else 0.0
-        out.append({
-            "dt": row["dt"],
-            "gain_T": (num_T / denom_T) if denom_T != 0.0 else None,
-            "gain_Y": (num_Y / denom_Y) if denom_Y != 0.0 else None,
-            "amplifying": bool((denom_T != 0.0 and abs(num_T) > abs(denom_T))
-                               or (denom_Y != 0.0 and num_Y > denom_Y)),
-            "future_dT_K": num_T, "dt0_dT_K": denom_T})
-    return {"same_pair_gain_relative_to_dt0": out}
+# the gain and quantile helpers live in thermoreach.summary_utils so their
+# arithmetic is unit-testable without Cantera
 
 
 def _cost_benchmark(cstr, lib, gen, theta, durations, q0, scaling):
@@ -314,14 +291,7 @@ def _cost_benchmark(cstr, lib, gen, theta, durations, q0, scaling):
 
 
 def quantiles(xs):
-    xs = np.asarray([x for x in xs if x is not None and math.isfinite(x)],
-                    dtype=float)
-    if xs.size == 0:
-        return {"n": 0}
-    q = np.quantile(xs, [0.0, 0.25, 0.5, 0.75, 1.0])
-    return {"n": int(xs.size), "min": float(q[0]), "q25": float(q[1]),
-            "median": float(q[2]), "q75": float(q[3]), "max": float(q[4]),
-            "mean": float(xs.mean())}
+    return _quantiles(xs)
 
 
 VARIANTS = ["A_oracle_reference", "B_predicted_reference",
