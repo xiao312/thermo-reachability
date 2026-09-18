@@ -18,9 +18,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thermoreach.generator import (  # noqa: E402
     LinearRegressor, conservation_subspace, exposure_integral,
-    feasible_a_interval, null_space_basis, oracle_correction_coefficient,
+    exposure_log_feature, feasible_a_interval, generator_features,
+    null_space_basis, oracle_correction_coefficient,
     project_onto_conservation_subspace,
 )
+
+
+def _affine_features(eta, order=1):
+    """A test feature map: [1, eta] plus, at order 2, squares and products."""
+    e = np.asarray(eta, dtype=float).ravel()
+    cols = [np.ones(1), e]
+    if order >= 2:
+        cols.append(e ** 2)
+        iu = np.triu_indices(e.size, k=1)
+        cols.append(e[iu[0]] * e[iu[1]])
+    return np.concatenate(cols)
 
 
 # ---------------------------------------------------------------------------
@@ -271,7 +283,8 @@ def test_regressor_recovers_an_affine_map_exactly():
     b = np.array([0.01, -0.02])
     etas = [rng.normal(size=3) for _ in range(20)]
     targets = np.stack([e @ true + b for e in etas])
-    reg = LinearRegressor(order=1, ridge=1e-12).fit(etas, targets)
+    reg = LinearRegressor(_affine_features, order=1,
+                         ridge=1e-12).fit(etas, targets)
     for e, t in zip(etas, targets):
         np.testing.assert_allclose(reg.predict(e), t, atol=1e-8)
 
@@ -279,7 +292,8 @@ def test_regressor_recovers_an_affine_map_exactly():
 def test_regressor_quadratic_features_have_expected_size():
     rng = np.random.default_rng(1)
     etas = [rng.normal(size=3) for _ in range(12)]
-    reg = LinearRegressor(order=2, ridge=1e-10).fit(etas, np.zeros((12, 1)))
+    reg = LinearRegressor(_affine_features, order=2,
+                         ridge=1e-10).fit(etas, np.zeros((12, 1)))
     # 1 + 3 + 3 + 3 = 10 features for m = 3
     assert len(reg.feature_names_) == 1 + 3 + 3 + 3
     assert reg.cond_XtX_ > 0
@@ -290,7 +304,8 @@ def test_regressor_never_penalizes_the_intercept():
     exactly however large the ridge on the slopes is."""
     rng = np.random.default_rng(2)
     etas = [rng.normal(size=3) for _ in range(15)]
-    reg = LinearRegressor(order=1, ridge=1.0).fit(etas, np.full((15, 1), 0.37))
+    reg = LinearRegressor(_affine_features, order=1,
+                         ridge=1.0).fit(etas, np.full((15, 1), 0.37))
     for e in etas:
         assert reg.predict(e)[0] == pytest.approx(0.37, abs=1e-9)
 
@@ -353,3 +368,93 @@ def test_null_space_basis_detects_rank_deficiency():
     assert out["dim"] == 1
     n = np.asarray(out["basis"])[:, 0]
     np.testing.assert_allclose(C @ n, 0.0, atol=1e-10)
+
+
+
+# ---------------------------------------------------------------------------
+# 8. the exposure-constrained reference-coordinate parametrization
+# ---------------------------------------------------------------------------
+
+
+def test_exposure_log_feature_is_the_exact_exposure():
+    eta = np.log(np.array([0.5, 2.0, 1.0]) / 1e4)
+    durs = np.array([1e-7, 3e-7, 6e-7])
+    lg = exposure_log_feature(eta, durs, 1e-6, 1e4)
+    gammas = 1e4 * np.exp(eta)
+    assert lg == pytest.approx(np.log(np.sum(gammas * durs) / (1e4 * 1e-6)))
+
+
+def test_generator_features_expose_the_exposure_and_the_segment_ratios():
+    eta = np.array([0.1, -0.2, 0.3])
+    durs = np.full(3, 1e-6 / 3)
+    f1 = generator_features(eta, durs, 1e-6, 1e4, order=1)
+    # [1, log Gamma, eta_1, eta_2, eta_3]
+    assert f1.shape == (5,)
+    assert f1[0] == pytest.approx(1.0)
+    assert f1[1] == pytest.approx(exposure_log_feature(eta, durs, 1e-6, 1e4))
+    np.testing.assert_allclose(f1[2:], eta)
+    f2 = generator_features(eta, durs, 1e-6, 1e4, order=2)
+    # 1 + 4 base + 4 squares + 6 products = 15
+    assert f2.shape == (15,)
+    assert np.all(np.isfinite(f2))
+    # order 2 strictly contains the order-1 features
+    f1b = generator_features(eta, durs, 1e-6, 1e4, order=1)
+    np.testing.assert_allclose(f2[:f1b.size], f1b)
+
+
+def test_exposure_parametrization_reproduces_the_oracle_gamma():
+    """The parametrization log gamma_B = log Gamma - v + u must reproduce the
+    oracle coordinates exactly when u and v are the oracle residuals: u is tiny
+    by the exact balance law, and gamma_B * t_B = Gamma_B holds."""
+    eta = np.array([0.05, -0.1, 0.2])
+    durs = np.full(3, 1e-6 / 3)
+    gref, T = 1e4, 1e-6
+    gammas = gref * np.exp(eta)
+    Gamma = float(np.sum(gammas * durs))
+    # a located reference with t_B = 0.9 T, so Gamma_B = gamma_B t_B
+    t_B = 0.9 * T
+    gamma_B = Gamma / t_B
+    lg = np.log(gamma_B / gref)
+    lt = np.log(t_B / T)
+    log_gamma_ex = exposure_log_feature(eta, durs, T, gref)
+    u = (lg + lt) - log_gamma_ex
+    v = lt
+    # round trip
+    assert np.log(gamma_B / gref) == pytest.approx(log_gamma_ex - v + u)
+    # and the exact balance law makes u small in practice (see the report)
+    assert abs(u) < 0.05
+
+
+def test_oracle_search_resolves_an_optimum_far_below_the_interval_width():
+    """The feasible interval can be orders of magnitude wider than the optimal a
+    (the interval is set by the least abundant species, the optimum by the
+    transverse excursion).  A uniform grid would miss it; the multi-scale search
+    must resolve a optimum at ~1e-3 of the interval width."""
+    gas = _GasStub(a=[1e6, 2e6, 3e6, 4e6], c=1200.0)
+    dec = _DecoderStub(gas)
+    n_Y = np.array([0.1, -0.1, 0.05, -0.05])
+    n_Y = n_Y / np.linalg.norm(n_Y)
+    Y_B = np.array([0.4, 0.3, 0.2, 0.1])
+    iv = feasible_a_interval(Y_B, n_Y)
+    a_true = 0.05 * iv["interval_width"]            # far below the width
+    Y_true = Y_B + a_true * n_Y
+    h = float(gas.a @ Y_true) + 1200.0 * 800.0
+    q_target = np.concatenate([[dec.decode(Y_true, h)["T_K"]], Y_true])
+    out = oracle_correction_coefficient(q_target, Y_B, n_Y, h, dec)
+    assert out["resolved"] is True
+    assert out["a"] == pytest.approx(a_true, rel=1e-6)
+    assert out["n_candidates"] > 20
+
+
+def test_oracle_search_finds_zero_when_the_family_is_exact():
+    gas = _GasStub(a=[1e6, 2e6, 3e6, 4e6], c=1200.0)
+    dec = _DecoderStub(gas)
+    n_Y = np.array([0.1, -0.1, 0.05, -0.05])
+    n_Y = n_Y / np.linalg.norm(n_Y)
+    Y_B = np.array([0.4, 0.3, 0.2, 0.1])
+    h = float(gas.a @ Y_B) + 1200.0 * 800.0
+    # the target IS the family member: the best correction is exactly zero
+    q_target = np.concatenate([[dec.decode(Y_B, h)["T_K"]], Y_B])
+    out = oracle_correction_coefficient(q_target, Y_B, n_Y, h, dec)
+    assert out["resolved"] is True
+    assert out["a"] == pytest.approx(0.0, abs=1e-12)

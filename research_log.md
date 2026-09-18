@@ -502,3 +502,46 @@ Decision: geometry small AND chemistry response small -> a tolerance-qualified
 canonical approximation for this local class. No CFD significance claim; no
 application tolerances have ever been supplied, so the E table spans illustrative
 choices only.
+
+## Revision 7 - local-generator (branch `local-generator`)
+
+The brief: turn the local rank-three approximation into a tested physical
+generator (canonical curved reference + one conservation-compatible correction).
+
+Findings, in the order they were made:
+
+1. Coordinate defect confirmed and corrected without re-solving. The phase-11
+   rays used r*u for u a Euclidean-unit right singular vector of A H^(-1/2); the
+   unit-time-norm direction is H^(-1/2) u. Actual norms = label/sqrt(m), so the
+   "r=1" ray was 0.577. Phase 12 relabels everything by measured norm
+   (postprocessing only, raw records immutable). The "58% closure" claim this
+   invalidated was confounded by the coordinate conversion: against the MEASURED
+   radius the ratio is 0.996, i.e. no closure along the transverse direction.
+2. The E-metric table in report_06 had E_Y = 6.8e-4 where 6.8e-3 is correct. The
+   raw records were always internally consistent; a verification step now checks
+   E_Y's independence of eps_T mechanically. Tables are generated, not
+   transcribed.
+3. The exposure law is the key structure. db/dt = gamma(b_in - b) and
+   dh/dt = gamma(h_in - h) exactly, so h and b are closed-form functions of
+   Gamma = gamma*t. Two consequences: (a) the located reference satisfies
+   gamma_B*t_B ~ Gamma with rms 2.7e-3, 20x tighter than a free fit, so the
+   regression now only learns the SPLIT between gamma and t (rms 4.5e-5, order 2,
+   validation-selected); (b) h_B and b_B are computable from beta without any
+   endpoint leakage. This single change turned a 10x prediction gap (B vs A) into
+   +4.2e-6.
+4. The oracle coefficient search had a scale-resolution defect: the feasible
+   interval (set by the least abundant species, width ~2.67) is ~1000x wider than
+   the optimal a (~1e-4), so a uniform 41-point grid returned a spurious bimodal
+   a. Multi-scale search (log-spaced both signs to 1e-12 of the width, then
+   bracketed refinement). The bimodality SURVIVES the fix, so it is genuine: the
+   residual cloud has a second mode the single fixed direction cannot represent.
+5. Result on 16 untouched test histories: A 3.62e-4, B 3.69e-4, C 2.92e-4,
+   D 5.17e-5 (median scaled error). The canonical generator is validated (C37);
+   the exposure parametrisation is validated (C38); the oracle correction is a
+   real gain (C39); the PREDICTED coefficient is not yet per-case reliable
+   (helps 7/16) and is reported as a candidate (C40).
+
+Integrity: expansion-branch signature defect fixed and now tested under a stub;
+load_verified checks mechanism content hash, species order, pressure, the hot-HP
+initial state; model frozen to disk before any test history exists; train,
+validation and test label sets are mechanically disjoint.

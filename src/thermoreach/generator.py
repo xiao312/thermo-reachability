@@ -285,33 +285,59 @@ class PhysicalDecoder:
 # 5. regression from control history to reference coordinates and correction
 # ---------------------------------------------------------------------------
 
-
-def _design(eta: np.ndarray, order: int) -> np.ndarray:
-    """Feature map.  Order 1: eta plus a constant.  Order 2: adds squares and
-    pairwise products (no cubic or higher: the development domain is a small
-    ball and the training set is small, so the model must stay well conditioned)."""
+def exposure_log_feature(eta, durations, T, gamma_ref) -> float:
+    """log(Gamma / (gamma_ref T)) with Gamma = sum_j gamma_j dur_j - the exact
+    exposure of the history, in units of the anchor exposure.  The closed-form
+    balance law makes h and the elemental inventory functions of Gamma ALONE, so
+    this feature carries most of the information the reference coordinates need.
+    """
     e = np.asarray(eta, dtype=float).ravel()
-    cols = [np.ones(1), e]
+    d = np.asarray(durations, dtype=float).ravel()
+    gammas = gamma_ref * np.exp(e)
+    return float(math.log(max(np.sum(gammas * d), 1e-300) / (gamma_ref * T)))
+
+
+def generator_features(eta, durations, T, gamma_ref, order: int = 1) -> np.ndarray:
+    """Feature map for the reference-coordinate regression.
+
+    Order 1: a constant, the exact exposure log feature, and the segment log
+    ratios eta.  Order 2 adds squares and pairwise products of those (no cubic
+    or higher: the development domain is a small ball and the training set is
+    small, so the model must stay well conditioned).
+
+    Every feature is an exact function of the input history; no endpoint
+    information enters.
+    """
+    e = np.asarray(eta, dtype=float).ravel()
+    d = np.asarray(durations, dtype=float).ravel()         if durations is not None else np.full(e.size, 1.0)
+    base = np.concatenate([[exposure_log_feature(e, d, T, gamma_ref)], e])
+    cols = [np.ones(1), base]
     if order >= 2:
-        cols.append(e ** 2)
-        iu = np.triu_indices(e.size, k=1)
-        cols.append(e[iu[0]] * e[iu[1]])
+        cols.append(base ** 2)
+        iu = np.triu_indices(base.size, k=1)
+        cols.append(base[iu[0]] * base[iu[1]])
     return np.concatenate(cols)
 
 
-@dataclass
 class LinearRegressor:
     """Affine or quadratic least squares with documented ridge regularization.
 
     Ridge is on the non-constant coefficients only, and it is FIXED at fit time
-    (never tuned on the test set)."""
-    order: int = 1
-    ridge: float = 1e-8
-    coef_: np.ndarray | None = field(default=None, repr=False)
-    feature_names_: list = field(default_factory=list, repr=False)
+    (never tuned on the test set).  The feature function is part of the frozen
+    model identity."""
+
+    def __init__(self, feature_fn, order: int = 1, ridge: float = 1e-8):
+        self.feature_fn = feature_fn
+        self.order = order
+        self.ridge = ridge
+        self.coef_ = None
+        self.feature_names_ = []
+
+    def _design(self, eta):
+        return self.feature_fn(eta, self.order)
 
     def fit(self, X_etas: list[np.ndarray], targets: np.ndarray):
-        X = np.stack([_design(e, self.order) for e in X_etas])
+        X = np.stack([self._design(e) for e in X_etas])
         targets = np.atleast_2d(np.asarray(targets, dtype=float))
         if targets.shape[0] != X.shape[0]:
             targets = targets.T
@@ -321,35 +347,42 @@ class LinearRegressor:
         A = X.T @ X + self.ridge * reg
         B = X.T @ targets
         self.coef_ = np.linalg.solve(A, B)
-        d = int(X_etas[0].size) if X_etas else 0
-        iu = list(zip(*np.triu_indices(d, k=1)))
-        self.feature_names_ = (
-            ["const"] + [f"eta_{i}" for i in range(d)]
-            + ([f"eta_{i}^2" for i in range(d)] if self.order >= 2 else [])
-            + ([f"eta_{i}*eta_{j}" for i, j in iu] if self.order >= 2 else []))
-        # training diagnostics
+        # generic names tied to the ACTUAL design width; the descriptive mapping
+        # is recorded by the model identity, not assumed here
+        self.feature_names_ = ["const"] + [f"feat_{i}"
+                                          for i in range(1, n_feat)]
         pred = X @ self.coef_
         self.train_rms_ = float(np.sqrt(np.mean((pred - targets) ** 2)))
         self.cond_XtX_ = float(np.linalg.cond(X.T @ X + self.ridge * reg))
+        self._X_ = X
         return self
 
     def predict(self, eta: np.ndarray) -> np.ndarray:
         if self.coef_ is None:
             raise RuntimeError("the regressor must be fitted before prediction")
-        return _design(eta, self.order) @ self.coef_
+        return self._design(eta) @ self.coef_
 
 
-# ---------------------------------------------------------------------------
-# 6. the generator itself
-# ---------------------------------------------------------------------------
-
+def _leverage(reg: LinearRegressor, eta: np.ndarray) -> float:
+    """A simple uncertainty indicator for the regression: the leverage of the
+    input in the fitted design.  Returns NaN if unavailable."""
+    try:
+        X = getattr(reg, "_X_")
+        if X is None:
+            return float("nan")
+        x = reg._design(eta)
+        A = X.T @ X + reg.ridge * np.eye(X.shape[1])
+        A[0, 0] -= reg.ridge                      # intercept unpenalized
+        return float(x @ np.linalg.pinv(A) @ x)
+    except Exception:                                   # noqa: BLE001
+        return float("nan")
 
 @dataclass
 class LocalGenerator:
     """Canonical curved reference + one conservation-compatible correction.
 
     Every field needed at inference is frozen at fit time: the reference library,
-    the fitted normal direction, the two regressors, the decoder and the declared
+    the fitted normal direction, the regressors, the decoder and the declared
     training domain."""
     cstr: object
     library: object
@@ -369,8 +402,12 @@ class LocalGenerator:
         """The canonical family member, by an independent fresh integration so a
         stale cache can never be used, with the exact balances from beta."""
         gamma = self.gamma_ref * float(np.exp(log_gamma))
-        q_B = np.asarray(self.library.evaluate_fresh(gamma, t)["q_B"],
-                         dtype=float)
+        fresh = self.library.evaluate_fresh(gamma, t)
+        if not fresh.get("success"):
+            return {"gamma": gamma, "t": t, "q_B": None,
+                    "h_B_J_kg": None, "b_B": None, "Gamma_B": None,
+                    "integration_failure": fresh.get("message")}
+        q_B = np.asarray(fresh["q_B"], dtype=float)
         bal = exact_balances_from_controls(self.cstr, self.library.q0,
                                           [gamma], [float(t)])
         return {"gamma": gamma, "t": t, "q_B": q_B.tolist(),
@@ -381,22 +418,62 @@ class LocalGenerator:
     def predict(self, eta: np.ndarray, durations=None) -> dict:
         """Predict the state from control history coordinates ALONE.
 
-        eta = log(gamma_j / gamma_ref) is the input; the balances are computed
-        from the controls in closed form and the reference coordinates and the
-        correction coefficient come from the frozen regressors.
+        eta = log(gamma_j / gamma_ref) is the input.  The exposure Gamma and the
+        balances are computed from the controls in closed form; the reference
+        coordinates are predicted by the frozen regressors in the
+        exposure-constrained parametrization
+
+            log gamma_B = log(Gamma/(gamma_ref T)) - v + u
+            log t_B     = v                  (t in units of the anchor horizon)
+
+        where u = log(Gamma_B/Gamma) is forced to be small by the exact balance
+        law (h depends on Gamma alone), and v = log(t_B/T) is the split between
+        gamma and t that the regression must actually learn.
         """
         eta = np.asarray(eta, dtype=float).ravel()
         durs = np.asarray(durations if durations is not None else self.durations,
                           dtype=float)
         gammas = self.gamma_ref * np.exp(eta)
-        # exact balances from the controls
+        # exact exposure and balances from the controls
         bal = exact_balances_from_controls(self.cstr, self.library.q0,
                                           gammas, durs)
+        log_gamma_exposure = exposure_log_feature(eta, durs, self.T_horizon,
+                                                  self.gamma_ref)
         beta = np.asarray(self.beta_regressor.predict(eta), dtype=float).ravel()
-        log_gamma_B, log_t_B = float(beta[0]), float(beta[1])
-        t_B = self.T_horizon * float(np.exp(log_t_B))
+        u, v = float(beta[0]), float(beta[1])
+        log_gamma_B = log_gamma_exposure - v + u
+        t_B = self.T_horizon * float(np.exp(v))
         ref = self.reference_state(log_gamma_B, t_B)
         a_raw = float(np.asarray(self.a_regressor.predict(eta)).ravel()[0])
+        if ref.get("q_B") is None:
+            return {"input": {"eta": eta.tolist(), "gammas": gammas.tolist(),
+                              "durations_s": durs.tolist(),
+                              "measured_time_norm":
+                                  math.sqrt(float(np.sum(
+                                      (durs / self.T_horizon) * eta ** 2))),
+                              "Gamma": bal["Gamma"],
+                              "exact_balances_from_controls": bal},
+                    "model_identity": self.model_identity,
+                    "training_domain": self.training_domain,
+                    "predicted_reference": {
+                        "log_gamma_B": log_gamma_B,
+                        "log_t_B_over_T": v, "gamma_B": ref["gamma"],
+                        "t_B_s": ref["t"],
+                        "exposure_constrained": True, "u": u, "v": v,
+                        "log_gamma_exposure": log_gamma_exposure,
+                        "integration_failure": ref.get("integration_failure")},
+                    "predicted_correction": {"a": None, "a_raw": a_raw,
+                                             "feasible_interval": None,
+                                             "a_clipped_to_feasible": False},
+                    "decoded_state": {"status": "rejected_reference_integration",
+                                      "reason": ref.get("integration_failure")},
+                    "canonical_state_before_correction": {"q_B": None,
+                                                          "status": "failed"},
+                    "uncertainty_indicator": {"measured_time_norm":
+                                              math.sqrt(float(np.sum(
+                                                  (durs / self.T_horizon)
+                                                  * eta ** 2)))},
+                    "provenance": {}}
         Y_B = np.asarray(ref["q_B"], dtype=float)[1:]
         n_Y = np.asarray(self.n_Y, dtype=float)
         interval = feasible_a_interval(Y_B, n_Y)
@@ -407,19 +484,19 @@ class LocalGenerator:
             a, clipped = a_raw, False
         Y_hat = Y_B + a * n_Y
         dec = self.decoder.decode(Y_hat, ref["h_B_J_kg"], a=a)
-        # uncertainty indicator: distance of the input from the training domain
         meas = math.sqrt(float(np.sum((durs / self.T_horizon) * eta ** 2)))
         return {
             "input": {"eta": eta.tolist(), "gammas": gammas.tolist(),
                       "durations_s": durs.tolist(),
-                      "measured_time_norm": meas,
-                      "Gamma": bal["Gamma"],
+                      "measured_time_norm": meas, "Gamma": bal["Gamma"],
                       "exact_balances_from_controls": bal},
             "model_identity": self.model_identity,
             "training_domain": self.training_domain,
             "predicted_reference": {
-                "log_gamma_B": log_gamma_B, "log_t_B_over_T": log_t_B,
-                "gamma_B": ref["gamma"], "t_B_s": ref["t"]},
+                "log_gamma_B": log_gamma_B, "log_t_B_over_T": v,
+                "gamma_B": ref["gamma"], "t_B_s": ref["t"],
+                "exposure_constrained": True, "u": u, "v": v,
+                "log_gamma_exposure": log_gamma_exposure},
             "predicted_correction": {"a": a, "a_raw": a_raw,
                                      "a_clipped_to_feasible": clipped,
                                      "feasible_interval": interval},
@@ -430,8 +507,11 @@ class LocalGenerator:
             "decoded_state": dec,
             "provenance": {
                 "balances": "computed in closed form from the input controls",
-                "reference_state": "simulated (fresh integration of the canonical "
-                                   "family at the predicted coordinates)",
+                "exposure": "the exact exposure Gamma is a regression feature "
+                            "and constrains gamma_B * t_B = Gamma_B",
+                "reference_state": "simulated (a fresh integration of the "
+                                   "canonical family at the predicted "
+                                   "coordinates)",
                 "correction": "reconstructed (a scalar along the frozen fitted "
                               "direction)",
                 "temperature": "solved by enthalpy inversion"},
@@ -439,47 +519,46 @@ class LocalGenerator:
                 "measured_time_norm": meas,
                 "inside_declared_domain":
                     bool(meas <= self.training_domain["max_measured_time_norm"]),
-                "regression_leverage": float(_leverage(
-                    self.beta_regressor, eta))},
+                "regression_leverage": _leverage(self.beta_regressor, eta)},
         }
-
-
-def _leverage(reg: LinearRegressor, eta: np.ndarray) -> float:
-    """A simple uncertainty indicator for the regression: the leverage of the
-    input in the fitted design.  Returns NaN if unavailable."""
-    try:
-        X = getattr(reg, "_X_")
-        if X is None:
-            return float("nan")
-        x = _design(eta, reg.order)
-        A = X.T @ X + reg.ridge * np.eye(X.shape[1])
-        A[0, 0] -= reg.ridge                      # intercept unpenalized
-        return float(x @ np.linalg.pinv(A) @ x)
-    except Exception:                                   # noqa: BLE001
-        return float("nan")
 
 
 def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
                         T_horizon, scaling, decoder, order: int = 1,
-                        ridge: float = 1e-8, anchor_log_gamma: float = 0.0,
-                        anchor_log_t: float = 0.0,
+                        ridge: float = 1e-8,
                         normal_rel_tol: float = 1e-10) -> tuple:
     """Fit the generator on the training cases.
 
     train_cases: dicts with
         eta                 log control perturbation
         q_target            the true endpoint
+        q_B                 the oracle located family member
         located_reference   the oracle reference coordinates (training only)
-    The model (complexity, regularization, normal direction) is FROZEN here and
-    must not be refit after test data exists.
+    The model (complexity, regularization, normal direction, reference-coordinate
+    parametrization) is FROZEN here and must not be refit after test data exists.
     """
     etas = [np.asarray(c["eta"], dtype=float) for c in train_cases]
-    # targets: log gamma_B / gamma_ref and log(t_B / T)
-    Y_beta = np.array([[float(c["located_reference"]["log_gamma_B"]),
-                       float(c["located_reference"]["log_t_B_over_T"])]
-                      for c in train_cases])
-    beta_reg = LinearRegressor(order=order, ridge=ridge).fit(etas, Y_beta)
-    beta_reg._X_ = np.stack([_design(e, order) for e in etas])
+    durs = np.asarray(durations, dtype=float)
+
+    # ---- reference coordinates in the exposure-constrained parametrization ----
+    # The exact balance law makes h and b functions of Gamma alone, so the
+    # located reference satisfies gamma_B * t_B ~ Gamma with a residual two
+    # orders of magnitude smaller than a free fit of the two coordinates.  The
+    # regression therefore learns only the SPLIT v = log(t_B/T) and the small
+    # residual u = log(Gamma_B/Gamma); log gamma_B then follows exactly.
+    def _targets(c):
+        lg = float(c["located_reference"]["log_gamma_B"])
+        lt = float(c["located_reference"]["log_t_B_over_T"])
+        log_gamma_ex = exposure_log_feature(np.asarray(c["eta"], dtype=float),
+                                            durs, T_horizon, gamma_ref)
+        u = (lg + lt) - log_gamma_ex          # log(Gamma_B / Gamma), ~ 0
+        v = lt                                # log(t_B / T)
+        return [u, v]
+
+    Y_beta = np.array([_targets(c) for c in train_cases])
+    beta_reg = LinearRegressor(
+        lambda e, o: generator_features(e, durs, T_horizon, gamma_ref, o),
+        order=order, ridge=ridge).fit(etas, Y_beta)
 
     # ---- the normal direction, fitted on the SCALED training residuals -----
     # The projection is done in the SCALED metric (the same metric the singular
@@ -515,15 +594,15 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
             [T_horizon * math.exp(float(c["located_reference"]["log_t_B_over_T"]))])
         a_o = oracle_correction_coefficient(q, Y_B, n_Y, bal["h_J_kg"], decoder,
                                             scaling=W)
-        a_targets.append(a_o["a"])
-    a_reg = LinearRegressor(order=order, ridge=ridge).fit(
-        etas, np.asarray(a_targets, dtype=float))
-    a_reg._X_ = np.stack([_design(e, order) for e in etas])
+        a_targets.append(a_o.get("a") if a_o.get("resolved") else 0.0)
+    a_reg = LinearRegressor(
+        lambda e, o: generator_features(e, durs, T_horizon, gamma_ref, o),
+        order=order, ridge=ridge).fit(etas, np.asarray(a_targets, dtype=float))
 
     model = LocalGenerator(
         cstr=cstr, library=library, decoder=decoder, n_Y=n_Y.tolist(),
         beta_regressor=beta_reg, a_regressor=a_reg,
-        gamma_ref=gamma_ref, T_horizon=T_horizon, durations=list(durations),
+        gamma_ref=gamma_ref, T_horizon=T_horizon, durations=list(durs),
         training_domain={"max_measured_time_norm": float(max(
             math.sqrt(float(np.sum((np.asarray(durations, dtype=float)
                                     / T_horizon) * e ** 2))) for e in etas)),
@@ -534,6 +613,9 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
                        "subspace": rep["subspace"],
                        "residual_cloud_rank_revealed": True},
         model_identity={"kind": "canonical_reference_plus_one_correction",
+                        "reference_coordinate_parametrization":
+                            "exposure_constrained (log gamma_B = log Gamma - v "
+                            "+ u, log t_B = v)",
                         "mechanism": cstr.cfg.mechanism,
                         "gamma_ref": gamma_ref, "T_horizon_s": T_horizon,
                         "n_segments": int(len(durations)),
@@ -543,16 +625,25 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
                    "a_train_rms": a_reg.train_rms_,
                    "cond_XtX": beta_reg.cond_XtX_,
                    "oracle_a": a_targets,
+                   "u_rms": float(np.sqrt(np.mean(Y_beta[:, 0] ** 2))),
+                   "v_rms": float(np.sqrt(np.mean(Y_beta[:, 1] ** 2))),
                    "normal_report": model.normal_report}
 
-
 def oracle_correction_coefficient(q_target, Y_B, n_Y, h_J_kg: float,
-                                  decoder: PhysicalDecoder,
-                                  scaling=None, n_scan: int = 41) -> dict:
+                                  decoder: PhysicalDecoder, scaling=None,
+                                  n_scales: int = 25,
+                                  xatol: float = 1e-16) -> dict:
     """The best single scalar a given the TRUE endpoint: a representational
-    measurement, not a prediction.  Bounded 1-D minimization over the feasible
-    interval, evaluated through the physical decoder (so the temperature is
-    enthalpy-inverted, never assumed additive)."""
+    measurement, not a prediction.
+
+    The feasible interval can be ORDERS OF MAGNITUDE wider than the optimal a
+    (the interval is set by the least abundant species, while the optimum is set
+    by the transverse excursion), so a uniform grid over the interval is far too
+    coarse to resolve it.  The search is therefore MULTI-SCALE: a log-spaced scan
+    of both signs of a down to 1e-12 of the interval width, then a bounded golden
+    refinement around the best scale.  Evaluated through the physical decoder, so
+    the temperature is enthalpy-inverted, never assumed additive.
+    """
     interval = feasible_a_interval(Y_B, n_Y)
     if not interval["bounded"]:
         return {"a": None, "resolved": False,
@@ -568,19 +659,38 @@ def oracle_correction_coefficient(q_target, Y_B, n_Y, h_J_kg: float,
         q_hat = np.asarray(dec["q_hat"], dtype=float)
         return float(np.linalg.norm(W * (q_target - q_hat)))
 
-    grid = np.linspace(lo, hi, n_scan)
-    vals = np.array([obj(a) for a in grid])
+    # the optimum is expected to be small, so probe a wide range of SCALES on
+    # both sides of zero, plus zero itself
+    width = hi - lo
+    scales = np.unique(np.concatenate([
+        [0.0],
+        np.logspace(-12.0, 0.0, n_scales) * width,
+        -np.logspace(-12.0, 0.0, n_scales) * width]))
+    # the candidates are offsets from ZERO (both signs), clipped to the interval
+    cands = np.unique(np.clip(np.asarray(scales, dtype=float), lo, hi))
+    vals = np.array([obj(a) for a in cands])
     finite = np.isfinite(vals)
     if not finite.any():
         return {"a": None, "resolved": False,
                 "reason": "no admissible correction on the feasible interval",
                 "interval": interval}
     i = int(np.argmin(np.where(finite, vals, np.inf)))
-    r = minimize_scalar(obj, bounds=(grid[max(i - 1, 0)],
-                                     grid[min(i + 1, n_scan - 1)]),
-                        method="bounded",
-                        options={"xatol": 1e-14})
-    a_best = float(r.x) if r.success and np.isfinite(r.fun) else float(grid[i])
-    d_best = float(r.fun) if r.success and np.isfinite(r.fun) else float(vals[i])
+    a_grid, d_grid = float(cands[i]), float(vals[i])
+    # bounded refinement between the NEIGHBOURING candidates, so the bracket is
+    # at the scale the optimum lives at rather than an arbitrary multiple of it
+    b_lo = max(lo, float(cands[max(i - 1, 0)]))
+    b_hi = min(hi, float(cands[min(i + 1, cands.size - 1)]))
+    if not (b_lo < a_grid < b_hi):
+        step = max(abs(a_grid) * 0.1, width * 1e-9)
+        b_lo, b_hi = max(lo, a_grid - step), min(hi, a_grid + step)
+    r = minimize_scalar(obj, bounds=(b_lo, b_hi), method="bounded",
+                        options={"xatol": xatol})
+    if r.success and np.isfinite(r.fun) and r.fun <= d_grid:
+        a_best, d_best = float(r.x), float(r.fun)
+    else:
+        a_best, d_best = a_grid, d_grid
     return {"a": a_best, "resolved": True, "dist_scaled_raw": d_best,
-            "interval": interval, "at_grid": float(vals[i])}
+            "interval": interval,
+            "n_candidates": int(cands.size),
+            "at_coarse_grid": d_grid,
+            "refinement_improved": bool(d_best < d_grid)}

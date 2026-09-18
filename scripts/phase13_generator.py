@@ -175,14 +175,23 @@ def new_admissible_history(cstr, adm, theta0, durations, T, radius, rng,
             "admissible": True}
 
 
+def _distribute(n, n_strata):
+    """Split n over the strata as evenly as possible, larger strata first."""
+    if n <= 0:
+        return []
+    base = n // n_strata
+    extra = n - base * n_strata
+    return [base + (1 if i < extra else 0) for i in range(n_strata)]
+
+
 def new_history_schedule(n_val, n_test, durations, T, gamma_ref, cstr, adm,
                          theta0, q0):
     """Fixed seeds and a stratification in the MEASURED time norm, decided here
     before the model is evaluated on any of them.  A zero count generates no
-    histories for that role."""
-    # exact counts per stratum: validation 3/3/2 = 8, test 5/5/6 = 16
-    val_counts = [3, 3, max(n_val - 6, 2)] if n_val > 0 else []
-    test_counts = [5, 5, max(n_test - 10, 6)] if n_test > 0 else []
+    histories for that role.  With the nominal counts the split is validation
+    3/3/2 = 8 and test 5/5/6 = 16."""
+    val_counts = _distribute(n_val, len(VAL_RADII))
+    test_counts = _distribute(n_test, len(TEST_RADII))
     out = []
     seed_val = stable_child_seed(20240, "phase13-validation")
     seed_test = stable_child_seed(20241, "phase13-test")
@@ -287,6 +296,7 @@ def evaluate_case(cstr, lib, scaling, gamma_ref, T, durations, gen, case,
         "decoded_status": pred["decoded_state"].get("status"),
         "rejection_reason": pred["decoded_state"].get("reason")
         if pred["decoded_state"].get("status") != "admissible" else None,
+        "feasible_interval": pred["predicted_correction"]["feasible_interval"],
         "error": state_error(q_true, q_hat_C, scaling) if q_hat_C is not None
         else None,
         "uncertainty": pred["uncertainty_indicator"]}

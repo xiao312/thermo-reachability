@@ -1,0 +1,39 @@
+{
+  "run_id": "phase13-generator",
+  "timestamp_utc": "2026-09-18T02:56:55.046708+00:00",
+  "host": "redacted-host",
+  "platform": "Linux-5.4.0-144-generic-x86_64-with-glibc2.31",
+  "git_revision": "src-sha256:6697496b80f28d32",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "mechanism": "h2o2.yaml",
+    "mechanism_sha256_16": "0efc6c52862741a2",
+    "species": [
+      "H2",
+      "H",
+      "O",
+      "O2",
+      "OH",
+      "H2O",
+      "HO2",
+      "H2O2",
+      "AR",
+      "N2"
+    ],
+    "anchor": {
+      "state": "hot HP equilibrium of the feed",
+      "T_in_K": 1200.0,
+      "p_Pa": 101325.0,
+      "gamma_ref": 10000.0,
+      "horizon_s": 1e-06,
+      "m_segments": 3,
+      "initial_state_sha256_16": "b85e5fd3dc5fd2a1"
+    },
+    "training_source": "/data2/kexiao/ThermoReachability/results/phase11/phase11_results.json",
+    "n_train": 25,
+    "n_val": 8,
+    "n_test": 16,
+    "frozen_order": 2,
+    "domain_max_measured_time_norm": 0.6
+  }
+}

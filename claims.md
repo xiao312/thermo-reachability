@@ -657,3 +657,44 @@ claim.
 - Phases 4–6 (counterflow flamelet continuation, reduced flamelet transients,
   reaction-invariant convex enclosures): deferred; the audit directs a
   correctness revision and the sensitivity experiment first.
+
+## Revision 7 — the local generator (branch `local-generator`)
+
+**C37 (established).** The canonical curved reference is *predictable* from
+control history coordinates alone, to the accuracy of the oracle-located
+reference: on 16 untouched test histories the median scaled state error of the
+predicted reference (B, 3.69e-4) exceeds the oracle reference (A, 3.62e-4) by only
++4.2e-6, and the log-gamma coordinate error has median 1.0e-4. Every decoded state
+is physically admissible (0 rejections) over the declared development domain
+(measured time norm <= 0.6). Evidence: results/phase13/phase13_summary.json,
+reports/report_07.md.
+
+**C38 (established).** The closed-form exposure law makes h and the elemental
+inventory functions of Gamma alone, so the located reference satisfies
+gamma_B * t_B ~ Gamma with rms 2.7e-3 in log space. Reparametrising the
+reference-coordinate regression around this constraint (log gamma_B = log Gamma -
+v + u) reduces its rms error from 5.3e-2 (free) to 4.5e-5 (quadratic); validation
+on 8 untouched histories selects the quadratic parametrisation.
+
+**C39 (established).** A single conservation-compatible scalar correction is a
+real representational gain at this anchor: given the true endpoint, the best
+correction reduces the median scaled state error 7x (3.62e-4 -> 5.17e-5), and
+where its coefficient is predicted well the chemistry error E_max at dt = 1e-6 s
+falls ~15x.
+
+**C40 (candidate, not settled).** The *predicted* correction coefficient is not
+yet per-case reliable: it improves the state error in only 7 of 16 test cases and
+worsens it in 9. The optimal coefficient is bimodal across histories (either ~0
+or O(1e-4 - 2e-3)) because the residual cloud has a second mode (3.47e-3 vs
+1.17e-4) that the single fixed direction cannot represent; that bimodality is not
+a smooth low-order function of the controls. Verified not to be a search artifact
+(multi-scale oracle search). The canonical reference (C37) is the validated
+deliverable; the correction is a constructive improvement whose coefficient
+prediction remains open.
+
+Also corrected in this revision (no claim attached): the transverse-ray radius
+labels overstate the actual time norm by sqrt(m) (Phase 12 relabels them by
+measured norm; the confounded "58% closure" comparison is withdrawn, the true
+ratio against the measured radius being 0.996); the E-metric table's E_Y entry
+(6.8e-4 -> 6.8e-3, a transcription error only, the raw records were always
+consistent); the phase-11 expansion branch's rtol=/refine_rtol= signature defect.
