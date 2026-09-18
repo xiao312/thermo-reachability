@@ -8,6 +8,7 @@ exactly-integrable stub; the real-thermo paths run on the compute server.
 
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -17,10 +18,13 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thermoreach.generator import (  # noqa: E402
-    LinearRegressor, conservation_subspace, exposure_integral,
-    exposure_log_feature, feasible_a_interval, generator_features,
-    null_space_basis, oracle_correction_coefficient,
-    project_onto_conservation_subspace,
+    LinearRegressor, active_species_report, apply_structural_zeros,
+    conservation_subspace, conservation_subspace_active,
+    exposure_integral, exposure_log_feature, feasible_a_interval,
+    generator_features, net_stoichiometry, null_space_basis,
+    exact_balances_from_controls, oracle_correction_coefficient,
+    project_onto_active_conservation_subspace,
+    project_onto_conservation_subspace, structural_zero_mask,
 )
 
 
@@ -68,10 +72,10 @@ class _DecoderStub:
     """Mimics PhysicalDecoder.decode but solves T in closed form, and refuses
     negative compositions exactly like the real decoder."""
 
-    def __init__(self, gas, y_floor=-1e-12, sum_atol=1e-9):
+    def __init__(self, gas, y_floor=-1e-12, sum_atol=1e-9, E=None):
         self.cstr = type("C", (), {})()
         self.cstr.gas = gas
-        self.cstr.E = E_STUB
+        self.cstr.E = E_STUB if E is None else np.asarray(E, dtype=float)
         self.cstr.p = gas.p
         self.y_floor = y_floor
         self.sum_atol = sum_atol
@@ -95,7 +99,7 @@ class _DecoderStub:
         return {"status": "admissible", "T_K": T,
                 "Y": Y.tolist(),
                 "q_hat": np.concatenate([[T], Y]).tolist(),
-                "b_hat": (E_STUB @ Y).tolist()}
+                "b_hat": (self.cstr.E @ Y).tolist()}
 
 
 # ---------------------------------------------------------------------------
@@ -458,3 +462,316 @@ def test_oracle_search_finds_zero_when_the_family_is_exact():
     out = oracle_correction_coefficient(q_target, Y_B, n_Y, h, dec)
     assert out["resolved"] is True
     assert out["a"] == pytest.approx(0.0, abs=1e-12)
+
+
+# ---------------------------------------------------------------------------
+# Revision 8: the structural face of the species polytope
+# ---------------------------------------------------------------------------
+
+# A 5-species, 3-element stub that mimics h2o2.yaml's structure:
+#   S0, S1, S2, S3 are reactive and built from elements 0 and 1
+#   S4 (the "argon") is built only from element 2, which the feed lacks entirely
+#   S5 (the "nitrogen") is inert and present in the feed at its initial value
+E_FACE = np.array([
+    [2.0, 0.0, 2.0, 1.0, 0.0, 0.0],       # element 0
+    [0.0, 2.0, 1.0, 1.0, 0.0, 0.0],       # element 1
+    [0.0, 0.0, 0.0, 0.0, 1.0, 1.0],       # element 2: only in S4 and S5
+])
+FACE_NAMES = ["H2", "O2", "H2O", "OH", "AR", "N2"]
+
+
+class _FaceGas:
+    """Minimal gas interface for active_species_report: species names, element
+    names, stoichiometry, and no thermo (the report needs no thermo)."""
+
+    def __init__(self, n_species=6, n_elements=3, n_reactions=2):
+        self.n_species = n_species
+        self.n_elements = n_elements
+        self.n_reactions = n_reactions
+        # S4 and S5 appear in no reaction
+        nu = np.zeros((n_species, n_reactions))
+        nu[0, 0], nu[1, 0], nu[2, 0] = -1.0, -0.5, 1.0
+        nu[0, 1], nu[3, 1], nu[2, 1] = -1.0, 1.0, 1.0
+        self.product_stoich_coeffs = np.clip(nu, 0, None)
+        self.reactant_stoich_coeffs = -np.clip(nu, None, 0)
+
+    @property
+    def species_names(self):
+        return FACE_NAMES[: self.n_species]
+
+    def element_name(self, e):
+        return ["H", "O", "Ar"][e]
+
+
+class _FaceCstr:
+    """The feed/initial state: no AR at all, N2 inert at its initial value.
+
+    A stoichiometric H2/O2 feed with N2 as the inert diluent (mimicking
+    h2o2.yaml's H2 / O2:1,N2:3.76, phi = 1).  Element 2's inventory is carried
+    only by N2; AR has no feed material at all."""
+
+    def __init__(self):
+        self.gas = _FaceGas()
+        self.E = E_FACE
+        self.Y_in = np.array([0.0285, 0.2263, 0.0, 0.0, 0.0, 0.7452])
+        self.cfg = type("cfg", (), {})()
+        self.cfg.mechanism = "h2o2.yaml"
+        self.cfg.pressure = 101325.0
+        self.cfg.inlet_temperature = 1200.0
+        self.cfg.fuel = "H2"
+        self.cfg.oxidizer = "O2:1,N2:3.76"
+        self.cfg.equivalence_ratio = 1.0
+        self.h_in = 1.0e9
+        self.b_in = self.E @ self.Y_in
+        self._hk = np.array([1.0e6, 2.0e6, 3.0e6, 4.0e6, 1.0e5, 2.0e5])
+
+    def species_enthalpies(self, T):
+        return self._hk
+
+
+def _face_report():
+    cstr = _FaceCstr()
+    # initial state: the feed, with AR exactly zero and N2 at its feed value
+    q0 = np.concatenate([[1200.0], cstr.Y_in.copy()])
+    return active_species_report(cstr, q0), cstr, q0
+
+
+def test_structural_classification_of_the_species_polytope():
+    rep, _, _ = _face_report()
+    assert rep["absent_indices"] == [4]            # AR: no feed material at all
+    assert rep["fixed_indices"] == [5]             # N2: inert, Y0 == Y_in
+    assert rep["active_indices"] == [0, 1, 2, 3]
+    assert rep["n_active"] == 4
+    assert rep["inconsistent"] == []               # nothing surprising
+    # the element cross-check: element 2 is carried only by the absent AR and
+    # the fixed N2, which is exactly why both are structurally excluded
+    assert rep["element_carriers"]["Ar"] == ["AR", "N2"]
+    assert rep["b_in"][2] == pytest.approx(0.7452)
+    assert rep["b_in"][2] == pytest.approx(
+        float(_FaceCstr().Y_in[5]))       # all of element 2 sits in N2
+
+
+def test_structural_zeros_remove_the_one_sided_interval():
+    """Without the mask, SVD noise of 1e-19 in the AR component of the direction
+    meets the exactly-zero Y_AR and imposes an artificial a >= 0.  The structural
+    mask must restore a TWO-SIDED interval."""
+    rep, _, _ = _face_report()
+    mask = structural_zero_mask(rep)
+    Y_B = np.array([0.030, 0.220, 0.004, 0.0008, 0.0, 0.7452])
+    # a conservation-compatible direction with injected numerical noise in AR
+    n_clean = np.array([0.6, -0.5, -0.15, 0.05, 0.0, 0.0])
+    n_clean = n_clean / np.linalg.norm(n_clean) * 0.01
+    n_noisy = n_clean.copy()
+    n_noisy[4] = 9.759474952003097e-19       # the exact frozen-model value
+
+    iv_noisy = feasible_a_interval(Y_B, n_noisy, FACE_NAMES)
+    assert iv_noisy["a_lo"] == pytest.approx(0.0)      # the defect
+    assert iv_noisy["bounded"] is True
+    assert any(e["name"] == "AR" for e in iv_noisy["inconsistent"])
+
+    iv_fixed = feasible_a_interval(Y_B, apply_structural_zeros(n_noisy, rep),
+                                   FACE_NAMES, fixed_mask=mask)
+    assert iv_fixed["bounded"] is True
+    assert iv_fixed["a_lo"] < 0.0 < iv_fixed["a_hi"]    # two-sided again
+    assert iv_fixed["inconsistent"] == []
+    assert iv_fixed["binding_name_low"] != "AR"
+    # the masked entries are reported with their original indices and names
+    assert any(r["name"] == "AR" for r in iv_fixed["skipped"]["masked_fixed"])
+
+
+def test_injected_1e18_component_does_not_make_the_interval_one_sided():
+    """A regression guard for the exact defect found in the frozen model."""
+    rep, _, _ = _face_report()
+    mask = structural_zero_mask(rep)
+    Y_B = np.array([0.030, 0.220, 0.004, 0.0008, 0.0, 0.7452])
+    n = np.array([0.6, -0.5, -0.15, 0.05, 0.0, 0.0])
+    n = n / np.linalg.norm(n) * 0.01
+    n[4] = 1e-18                      # a numerical artifact, not a physical entry
+    iv = feasible_a_interval(Y_B, apply_structural_zeros(n, rep), FACE_NAMES,
+                             fixed_mask=mask)
+    assert iv["bounded"] is True
+    assert iv["a_lo"] < 0.0, "an injected 1e-18 component must not impose a >= 0"
+    assert abs(n[4]) > 0.0           # the raw direction was NOT modified
+
+
+def _face_direction():
+    """A conservation-compatible direction for the face, from the real projection
+    code, so the sign/conservation tests exercise the actual code path."""
+    rep, _, _ = _face_report()
+    rng = np.random.default_rng(3)
+    out = project_onto_active_conservation_subspace(rng.normal(size=6), E_FACE,
+                                                    rep["active_mask"])
+    assert out["resolved"] is True
+    return np.asarray(out["n_Y"]) * 0.01, rep
+
+
+def test_sign_equivalent_representations_agree():
+    """(n, a) and (-n, -a) are the same correction: the feasible intervals are
+    the same set, and the decoded states coincide."""
+    Y_B = np.array([0.030, 0.220, 0.004, 0.0008, 0.0, 0.7452])
+    n, _ = _face_direction()
+    iv_p = feasible_a_interval(Y_B, n, FACE_NAMES)
+    iv_m = feasible_a_interval(Y_B, -n, FACE_NAMES)
+    assert iv_m["a_lo"] == pytest.approx(-iv_p["a_hi"])
+    assert iv_m["a_hi"] == pytest.approx(-iv_p["a_lo"])
+    # the binding species swap roles
+    assert iv_m["binding_name_low"] == iv_p["binding_name_high"]
+    assert iv_m["binding_name_high"] == iv_p["binding_name_low"]
+    gas = _GasStub(a=[1e6, 2e6, 3e6, 4e6, 1e5, 2e5], c=1200.0)
+    dec = _DecoderStub(gas, E=E_FACE)
+    h = 1.2e9
+    a0 = 0.5 * (iv_p["a_lo"] + iv_p["a_hi"])
+    d_p = dec.decode(Y_B + a0 * n, h)
+    d_m = dec.decode(Y_B + (-a0) * (-n), h)
+    assert d_p["status"] == d_m["status"] == "admissible"
+    assert d_p["T_K"] == pytest.approx(d_m["T_K"])
+    assert np.allclose(d_p["q_hat"], d_m["q_hat"])
+
+
+def test_small_corrections_of_both_signs_are_admissible_and_conserving():
+    """Both signs of a small admissible correction decode to admissible states
+    that preserve the inventory, the normalization and the enthalpy."""
+    n, rep = _face_direction()
+    mask = structural_zero_mask(rep)
+    Y_B = np.array([0.030, 0.220, 0.004, 0.0008, 0.0, 0.7452])
+    assert E_FACE @ n == pytest.approx(np.zeros(3), abs=1e-12)
+    assert n.sum() == pytest.approx(0.0, abs=1e-12)
+    assert n[4] == 0.0 and n[5] == 0.0                  # AR and N2 untouched
+    iv = feasible_a_interval(Y_B, n, FACE_NAMES, fixed_mask=mask)
+    assert iv["bounded"] is True and iv["a_lo"] < 0.0 < iv["a_hi"]
+    gas = _GasStub(a=[1e6, 2e6, 3e6, 4e6, 1e5, 2e5], c=1200.0)
+    dec = _DecoderStub(gas, E=E_FACE)
+    h = float(gas.a @ Y_B) + 1200.0 * 800.0
+    b0 = E_FACE @ Y_B
+    for a in (iv["a_lo"], 0.5 * iv["a_lo"], -1e-4, 1e-4, 0.5 * iv["a_hi"],
+              iv["a_hi"]):
+        d = dec.decode(Y_B + a * n, h)
+        assert d["status"] == "admissible", (a, d.get("reason"))
+        assert np.allclose(E_FACE @ np.asarray(d["Y"]), b0, atol=1e-10)
+        assert sum(d["Y"]) == pytest.approx(1.0, abs=1e-9)
+        assert d["Y"][4] == pytest.approx(0.0, abs=1e-15)   # AR stays absent
+        assert d["Y"][5] == pytest.approx(Y_B[5], abs=1e-15)  # N2 stays fixed
+        # enthalpy inversion round-trips
+        assert gas.a @ np.asarray(d["Y"]) + gas.c * d["T_K"] \
+            == pytest.approx(h, rel=1e-9)
+
+def test_active_conservation_subspace_excludes_the_fixed_species():
+    sub = conservation_subspace_active(E_FACE, np.array(
+        [True, True, True, True, False, False]), y_interval=1.0)
+    Q = np.asarray(sub["basis"])
+    assert Q.shape == (4, sub["dim"])
+    assert sub["dim"] == 4 - 2 - 1                      # 4 species, 2 elements
+    for col in range(Q.shape[1]):
+        v = np.zeros(6)
+        v[[0, 1, 2, 3]] = Q[:, col]
+        assert np.allclose(E_FACE @ v, 0.0, atol=1e-10)
+        assert abs(v.sum()) < 1e-10
+
+
+def test_projection_into_the_active_subspace_embeds_exact_zeros():
+    rep, _, _ = _face_report()
+    rng = np.random.default_rng(11)
+    w = rng.normal(size=6)
+    out = project_onto_active_conservation_subspace(w, E_FACE,
+                                                   rep["active_mask"])
+    assert out["resolved"] is True
+    n = np.asarray(out["n_Y"])
+    assert n.shape == (6,)
+    assert n[4] == 0.0 and n[5] == 0.0                 # exact, not 1e-19
+    assert np.allclose(E_FACE @ n, 0.0, atol=1e-10)
+    assert abs(n.sum()) < 1e-10
+    assert np.linalg.norm(n) == pytest.approx(1.0)
+
+
+# ---------------------------------------------------------------------------
+# Revision 8 section C: what the exact balance law can and cannot identify
+# ---------------------------------------------------------------------------
+
+
+class _BalanceCstr:
+    """Exactly the fields the closed-form mixing law needs - no thermo."""
+
+    def __init__(self, hk_at_T0, b_in, h_in):
+        self._hk = np.asarray(hk_at_T0, dtype=float)
+        self.E = np.eye(len(hk_at_T0))          # b = Y itself, one "element" each
+        self.b_in = np.asarray(b_in, dtype=float)
+        self.h_in = float(h_in)
+
+    def species_enthalpies(self, T):
+        return self._hk
+
+
+def test_feed_compatible_invariants_cannot_identify_the_exposure():
+    """The hot-HP start of the same feed has h0 = h_in and b0 = b_in, so both
+    invariants are CONSTANT for every control: no measurement of h or b can
+    recover Gamma, and the exposure relation must be an empirical bias."""
+    hk = np.array([1e6, 2e6, 3e6])
+    # the initial state is the SAME feed: b0 = b_in and h0 = h_in exactly
+    h_in = float(hk @ hk)
+    cstr = _BalanceCstr(hk, b_in=hk, h_in=h_in)
+    q0 = np.concatenate([[1200.0], hk.copy()])
+    assert exact_balances_from_controls(cstr, q0, [1.0], [1.0])["h0_J_kg"]         == pytest.approx(h_in)
+    low = exact_balances_from_controls(cstr, q0, [1e3], [1e-6])
+    high = exact_balances_from_controls(cstr, q0, [1e5], [1e-6])
+    # the exposures differ by 100x ...
+    assert high["Gamma"] == pytest.approx(100.0 * low["Gamma"])
+    # ... yet the invariants are bit-identical: no exposure information
+    assert high["h_J_kg"] == low["h_J_kg"]
+    assert high["b"] == low["b"]
+    assert low["dec"] == pytest.approx(math.exp(-low["Gamma"]))
+    # the report says so explicitly
+    assert abs(low["h0_J_kg"] - low["h_in_J_kg"]) <= 0.0
+    assert np.allclose(low["b0"], low["b_in"])
+
+
+def test_a_nonmatching_invariant_identifies_the_exposure_when_conditioned():
+    """If b0 != b_in the decaying factor e^-Gamma is observable, and the exposure
+    is recoverable - but the conditioning is set by |b0 - b_in|."""
+    hk = np.array([1e6, 2e6, 3e6])
+    b_in = hk
+    cstr = _BalanceCstr(hk, b_in=b_in, h_in=1.0e9)
+    # a deliberately nonmatching initial inventory: species 0 is enriched
+    Y0 = hk * np.array([1.5, 1.0, 1.0])
+    Y0 = Y0 / Y0.sum() * b_in.sum()
+    q0 = np.concatenate([[1200.0], Y0])
+    assert not np.allclose(cstr.E @ Y0, b_in)       # the law is NOT degenerate
+    for Gamma in (1e-3, 0.5, 3.0):
+        # choose a single-segment history with exactly this exposure
+        bal = exact_balances_from_controls(cstr, q0, [1.0], [Gamma])
+        assert bal["Gamma"] == pytest.approx(Gamma)
+        assert bal["dec"] == pytest.approx(math.exp(-Gamma))
+        # the invariant has actually moved away from b_in
+        b = np.asarray(bal["b"], dtype=float)
+        assert np.linalg.norm(b - b_in) > 0.0
+        # and the exposure is recoverable from it, by inverting the law
+        d = np.asarray(bal["b"], dtype=float) - b_in
+        d0 = np.asarray(bal["b0"], dtype=float) - b_in
+        Gamma_back = -math.log(np.linalg.norm(d) / np.linalg.norm(d0))
+        assert Gamma_back == pytest.approx(Gamma, rel=1e-9)
+
+
+def test_a_nearly_degenerate_invariant_makes_the_exposure_ill_conditioned():
+    """As b0 -> b_in the same measurement noise in b maps to a larger error in
+    Gamma: the recovery is well conditioned only while |b0 - b_in| is well above
+    the measurement floor, so the conditioning is set by the OFFSET."""
+    hk = np.array([1e6, 2e6, 3e6])
+    cstr = _BalanceCstr(hk, b_in=hk, h_in=float(hk @ hk))
+    # a relative measurement floor on the inventory, independent of the offset
+    noise = 1e-6 * float(np.linalg.norm(cstr.b_in))
+    gamma_true = 0.7
+    rel_errs = {}
+    for scale in (1e-1, 1e-4, 1e-7):
+        Y0 = hk * (1.0 + scale * np.array([1.0, 0.0, 0.0]))
+        q0 = np.concatenate([[1200.0], Y0])
+        bal = exact_balances_from_controls(cstr, q0, [1.0], [gamma_true])
+        d = np.asarray(bal["b"], dtype=float) - cstr.b_in
+        d0 = np.asarray(bal["b0"], dtype=float) - cstr.b_in
+        offset = float(np.linalg.norm(d0))
+        # the exposure recovered from a noise-corrupted invariant
+        r = np.linalg.norm(d + noise) / max(offset, 1e-300)
+        gamma_back = -math.log(r) if r > 0 else float("inf")
+        rel_errs[scale] = (abs(gamma_back - gamma_true) / gamma_true, offset)
+    # the largest offset is well conditioned; the smallest is not
+    assert rel_errs[1e-1][0] < 1e-3
+    assert rel_errs[1e-1][0] < rel_errs[1e-4][0] < rel_errs[1e-7][0]
+    assert rel_errs[1e-7][1] < noise      # the offset is below the floor

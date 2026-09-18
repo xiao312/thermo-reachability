@@ -67,6 +67,16 @@ def exact_balances_from_controls(cstr, q0, gammas, durations) -> dict:
 
     with Gamma = sum_j gamma_j dur_j.  These are exact, and they are functions of
     the CONTROLS only - never of the endpoint.
+
+    INTERPRETATION (Revision 8).  When the initial state is the hot
+    HP-equilibrium of the SAME feed, h0 = h_in and b0 = b_in identically, so both
+    invariants are CONSTANT for every control and CANNOT identify Gamma: the
+    balance law is then degenerate, and any observed gamma_B * t_B ~ Gamma is an
+    EMPIRICAL relationship at that anchor, not a consequence of invariant
+    matching.  Only when b0 != b_in (or h0 != h_in) does the decaying factor
+    e^-Gamma carry exposure information, and then only as well as |b0 - b_in| is
+    conditioned.  The caller must therefore check the reported h0/h_in and
+    b0/b_in rather than assume the law identifies anything.
     """
     Gamma = exposure_integral(gammas, durations)
     dec = math.exp(-Gamma)
@@ -112,6 +122,208 @@ def null_space_basis(C: np.ndarray, tol_rel: float = 1e-10,
             "n_constraints": int(C.shape[0]),
             "singular_values_of_equilibrated_rows": S.tolist(),
             "conditioning": float(S[0] / S[rank - 1]) if rank else float("inf")}
+
+
+# ---------------------------------------------------------------------------
+# 2a. the structural face of the species polytope
+#
+# A species is STRUCTURALLY ABSENT when the feed carries none of the elements it
+# is built from: no admissible trajectory can ever create it, so its mass
+# fraction is exactly zero for all time and all controls.  A species is FIXED
+# when it takes no part in any reaction AND its initial value equals its feed
+# value, so the exchange term gamma (Y_in - Y) vanishes and its mass fraction is
+# exactly constant.  Both are excluded from the correction direction (exact
+# zeros embedded) and from the feasible interval; only the ACTIVE species move.
+#
+# This matters because a conservation-compatible direction already forces the
+# absent/fixed components to zero, but only to SVD numerical noise (~1e-19).
+# Against an exactly zero Y_k that noise becomes an ACTIVE bound a >= 0 through
+# (0 - 0)/1e-19, silently making the feasible interval ONE-SIDED and truncating
+# every negative correction.  The structural mask replaces the noise with exact
+# zeros; that is not clipping a physical species, it is removing a numerical
+# artifact of a constraint that holds exactly.
+# ---------------------------------------------------------------------------
+
+
+def net_stoichiometry(gas) -> np.ndarray:
+    """nu[k, r] = products minus reactants for species k and reaction r.
+
+    A zero ROW means the species takes part in no reaction.  Cantera returns
+    (n_reactions, n_species) for Kinetics objects; both orientations are handled.
+    """
+    try:
+        pr = np.asarray(gas.product_stoich_coeffs, dtype=float)
+        re = np.asarray(gas.reactant_stoich_coeffs, dtype=float)
+    except AttributeError:
+        return np.zeros((int(gas.n_species), 0))
+    if pr.shape != re.shape:
+        raise ValueError(f"stoichiometry shapes disagree: {pr.shape} {re.shape}")
+    if pr.ndim != 2:
+        raise ValueError(f"stoichiometry is not 2-D: shape {pr.shape}")
+    # orient as (n_species, n_reactions)
+    if pr.shape[0] == gas.n_reactions and pr.shape[1] == gas.n_species:
+        pr, re = pr.T, re.T
+    elif not (pr.shape[0] == gas.n_species
+              and pr.shape[1] == gas.n_reactions):
+        raise ValueError(f"cannot orient stoichiometry of shape {pr.shape} "
+                         f"for {gas.n_species} species / "
+                         f"{gas.n_reactions} reactions")
+    return pr - re
+
+
+def active_species_report(cstr, q0, drift_tol: float = 1e-15) -> dict:
+    """Classify every species as structurally absent, fixed, or active.
+
+    Requires only the mechanism, the feed and the initial state - no endpoint
+    information.  A report, not a mutation: callers embed the resulting zeros.
+    """
+    gas = cstr.gas
+    E = np.asarray(cstr.E, dtype=float)
+    Y_in = np.asarray(cstr.Y_in, dtype=float)
+    b_in = E @ Y_in
+    names = [str(s) for s in gas.species_names]
+    n_sp = int(gas.n_species)
+    nu = net_stoichiometry(gas)
+    inert = [bool(np.all(nu[k, :] == 0.0)) for k in range(n_sp)]
+
+    Y0 = np.asarray(q0, dtype=float).ravel()
+    if Y0.size == n_sp + 1:
+        Y0 = Y0[1:]                      # q0 = [T, Y...]
+    elif Y0.size != n_sp:
+        raise ValueError(f"q0 has {Y0.size} entries for {n_sp} species")
+
+    absent, fixed, active, inconsistent = [], [], [], []
+    for k in range(n_sp):
+        elems = np.flatnonzero(E[:, k] > 0.0)
+        # TWO independent rigorous routes to structural absence:
+        #  (a) the species takes part in no reaction AND the feed carries none of
+        #      it, so both the chemistry and the exchange term vanish exactly;
+        #  (b) the feed carries none of ANY element the species is built from, so
+        #      no admissible trajectory has material to form it from.
+        no_feed_material = bool(elems.size and np.all(b_in[elems] == 0.0))
+        no_feed_species = bool(inert[k] and Y_in[k] == 0.0)
+        if no_feed_material or no_feed_species:
+            absent.append(k)
+            which = ("no_feed_material" if no_feed_material else
+                     "inert_and_absent_from_feed")
+            if Y_in[k] != 0.0 or Y0[k] != 0.0:
+                inconsistent.append({
+                    "index": k, "name": names[k], "kind": which,
+                    "Y_in": float(Y_in[k]), "Y0": float(Y0[k])})
+            continue
+        if inert[k] and abs(float(Y_in[k]) - float(Y0[k])) <= drift_tol:
+            fixed.append(k)
+            continue
+        active.append(k)
+
+    mask = np.zeros(n_sp, dtype=bool)
+    mask[active] = True
+    # for each element, the species that carry it: a singleton element makes its
+    # species fixed by inventory conservation alone (a cross-check on the
+    # mechanism-based classification above)
+    element_carriers = {
+        str(gas.element_name(e)): [names[k] for k in range(n_sp)
+                                   if E[e, k] > 0.0]
+        for e in range(int(gas.n_elements))}
+    return {
+        "species_names": names,
+        "active_indices": active,
+        "fixed_indices": fixed,
+        "absent_indices": absent,
+        "active_mask": mask.tolist(),
+        "structurally_zero_mask": np.logical_not(mask).tolist(),
+        "n_active": len(active),
+        "inert": inert,
+        "b_in": b_in.tolist(),
+        "element_carriers": element_carriers,
+        "inconsistent": inconsistent,
+        "note": ("absent species have zero feed inventory for every element "
+                 "they contain; fixed species are inert with Y0 == Y_in; the "
+                 "remaining active species are what the correction can move"),
+    }
+
+
+def structural_zero_mask(report: dict) -> np.ndarray:
+    """Boolean mask, True where the correction direction must be exactly zero."""
+    return np.asarray(report["structurally_zero_mask"], dtype=bool)
+
+
+def conservation_subspace_active(E: np.ndarray, active_mask,
+                                 y_interval: float = 1.0,
+                                 tol_rel: float = 1e-10,
+                                 tol_abs: float = 1e-14) -> dict:
+    """An orthonormal basis, in SCALED coordinates, of the ACTIVE-species
+    directions preserving every element inventory and the active normalization.
+
+    The absent/fixed species keep exactly their mass fractions, so the active
+    ones must sum to 1 - sum(absent and fixed); that constraint is included
+    explicitly (it follows from element conservation only when the active
+    species carry every element the fixed ones do).
+    """
+    E = np.asarray(E, dtype=float)
+    mask = np.asarray(active_mask, dtype=bool)
+    yi = float(y_interval)
+    Ea = E[:, mask]
+    C = np.vstack([Ea * yi, np.full(int(mask.sum()), yi)])
+    out = null_space_basis(C, tol_rel=tol_rel, tol_abs=tol_abs)
+    out["y_interval"] = yi
+    out["active_count"] = int(mask.sum())
+    out["note"] = ("columns are orthonormal in scaled coordinates over the "
+                   "ACTIVE species; multiply by y_interval for the physical "
+                   "mass-fraction direction and embed exact zeros elsewhere")
+    return out
+
+
+def apply_structural_zeros(n_Y, report: dict) -> np.ndarray:
+    """Embed exact zeros for structurally absent and fixed species."""
+    n = np.asarray(n_Y, dtype=float).copy()
+    n[structural_zero_mask(report)] = 0.0
+    return n
+
+
+def project_onto_active_conservation_subspace(direction, E: np.ndarray,
+                                               active_mask,
+                                               y_interval: float = 1.0,
+                                               tol_rel: float = 1e-10) -> dict:
+    """Project a SCALED full-length composition direction onto the
+    conservation-compatible subspace of the ACTIVE species, and embed exact
+    zeros for the structurally absent and fixed ones.
+
+    Returns the PHYSICAL (unscaled) unit direction n_Y, full length, with
+    E n_Y = 0 over all species and 1^T n_Y = 0.
+    """
+    mask = np.asarray(active_mask, dtype=bool)
+    sub = conservation_subspace_active(E, mask, y_interval=y_interval,
+                                       tol_rel=tol_rel)
+    Q = sub["basis"]
+    d = np.asarray(direction, dtype=float).ravel()
+    if d.size != mask.size:
+        raise ValueError(f"direction has {d.size} entries for {mask.size} "
+                         f"species")
+    if Q.size == 0:
+        return {"n_Y": None, "resolved": False,
+                "reason": "active conservation subspace is trivial",
+                "subspace": sub}
+    proj_a = Q @ (Q.T @ d[mask])
+    nrm = float(np.linalg.norm(proj_a))
+    d_a = float(np.linalg.norm(d[mask]))
+    if nrm <= 1e-14 or nrm < 1e-10 * max(d_a, 1e-300):
+        return {"n_Y": None, "resolved": False,
+                "reason": (f"projection of the fitted direction onto the active "
+                           f"conservation subspace is degenerate "
+                           f"(|proj| = {nrm:.3e})"),
+                "subspace": sub}
+    n_active = float(y_interval) * (proj_a / nrm)
+    n_Y = np.zeros(mask.size)
+    n_Y[mask] = n_active
+    assert np.allclose(E @ n_Y, 0.0, atol=1e-10), "E n_Y must vanish"
+    assert abs(n_Y.sum()) < 1e-10, "1^T n_Y must vanish"
+    return {"n_Y": n_Y.tolist(), "resolved": True,
+            "projection_retained_fraction": nrm / max(d_a, 1e-300),
+            "subspace": {"dim": sub["dim"],
+                         "conditioning": sub["conditioning"],
+                         "y_interval": sub["y_interval"],
+                         "active_count": sub["active_count"]}}
 
 
 def conservation_subspace(E: np.ndarray, y_interval: float = 1.0,
@@ -177,23 +389,51 @@ def project_onto_conservation_subspace(direction: np.ndarray, E: np.ndarray,
 # ---------------------------------------------------------------------------
 
 
-def feasible_a_interval(Y_B, n_Y, y_floor: float = 0.0) -> dict:
+def feasible_a_interval(Y_B, n_Y, species_names=None,
+                        fixed_mask=None, y_floor: float = 0.0) -> dict:
     """The interval of a for which Y_B + a n_Y stays non-negative.
 
     This is derived from the species bounds THEMSELVES (a feasibility statement
     about the physical decoder), not from the range of a seen in training.
+
+    Components whose direction entry is exactly zero (the structurally absent
+    and fixed species, after `apply_structural_zeros`) impose no bound and are
+    skipped, with their ORIGINAL indices and names reported.  A component with an
+    exactly (or nearly) zero Y_B but a NONZERO direction entry is a structural
+    inconsistency - it makes the interval one-sided at 0 through
+    (0 - 0)/|n_k| - and is REPORTED, never silently accepted as a bound.
     """
     Y_B = np.asarray(Y_B, dtype=float)
     n_Y = np.asarray(n_Y, dtype=float)
-    if not np.any(np.abs(n_Y) > 0):
-        return {"a_lo": None, "a_hi": None, "bounded": False,
-                "reason": "the correction direction is zero"}
-    lo, hi = [], []
-    for yk, nk in zip(Y_B, n_Y):
+    names = ([str(s) for s in species_names] if species_names is not None
+             else [f"species_{k}" for k in range(Y_B.size)])
+    fixed = (np.zeros(Y_B.size, dtype=bool) if fixed_mask is None
+             else np.asarray(fixed_mask, dtype=bool))
+    skipped = {"exact_zero_direction": [], "masked_fixed": []}
+    inconsistent = []
+    lo, hi, lo_idx, hi_idx = [], [], [], []
+    for k, (yk, nk) in enumerate(zip(Y_B, n_Y)):
+        if nk == 0.0:
+            rec = {"index": int(k), "name": names[k],
+                   "Y_B": float(yk), "n_Y": float(nk)}
+            (skipped["masked_fixed"] if bool(fixed[k])
+             else skipped["exact_zero_direction"]).append(rec)
+            continue
+        if yk == 0.0 or (abs(yk) < 1e-14 and not bool(fixed[k])):
+            inconsistent.append({"index": int(k), "name": names[k],
+                                 "Y_B": float(yk), "n_Y": float(nk),
+                                 "bound_imposed": (0.0 if nk > 0 else None),
+                                 "note": ("a zero species mass fraction with a "
+                                           "nonzero direction entry makes the "
+                                           "interval one-sided; the structural "
+                                           "mask should have zeroed this "
+                                           "direction entry")})
         if nk > 0:
             lo.append((y_floor - yk) / nk)
+            lo_idx.append(k)
         elif nk < 0:
             hi.append((y_floor - yk) / nk)
+            hi_idx.append(k)
     a_lo = max(lo) if lo else None
     a_hi = min(hi) if hi else None
     bounded = a_lo is not None and a_hi is not None and a_lo < a_hi
@@ -201,12 +441,18 @@ def feasible_a_interval(Y_B, n_Y, y_floor: float = 0.0) -> dict:
         return {"a_lo": a_lo, "a_hi": a_hi, "bounded": False,
                 "reason": ("no admissible interval: the direction drives a "
                            "species negative on both sides of the anchor"),
-                "Y_B_min": float(Y_B.min()), "n_Y_argmax": int(np.argmax(n_Y))}
+                "Y_B_min": float(Y_B.min()), "n_Y_argmax": int(np.argmax(n_Y)),
+                "binding_species_low": None, "binding_species_high": None,
+                "binding_name_low": None, "binding_name_high": None,
+                "skipped": skipped, "inconsistent": inconsistent,
+                "interval_width": None}
+    i_lo, i_hi = int(lo_idx[int(np.argmax(lo))]), int(hi_idx[int(np.argmin(hi))])
     return {"a_lo": float(a_lo), "a_hi": float(a_hi), "bounded": True,
-            "binding_species_low": int(np.argmax(lo)),
-            "binding_species_high": int(np.argmin(hi)),
+            "binding_species_low": i_lo, "binding_species_high": i_hi,
+            "binding_name_low": names[i_lo], "binding_name_high": names[i_hi],
             "Y_B_min": float(Y_B.min()),
-            "interval_width": float(a_hi - a_lo)}
+            "interval_width": float(a_hi - a_lo),
+            "skipped": skipped, "inconsistent": inconsistent}
 
 
 # ---------------------------------------------------------------------------
@@ -279,6 +525,37 @@ class PhysicalDecoder:
                 "h_roundtrip_J_kg": float(gas.enthalpy_mass),
                 "density_kg_m3": float(gas.density),
                 "q_hat": np.concatenate([[T], np.maximum(Y, 0.0)]).tolist()}
+
+    # ------------------------------------------------------------------
+    def sensitivity(self, Y_hat, n_Y, h_J_kg: float) -> dict:
+        """The EXACT sensitivity of the decoded state to the scalar correction,
+        at fixed (h, p):
+
+            h = sum_k h_k(T) Y_k  is constant along the correction, so
+            0 = cp dT/da + sum_k h_k(T) n_k
+            dT/da = -sum_k h_k(T) n_k / cp(T, Y)
+
+        and the full state Jacobian column is j = (dT/da, n_Y).  This is the
+        linear estimate of the optimal coefficient:
+
+            a_lin = j^T W^T W (q_true - q_B) / (j^T W^T W j)
+
+        evaluated here without the scaling, which the caller applies.
+        """
+        Y = np.maximum(np.asarray(Y_hat, dtype=float), 0.0)
+        n = np.asarray(n_Y, dtype=float)
+        gas = self.cstr.gas
+        gas.HPY = float(h_J_kg), float(self.cstr.p), Y
+        T = float(gas.T)
+        Wm = np.asarray(gas.molecular_weights, dtype=float)
+        hk = np.asarray(gas.partial_molar_enthalpies, dtype=float) / Wm
+        cp = float(gas.cp_mass)
+        if not np.isfinite(cp) or cp <= 0.0:
+            return {"resolved": False, "reason": f"bad cp = {cp}"}
+        dT_over_da = -float(hk @ n) / cp
+        return {"resolved": True, "T_K": T, "cp_J_kg_K": cp,
+                "h_k_J_kg": hk.tolist(), "dT_over_da": dT_over_da,
+                "j": np.concatenate([[dT_over_da], n]).tolist()}
 
 
 # ---------------------------------------------------------------------------
@@ -388,6 +665,7 @@ class LocalGenerator:
     library: object
     decoder: PhysicalDecoder
     n_Y: list                       # unit species direction, E n_Y = 0, 1^T n_Y = 0
+    species_report: dict            # structural absence/fixed/active classification
     beta_regressor: LinearRegressor
     a_regressor: LinearRegressor
     gamma_ref: float
@@ -396,6 +674,10 @@ class LocalGenerator:
     training_domain: dict
     normal_report: dict
     model_identity: dict
+    # a running count of predictions whose RAW coefficient was outside the
+    # feasible interval and was projected back in (reported, never hidden)
+    n_a_raw_projected: int = 0
+    n_a_raw_infeasible_rejected: int = 0
 
     # ------------------------------------------------------------------
     def reference_state(self, log_gamma: float, t: float) -> dict:
@@ -426,9 +708,13 @@ class LocalGenerator:
             log gamma_B = log(Gamma/(gamma_ref T)) - v + u
             log t_B     = v                  (t in units of the anchor horizon)
 
-        where u = log(Gamma_B/Gamma) is forced to be small by the exact balance
-        law (h depends on Gamma alone), and v = log(t_B/T) is the split between
-        gamma and t that the regression must actually learn.
+        where u = log(Gamma_B/Gamma) and v = log(t_B/T) are BOTH REGRESSED - u is
+        not an enforced exact zero.  At this anchor the closed-form balance law is
+        degenerate (the initial state is the HP equilibrium of the same feed, so
+        h0 = h_in and b0 = b_in and the invariants cannot identify Gamma), so the
+        exposure relation is carried here as an INDUCTIVE BIAS, not as an
+        invariant-matching constraint; v is the split between gamma and t that the
+        regression must actually learn.
         """
         eta = np.asarray(eta, dtype=float).ravel()
         durs = np.asarray(durations if durations is not None else self.durations,
@@ -475,13 +761,18 @@ class LocalGenerator:
                                                   * eta ** 2)))},
                     "provenance": {}}
         Y_B = np.asarray(ref["q_B"], dtype=float)[1:]
-        n_Y = np.asarray(self.n_Y, dtype=float)
-        interval = feasible_a_interval(Y_B, n_Y)
+        n_Y = np.asarray(self.n_Y, dtype=float)      # exact structural zeros
+        interval = feasible_a_interval(
+            Y_B, n_Y, species_names=self.species_report["species_names"],
+            fixed_mask=self.species_report["structurally_zero_mask"])
         if interval["bounded"]:
             a = float(np.clip(a_raw, interval["a_lo"], interval["a_hi"]))
-            clipped = not math.isclose(a, a_raw)
+            clipped = not math.isclose(a, a_raw, rel_tol=0.0, abs_tol=0.0)
+            if clipped:
+                self.n_a_raw_projected += 1
         else:
             a, clipped = a_raw, False
+            self.n_a_raw_infeasible_rejected += 1
         Y_hat = Y_B + a * n_Y
         dec = self.decoder.decode(Y_hat, ref["h_B_J_kg"], a=a)
         meas = math.sqrt(float(np.sum((durs / self.T_horizon) * eta ** 2)))
@@ -541,11 +832,14 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
     durs = np.asarray(durations, dtype=float)
 
     # ---- reference coordinates in the exposure-constrained parametrization ----
-    # The exact balance law makes h and b functions of Gamma alone, so the
-    # located reference satisfies gamma_B * t_B ~ Gamma with a residual two
-    # orders of magnitude smaller than a free fit of the two coordinates.  The
-    # regression therefore learns only the SPLIT v = log(t_B/T) and the small
-    # residual u = log(Gamma_B/Gamma); log gamma_B then follows exactly.
+    # EMPIRICAL, not invariant-matching (Revision 8): at this anchor the initial
+    # state is the HP equilibrium of the same feed, so h0 = h_in and b0 = b_in
+    # and the closed-form balance law is degenerate - it cannot identify Gamma.
+    # The observed gamma_B * t_B ~ Gamma is nonetheless a strong empirical
+    # regularity of the located references (rms 2.7e-3 in log space, two orders
+    # below a free fit of the two coordinates), so it is retained as an
+    # inductive bias.  The regression learns BOTH the split v = log(t_B/T) and
+    # the residual u = log(Gamma_B/Gamma); u is not forced to zero.
     def _targets(c):
         lg = float(c["located_reference"]["log_gamma_B"])
         lt = float(c["located_reference"]["log_t_B_over_T"])
@@ -574,14 +868,25 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
     R = np.stack(residuals, axis=1)                  # (n_states, N)
     # rank-revealing leading direction of the residual cloud; the COMPOSITION
     # part of that direction is what the correction acts on
+    # ---- the structural face: which species can the correction move? -------
+    # A structurally absent species (not in the feed, no reaction forming it) and
+    # a fixed inert (in the feed at its initial value) have EXACTLY constant mass
+    # fractions.  A conservation-compatible direction already zeroes them, but
+    # only to SVD numerical noise; against an exactly zero Y_k that noise becomes
+    # an active bound a >= 0 and silently truncates every NEGATIVE correction.
+    # Embedding exact zeros restores a two-sided feasible interval.
+    species_report = active_species_report(cstr, library.q0)
+
     U, S, _ = np.linalg.svd(R, full_matrices=False)
     w_Y = U[1:, 0]
-    rep = project_onto_conservation_subspace(w_Y, cstr.E,
-                                             y_interval=y_interval,
-                                             tol_rel=normal_rel_tol)
+    rep = project_onto_active_conservation_subspace(
+        w_Y, cstr.E, species_report["active_mask"],
+        y_interval=y_interval, tol_rel=normal_rel_tol)
     if not rep["resolved"]:
         raise RuntimeError(f"the normal field is unresolved: {rep['reason']}")
     n_Y = np.asarray(rep["n_Y"], dtype=float)
+    assert all(n_Y[k] == 0.0 for k in species_report["absent_indices"]),         "structurally absent species must have exact zeros in the direction"
+    assert all(n_Y[k] == 0.0 for k in species_report["fixed_indices"]),         "fixed inerts must have exact zeros in the direction"
 
     # ---- the correction coefficient: fit on oracle a values ---------------
     a_targets = []
@@ -601,6 +906,7 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
 
     model = LocalGenerator(
         cstr=cstr, library=library, decoder=decoder, n_Y=n_Y.tolist(),
+        species_report=species_report,
         beta_regressor=beta_reg, a_regressor=a_reg,
         gamma_ref=gamma_ref, T_horizon=T_horizon, durations=list(durs),
         training_domain={"max_measured_time_norm": float(max(
@@ -614,12 +920,41 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
                        "residual_cloud_rank_revealed": True},
         model_identity={"kind": "canonical_reference_plus_one_correction",
                         "reference_coordinate_parametrization":
-                            "exposure_constrained (log gamma_B = log Gamma - v "
-                            "+ u, log t_B = v)",
+                            "exposure_constrained empirical inductive bias "
+                            "(log gamma_B = log Gamma - v + u, log t_B = v; "
+                            "u and v are both regressed, u is not forced to "
+                            "zero; at this anchor h0 = h_in and b0 = b_in so "
+                            "the balance law cannot identify Gamma)",
                         "mechanism": cstr.cfg.mechanism,
                         "gamma_ref": gamma_ref, "T_horizon_s": T_horizon,
                         "n_segments": int(len(durations)),
                         "order": order, "ridge": ridge,
+                        "state_scaling": {
+                            "T_interval_K": float(1.0 / W[0]),
+                            "Y_interval": float(1.0 / W[1]),
+                            "n_species": int(len(W) - 1),
+                            "note": ("an increment of T_INTERVAL kelvin and "
+                                     "Y_INTERVAL in every mass fraction are "
+                                     "declared comparably significant; singular "
+                                     "values in the scaled space count such "
+                                     "increments")},
+                        "problem_definition": {
+                            "initial_state": "hot HP equilibrium of the feed",
+                            "mechanism": cstr.cfg.mechanism,
+                            "pressure_Pa": float(cstr.cfg.pressure),
+                            "T_in_K": float(cstr.cfg.inlet_temperature),
+                            "fuel": cstr.cfg.fuel, "oxidizer": cstr.cfg.oxidizer,
+                            "equivalence_ratio": float(cstr.cfg.equivalence_ratio),
+                            "horizon_s": float(T_horizon),
+                            "durations_s": [float(x) for x in durs],
+                            "n_segments": int(len(durations)),
+                            "gamma_ref": float(gamma_ref),
+                            "control_bounds": {
+                                "gamma_lo": float(cstr.cfg.gamma_bounds[0])
+                                if hasattr(cstr.cfg, "gamma_bounds") else None,
+                                "gamma_hi": float(cstr.cfg.gamma_bounds[1])
+                                if hasattr(cstr.cfg, "gamma_bounds") else None},
+                            "reactor": "adiabatic fixed-pressure CSTR"},
                         "library_identity": library.identity()})
     return model, {"beta_train_rms": beta_reg.train_rms_,
                    "a_train_rms": a_reg.train_rms_,
@@ -627,7 +962,168 @@ def fit_local_generator(cstr, library, train_cases, durations, gamma_ref,
                    "oracle_a": a_targets,
                    "u_rms": float(np.sqrt(np.mean(Y_beta[:, 0] ** 2))),
                    "v_rms": float(np.sqrt(np.mean(Y_beta[:, 1] ** 2))),
-                   "normal_report": model.normal_report}
+                   "normal_report": model.normal_report,
+                   "species_report": species_report}
+
+
+# ---------------------------------------------------------------------------
+# 7. serialization: the reloadable frozen model (Revision 8 section D)
+# ---------------------------------------------------------------------------
+
+FEATURE_NAME = "generator_features"
+"""The single feature map used by the frozen model.  A record carries its full
+specification (durations, horizon, gamma_ref, order), so a fresh process can
+rebuild the design matrix without refitting or reading any training endpoint."""
+
+
+def _utc_now() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
+
+
+def source_hashes(directory=None) -> dict:
+    """Content hashes of the modules that reproduce a prediction, so a reloaded
+    model can state whether the code it is running matches the code that fitted
+    it.  A mismatch is REPORTED to the caller, never silently accepted."""
+    import hashlib
+    from pathlib import Path
+    base = Path(directory) if directory is not None else Path(
+        __file__).resolve().parent
+    out = {}
+    for name in ("generator.py", "reactor.py", "chemresponse.py",
+                 "admissibility.py", "controls.py"):
+        fp = base / name
+        if fp.is_file():
+            out[name] = hashlib.sha256(fp.read_bytes()).hexdigest()[:16]
+    return out
+
+
+def model_record(model, *, training_case_ids, validation_case_ids, config,
+                 selection) -> dict:
+    """The COMPLETE reloadable model: coefficient arrays, feature specification,
+    direction, structural classification, metric, decoder policy, problem
+    definition and provenance.  A fresh process must be able to reproduce
+    predictions from this record alone - without refitting and without reading
+any training endpoint."""
+    beta = np.asarray(model.beta_regressor.coef_, dtype=float)
+    a_coef = np.asarray(model.a_regressor.coef_, dtype=float)
+    return {
+        "model_kind": "canonical_reference_plus_one_correction",
+        "frozen_at_utc": _utc_now(),
+        "feature_specification": {
+            "feature": FEATURE_NAME,
+            "durations_s": [float(x) for x in model.durations],
+            "T_horizon_s": float(model.T_horizon),
+            "gamma_ref": float(model.gamma_ref),
+            "order": int(model.beta_regressor.order),
+            "n_features": int(beta.shape[0]),
+            "n_beta_targets": int(beta.shape[1]),
+            "n_a_targets": int(a_coef.shape[0]),
+        },
+        "beta_coefficients": beta.tolist(),
+        "a_coefficients": a_coef.flatten().tolist(),
+        "ridge": float(model.beta_regressor.ridge),
+        "n_Y": [float(x) for x in model.n_Y],
+        "species_report": model.species_report,
+        "state_scaling": model.model_identity.get("state_scaling", {}),
+        "decoder_policy": {
+            "y_floor": float(model.decoder.y_floor),
+            "sum_atol": float(model.decoder.sum_atol),
+            "policy": ("invalid compositions are REJECTED and counted, never "
+                       "clipped to look admissible; the temperature is solved "
+                       "by enthalpy inversion at the reference's own enthalpy")},
+        "reference_coordinates": {
+            "parametrization": model.model_identity.get(
+                "reference_coordinate_parametrization"),
+            "targets": ["u = log(Gamma_B / Gamma)", "v = log(t_B / T)"],
+            "log_gamma_B_rule": "log gamma_B = log Gamma - v + u",
+            "log_t_B_rule": "log t_B = T_horizon * exp(v)"},
+        "training_domain": model.training_domain,
+        "normal_report": model.normal_report,
+        "model_identity": model.model_identity,
+        "library_identity": model.model_identity.get("library_identity", {}),
+        "problem_definition": model.model_identity.get("problem_definition", {}),
+        "selection": selection,
+        "config": config,
+        "training_case_ids": list(training_case_ids),
+        "validation_case_ids": list(validation_case_ids),
+        "code_sha256_16": source_hashes(),
+        "declaration": ("the model above - complexity, regularization, the "
+                        "correction direction and both coefficient arrays - was "
+                        "frozen BEFORE any test history of this revision was "
+                        "generated; the test set is disjoint from training and "
+                        "validation"),
+    }
+
+
+def load_local_generator(record: dict, cstr, library, decoder) -> "LocalGenerator":
+    """Rebuild a frozen model from its record.  No refitting takes place and no
+    training endpoint is read: the design matrix is rebuilt from the stored
+    feature specification and multiplied by the STORED coefficient arrays.
+
+    The mechanism, the initial state and the source code are VERIFIED against the
+    record; any mismatch is collected in `reload_warnings` and returned to the
+    caller rather than silently ignored.
+    """
+    warnings = []
+    spec = record["feature_specification"]
+    if spec["feature"] != FEATURE_NAME:
+        raise ValueError(f"unknown feature map in the record: {spec['feature']}")
+
+    def _feature(eta, order):
+        return generator_features(eta, np.asarray(spec["durations_s"],
+                                                  dtype=float),
+                                  float(spec["T_horizon_s"]),
+                                  float(spec["gamma_ref"]), int(order))
+
+    beta_reg = LinearRegressor(_feature, order=int(spec["order"]),
+                               ridge=float(record["ridge"]))
+    beta_reg.coef_ = np.asarray(record["beta_coefficients"], dtype=float)
+    a_reg = LinearRegressor(_feature, order=int(spec["order"]),
+                            ridge=float(record["ridge"]))
+    a_raw = np.asarray(record["a_coefficients"], dtype=float)
+    a_reg.coef_ = a_raw.reshape(-1, 1)
+    for reg, name, want in ((beta_reg, "beta", spec["n_features"]),
+                            (a_reg, "a", spec["n_features"])):
+        if int(reg.coef_.shape[0]) != int(want):
+            warnings.append(f"{name} coefficient count {reg.coef_.shape[0]} != "
+                            f"stored n_features {want}")
+
+    ident = record.get("model_identity", {})
+    mech = ident.get("mechanism")
+    if mech is not None and mech != cstr.cfg.mechanism:
+        warnings.append(f"mechanism mismatch: record {mech} vs loaded "
+                        f"{cstr.cfg.mechanism}")
+    lib_ident = record.get("library_identity") or {}
+    q0_hash = lib_ident.get("q0_sha256_16")
+    if q0_hash:
+        import hashlib
+        got = hashlib.sha256(np.asarray(library.q0, dtype=float)
+                             .tobytes()).hexdigest()[:16]
+        if got != q0_hash:
+            warnings.append(f"initial-state hash mismatch: record {q0_hash} "
+                            f"vs loaded {got}")
+    stored_hashes = record.get("code_sha256_16") or {}
+    if stored_hashes:
+        now = source_hashes()
+        for name, h in stored_hashes.items():
+            if now.get(name) not in (None, h):
+                warnings.append(f"code content mismatch in {name}: record {h} "
+                                f"vs running {now.get(name)}")
+
+    model = LocalGenerator(
+        cstr=cstr, library=library, decoder=decoder,
+        n_Y=record["n_Y"], species_report=record["species_report"],
+        beta_regressor=beta_reg, a_regressor=a_reg,
+        gamma_ref=float(spec["gamma_ref"]),
+        T_horizon=float(spec["T_horizon_s"]),
+        durations=list(spec["durations_s"]),
+        training_domain=record["training_domain"],
+        normal_report=record["normal_report"],
+        model_identity=ident)
+    model.reload_warnings = warnings
+    return model
+
 
 def oracle_correction_coefficient(q_target, Y_B, n_Y, h_J_kg: float,
                                   decoder: PhysicalDecoder, scaling=None,
@@ -689,8 +1185,36 @@ def oracle_correction_coefficient(q_target, Y_B, n_Y, h_J_kg: float,
         a_best, d_best = float(r.x), float(r.fun)
     else:
         a_best, d_best = a_grid, d_grid
+
+    # ---- the LOCAL linear estimate and the active-bound status ------------
+    # j = (dT/da, n_Y) at a = 0, with dT/da from enthalpy conservation at fixed
+    # (h, p).  a_lin is the minimizer of the linearized objective; comparing it
+    # with a_best separates a genuinely curved objective from one that the
+    # feasible interval truncated.
+    lin = {"a_lin": None, "resolved": False}
+    try:
+        sens = decoder.sensitivity(Y_B, n_Y, h_J_kg)
+        if sens.get("resolved"):
+            j = np.asarray(sens["j"], dtype=float)
+            q_B = np.concatenate([[float(sens["T_K"])], np.asarray(Y_B,
+                                                                  dtype=float)])
+            resid = W * (np.asarray(q_target, dtype=float) - q_B)
+            jW2 = W * j
+            den = float(jW2 @ j)
+            lin = {"a_lin": float(jW2 @ resid / den) if den > 0 else None,
+                   "resolved": True, "dT_over_da": float(sens["dT_over_da"]),
+                   "cp_J_kg_K": float(sens["cp_J_kg_K"]), "denominator": den}
+    except Exception as exc:                    # noqa: BLE001
+        lin = {"a_lin": None, "resolved": False, "reason": repr(exc)}
+
+    tol_active = max(1e-12, 1e-9 * width)
+    active = ("low" if a_best <= lo + tol_active else
+              "high" if a_best >= hi - tol_active else None)
     return {"a": a_best, "resolved": True, "dist_scaled_raw": d_best,
             "interval": interval,
             "n_candidates": int(cands.size),
             "at_coarse_grid": d_grid,
-            "refinement_improved": bool(d_best < d_grid)}
+            "refinement_improved": bool(d_best < d_grid),
+            "linear_estimate": lin,
+            "active_bound": active,
+            "interior": active is None}
