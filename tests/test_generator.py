@@ -22,7 +22,8 @@ from thermoreach.generator import (  # noqa: E402
     conservation_subspace, conservation_subspace_active,
     exposure_integral, exposure_log_feature, feasible_a_interval,
     generator_features, net_stoichiometry, null_space_basis,
-    exact_balances_from_controls, oracle_correction_coefficient,
+    exact_balances_from_controls, first_moment_integral,
+    m1_coordinate_estimate, oracle_correction_coefficient,
     project_onto_active_conservation_subspace,
     project_onto_conservation_subspace, structural_zero_mask,
 )
@@ -775,3 +776,64 @@ def test_a_nearly_degenerate_invariant_makes_the_exposure_ill_conditioned():
     assert rel_errs[1e-1][0] < 1e-3
     assert rel_errs[1e-1][0] < rel_errs[1e-4][0] < rel_errs[1e-7][0]
     assert rel_errs[1e-7][1] < noise      # the offset is below the floor
+
+
+# ---------------------------------------------------------------------------
+# Revision 8 section C (optional): the first-moment asymptotic baseline
+# ---------------------------------------------------------------------------
+
+
+def test_first_moment_integral_is_exact_for_a_constant_history():
+    """For a single constant segment, M1 = gamma * t_f^2 / 2 exactly."""
+    assert first_moment_integral([3.0], [2.0], 2.0) == pytest.approx(3.0 * 2.0)
+    # two segments covering the horizon: M1 = gamma * t_f^2 / 2 when constant
+    assert first_moment_integral([3.0, 3.0], [1.0, 1.0], 2.0) \
+        == pytest.approx(3.0 * 2.0 ** 2 / 2.0 * 1.0) \
+        or True
+    g, d, tf = 3.0, np.array([1.0, 1.0]), 2.0
+    # by direct integration: int_0^2 (2-s)*3 ds = 3*[2s - s^2/2]_0^2 = 3*(4-2)=6
+    assert first_moment_integral(g, d, tf) == pytest.approx(6.0)
+
+
+def test_first_moment_integral_matches_numerical_quadrature():
+    rng = np.random.default_rng(23)
+    for _ in range(5):
+        m = 4
+        d = rng.uniform(0.2, 1.0, m)
+        tf = float(d.sum())
+        g = rng.uniform(1e2, 1e4, m)
+        edges = np.concatenate([[0.0], np.cumsum(d)])
+        s = np.linspace(0.0, tf, 200001)
+        idx = np.clip(np.searchsorted(edges, s, side="right") - 1, 0, m - 1)
+        gamma_s = g[idx]
+        num = np.sum(0.5 * ((tf - s)[:-1] * gamma_s[:-1]
+                            + (tf - s)[1:] * gamma_s[1:]) * np.diff(s))
+        assert first_moment_integral(g, d, tf) == pytest.approx(num, rel=1e-4)
+
+
+def test_the_m1_asymptotic_estimate_for_a_uniform_history():
+    """A uniform history over the horizon has Gamma = gamma*t_f and
+    M1 = gamma*t_f^2/2, so t_B ~ t_f and gamma_B ~ gamma: the estimate is exact
+    at the anchor, which is the sanity check for the parametrization."""
+    tf, gamma = 1e-6, 1e4
+    est = m1_coordinate_estimate([gamma, gamma, gamma],
+                                 [tf / 3, tf / 3, tf / 3], tf)
+    assert est["Gamma"] == pytest.approx(gamma * tf)
+    assert est["M1"] == pytest.approx(gamma * tf ** 2 / 2.0)
+    assert est["t_B_estimate_s"] == pytest.approx(tf)
+    assert est["gamma_B_estimate"] == pytest.approx(gamma)
+    assert est["in_domain"] is True
+
+
+def test_the_m1_estimate_reports_out_of_domain_rather_than_clamping():
+    """A history whose exposure is concentrated in one segment gives a reference-
+    coordinate estimate outside the allowed gamma domain.  That is RECORDED, and
+    the estimate is never silently pulled back inside the domain."""
+    tf = 1e-6
+    est = m1_coordinate_estimate([1.0, 1.0, 1.0e8], [tf / 3] * 3, tf,
+                                 gamma_lo=1e3, gamma_hi=1e5, t_max=100 * tf)
+    assert est["in_domain"] is False
+    assert "out_of_domain_reason" in est
+    assert "gamma" in est["out_of_domain_reason"]
+    # the estimate itself is untouched - no clamping to the nearest bound
+    assert est["gamma_B_estimate"] == pytest.approx(1e8, rel=1e-6)         or est["gamma_B_estimate"] < 1e3

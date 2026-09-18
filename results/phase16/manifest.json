@@ -1,0 +1,15 @@
+{
+  "run_id": "phase16",
+  "timestamp_utc": "2026-09-18T07:54:01.718067+00:00",
+  "host": "redacted-host",
+  "platform": "Windows-11-10.0.26100-SP0",
+  "git_revision": "e234aef25fbbea6ad020e21cc7e7684c8ce79dbc (dirty)",
+  "code_identity_note": "git revision when available, otherwise a sha256 over all Python sources under src/ and scripts/",
+  "config": {
+    "script": "scripts/phase16_exposure_ablation.py",
+    "inputs": [
+      "results/phase11/phase11_results.json"
+    ],
+    "diagnostic_only": true
+  }
+}

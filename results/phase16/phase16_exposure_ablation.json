@@ -1,0 +1,382 @@
+{
+ "run": {
+  "identifier": "phase16",
+  "timestamp_utc": "2026-09-18T07:54:01.614784+00:00",
+  "diagnostic_only": true
+ },
+ "cases_used": [
+  {
+   "label": "transverse_r0.03_s+1",
+   "measured_time_norm": 0.017320508075688697
+  },
+  {
+   "label": "transverse_r0.03_s-1",
+   "measured_time_norm": 0.01732050807568877
+  },
+  {
+   "label": "transverse_r0.1_s+1",
+   "measured_time_norm": 0.05773502691896252
+  },
+  {
+   "label": "transverse_r0.1_s-1",
+   "measured_time_norm": 0.05773502691896267
+  },
+  {
+   "label": "transverse_r0.3_s+1",
+   "measured_time_norm": 0.17320508075688773
+  },
+  {
+   "label": "transverse_r0.3_s-1",
+   "measured_time_norm": 0.17320508075688773
+  },
+  {
+   "label": "transverse_r0.6_s+1",
+   "measured_time_norm": 0.3464101615137754
+  },
+  {
+   "label": "transverse_r0.6_s-1",
+   "measured_time_norm": 0.34641016151377546
+  },
+  {
+   "label": "transverse_r1_s+1",
+   "measured_time_norm": 0.5773502691896257
+  },
+  {
+   "label": "transverse_r1_s-1",
+   "measured_time_norm": 0.5773502691896257
+  },
+  {
+   "label": "infamily_r0.03",
+   "measured_time_norm": 0.03000000000000008
+  },
+  {
+   "label": "infamily_r0.1",
+   "measured_time_norm": 0.10000000000000007
+  },
+  {
+   "label": "infamily_r0.3",
+   "measured_time_norm": 0.30000000000000004
+  },
+  {
+   "label": "heldout_0",
+   "measured_time_norm": 0.10000000000000003
+  },
+  {
+   "label": "heldout_1",
+   "measured_time_norm": 0.3
+  },
+  {
+   "label": "heldout_2",
+   "measured_time_norm": 0.6
+  },
+  {
+   "label": "heldout_3",
+   "measured_time_norm": 0.09999999999999996
+  },
+  {
+   "label": "heldout_4",
+   "measured_time_norm": 0.3
+  },
+  {
+   "label": "heldout_5",
+   "measured_time_norm": 0.6000000000000001
+  },
+  {
+   "label": "heldout_6",
+   "measured_time_norm": 0.09999999999999998
+  },
+  {
+   "label": "heldout_7",
+   "measured_time_norm": 0.29999999999999993
+  },
+  {
+   "label": "heldout_8",
+   "measured_time_norm": 0.5999999999999999
+  },
+  {
+   "label": "heldout_9",
+   "measured_time_norm": 0.10000000000000003
+  },
+  {
+   "label": "heldout_10",
+   "measured_time_norm": 0.3
+  },
+  {
+   "label": "heldout_11",
+   "measured_time_norm": 0.6
+  }
+ ],
+ "biases": {
+  "free": {
+   "n_features": 4,
+   "in_sample_rms": {
+    "log_gamma_B": 0.07091043098920652,
+    "log_t_B": 0.025036224942749482
+   },
+   "leave_one_out_rms": {
+    "log_gamma_B": 0.09362581953650574,
+    "log_t_B": 0.03581721985934544
+   },
+   "cond_XtX": 24.933291039956856
+  },
+  "exposure": {
+   "n_features": 5,
+   "in_sample_rms": {
+    "log_gamma_B": 0.018984738678744454,
+    "log_t_B": 0.018812020841340805
+   },
+   "leave_one_out_rms": {
+    "log_gamma_B": 0.036173524909407236,
+    "log_t_B": 0.03581707999087623
+   },
+   "cond_XtX": 509.72297000424453
+  },
+  "exposure_plus_M1": {
+   "n_features": 6,
+   "in_sample_rms": {
+    "log_gamma_B": 0.0021822719134435096,
+    "log_t_B": 0.0020858210016489877
+   },
+   "leave_one_out_rms": {
+    "log_gamma_B": 0.005712108915490705,
+    "log_t_B": 0.005464241689700227
+   },
+   "cond_XtX": 16599435.314595906
+  }
+ },
+ "m1_asymptotic_baseline": {
+  "n": 25,
+  "n_out_of_domain": 0,
+  "log_gamma_error_rms": 0.01332730525854687,
+  "log_t_error_rms": 0.010816106137547387,
+  "gamma_t_product_error_rms": 0.0026605119158140977
+ },
+ "m1_per_case": [
+  {
+   "label": "transverse_r0.03_s+1",
+   "log_gamma_error": 0.0010492565361828127,
+   "log_t_error": -0.0008419061692847244,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010001496306937595,
+   "gamma_t_error": 0.00020735036689808833
+  },
+  {
+   "label": "transverse_r0.03_s-1",
+   "log_gamma_error": -0.0010458806807788204,
+   "log_t_error": 0.0008383448277708039,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010001503805564228,
+   "gamma_t_error": -0.00020753585300801645
+  },
+  {
+   "label": "transverse_r0.1_s+1",
+   "log_gamma_error": 0.0035033532396546558,
+   "log_t_error": -0.0028139205935050456,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010016534695489826,
+   "gamma_t_error": 0.0006894326461496102
+  },
+  {
+   "label": "transverse_r0.1_s-1",
+   "log_gamma_error": -0.0034657199547823564,
+   "log_t_error": 0.002774279104716823,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010016812529240275,
+   "gamma_t_error": -0.0006914408500655334
+  },
+  {
+   "label": "transverse_r0.3_s+1",
+   "log_gamma_error": 0.010436759575258062,
+   "log_t_error": -0.008399654701758137,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010146800139265702,
+   "gamma_t_error": 0.002037104873499925
+  },
+  {
+   "label": "transverse_r0.3_s-1",
+   "log_gamma_error": -0.010088696831912972,
+   "log_t_error": 0.008037609067055789,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010154326690456976,
+   "gamma_t_error": -0.002051087764857183
+  },
+  {
+   "label": "transverse_r0.6_s+1",
+   "log_gamma_error": 0.020065825952227608,
+   "log_t_error": -0.01615777820884017,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010578612537575152,
+   "gamma_t_error": 0.00390804774338744
+  },
+  {
+   "label": "transverse_r0.6_s-1",
+   "log_gamma_error": -0.01857081015719024,
+   "log_t_error": 0.014658225497666698,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010639504883797286,
+   "gamma_t_error": -0.003912584659523542
+  },
+  {
+   "label": "transverse_r1_s+1",
+   "log_gamma_error": 0.030423530114955265,
+   "log_t_error": -0.024417468295858825,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.011592635449931585,
+   "gamma_t_error": 0.00600606181909644
+  },
+  {
+   "label": "transverse_r1_s-1",
+   "log_gamma_error": -0.02591925628457063,
+   "log_t_error": 0.02018127808927005,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.011882119827810705,
+   "gamma_t_error": -0.005737978195300579
+  },
+  {
+   "label": "infamily_r0.03",
+   "log_gamma_error": 1.141753358523859e-12,
+   "log_t_error": -1.3851142455233046e-12,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010304545339535166,
+   "gamma_t_error": -2.4336088699944546e-13
+  },
+  {
+   "label": "infamily_r0.1",
+   "log_gamma_error": 1.8200996265688253e-12,
+   "log_t_error": -2.1728174814962542e-12,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.011051709180756476,
+   "gamma_t_error": -3.52717854927429e-13
+  },
+  {
+   "label": "infamily_r0.3",
+   "log_gamma_error": 1.4939161019344947e-12,
+   "log_t_error": -1.858846410131627e-12,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.01349858807576003,
+   "gamma_t_error": -3.649303081971324e-13
+  },
+  {
+   "label": "heldout_0",
+   "log_gamma_error": -0.0009926031838176626,
+   "log_t_error": 0.0003612682179382049,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010358686045913676,
+   "gamma_t_error": -0.0006313349658794577
+  },
+  {
+   "label": "heldout_1",
+   "log_gamma_error": -0.004994556883990536,
+   "log_t_error": 0.004835227744306511,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.008258241266512685,
+   "gamma_t_error": -0.00015932913968402535
+  },
+  {
+   "label": "heldout_2",
+   "log_gamma_error": -0.0202897682602606,
+   "log_t_error": 0.015732550554398386,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.009954935302384036,
+   "gamma_t_error": -0.004557217705862215
+  },
+  {
+   "label": "heldout_3",
+   "log_gamma_error": 0.0056886350918909515,
+   "log_t_error": -0.004575141853157275,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.010403528869233387,
+   "gamma_t_error": 0.0011134932387336762
+  },
+  {
+   "label": "heldout_4",
+   "log_gamma_error": 0.01814265870560424,
+   "log_t_error": -0.016467759902014163,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.008934587596787252,
+   "gamma_t_error": 0.0016748988035900775
+  },
+  {
+   "label": "heldout_5",
+   "log_gamma_error": -0.02005913681313801,
+   "log_t_error": 0.015374699590142305,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.015508861672767197,
+   "gamma_t_error": -0.004684437222995705
+  },
+  {
+   "label": "heldout_6",
+   "log_gamma_error": -0.0038759989510595595,
+   "log_t_error": 0.003246758596593168,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.009255492785557599,
+   "gamma_t_error": -0.0006292403544663917
+  },
+  {
+   "label": "heldout_7",
+   "log_gamma_error": 0.01658033272688649,
+   "log_t_error": -0.015655163270568963,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.009629540745510921,
+   "gamma_t_error": 0.0009251694563175289
+  },
+  {
+   "label": "heldout_8",
+   "log_gamma_error": -0.01126093083534861,
+   "log_t_error": 0.009283255742904077,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.005819753580606853,
+   "gamma_t_error": -0.001977675092444533
+  },
+  {
+   "label": "heldout_9",
+   "log_gamma_error": -0.005634468482513683,
+   "log_t_error": 0.004624298222269716,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.009588500995608448,
+   "gamma_t_error": -0.0010101702602439665
+  },
+  {
+   "label": "heldout_10",
+   "log_gamma_error": 0.013903524251162428,
+   "log_t_error": -0.011373197089890449,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.008352707679824144,
+   "gamma_t_error": 0.002530327161271979
+  },
+  {
+   "label": "heldout_11",
+   "log_gamma_error": 0.003878432692158232,
+   "log_t_error": -0.0010120509353266386,
+   "in_domain": true,
+   "out_of_domain_reason": null,
+   "gamma_t_product": 0.008730953079954784,
+   "gamma_t_error": 0.0028663817568315934
+  }
+ ],
+ "method_note": "all three biases are compared on the SAME targets (log gamma_B and log t_B, both in anchor units) and the SAME split, at unchanged order-1 complexity; the leave-one-out rms is reported alongside the in-sample rms so a wider feature set cannot hide its variance.  The M1 relations are an asymptotic O(t_f^3) model, not an exact constraint; out-of-domain estimates are recorded, never clamped."
+}

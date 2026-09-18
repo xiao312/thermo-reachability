@@ -562,6 +562,64 @@ class PhysicalDecoder:
 # 5. regression from control history to reference coordinates and correction
 # ---------------------------------------------------------------------------
 
+def first_moment_integral(gammas, durations, t_final: float) -> float:
+    """M1 = int_0^t_f (t_f - s) gamma(s) ds for a piecewise-constant history,
+
+        M1 = sum_j gamma_j [ t_f (t_{j+1} - t_j) - (t_{j+1}^2 - t_j^2)/2 ].
+
+    It is the first time-moment of the exposure and is EXACT; no approximation is
+    involved in this integral.
+    """
+    g = np.asarray(gammas, dtype=float)
+    d = np.asarray(durations, dtype=float)
+    edges = np.concatenate([[0.0], np.cumsum(d)])
+    tj, tp = edges[:-1], edges[1:]
+    return float(np.sum(g * (t_final * (tp - tj) - 0.5 * (tp ** 2 - tj ** 2))))
+
+
+def m1_coordinate_estimate(gammas, durations, t_final: float,
+                           gamma_lo: float | None = None,
+                           gamma_hi: float | None = None,
+                           t_max: float | None = None) -> dict:
+    """The SHORT-TIME expansion baseline for the reference coordinates.
+
+    For a history with exposure Gamma and first moment M1, expanding the
+    composition to O(t_f^3) along the exchange direction suggests
+
+        t_B     ~ 2 M1 / Gamma          gamma_B ~ Gamma^2 / (2 M1)
+
+    This is an ASYMPTOTIC MODEL, not an exact constraint: it is reported alongside
+    the exposure-constrained regression as an inductive bias of a different
+    provenance.  Estimates that leave the allowed domain are RECORDED as out-of-
+    domain, never silently clamped.
+    """
+    g = np.asarray(gammas, dtype=float)
+    d = np.asarray(durations, dtype=float)
+    Gamma = exposure_integral(g, d)
+    M1 = first_moment_integral(g, d, t_final)
+    out = {"Gamma": Gamma, "M1": M1, "asymptotic": True}
+    if Gamma > 0.0 and M1 > 0.0:
+        t_est = 2.0 * M1 / Gamma
+        g_est = Gamma ** 2 / (2.0 * M1)
+        out["t_B_estimate_s"] = float(t_est)
+        out["gamma_B_estimate"] = float(g_est)
+        out["gamma_t_product"] = float(g_est * t_est)
+        out["in_domain"] = True
+        if gamma_lo is not None and g_est < gamma_lo:
+            out["in_domain"] = False
+            out["out_of_domain_reason"] = f"gamma estimate {g_est:.3e} < {gamma_lo:.3e}"
+        if gamma_hi is not None and g_est > gamma_hi:
+            out["in_domain"] = False
+            out["out_of_domain_reason"] = f"gamma estimate {g_est:.3e} > {gamma_hi:.3e}"
+        if t_max is not None and t_est > t_max:
+            out["in_domain"] = False
+            out["out_of_domain_reason"] = f"t estimate {t_est:.3e} > {t_max:.3e}"
+    else:
+        out["in_domain"] = False
+        out["out_of_domain_reason"] = f"degenerate Gamma={Gamma:.3e} M1={M1:.3e}"
+    return out
+
+
 def exposure_log_feature(eta, durations, T, gamma_ref) -> float:
     """log(Gamma / (gamma_ref T)) with Gamma = sum_j gamma_j dur_j - the exact
     exposure of the history, in units of the anchor exposure.  The closed-form
