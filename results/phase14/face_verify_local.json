@@ -1,0 +1,87 @@
+{
+ "method": "server-free verification on the committed phase-11 records; the element matrix is built from the standard species formulae and the feed from the declared H2 / O2:1,N2:3.76, phi=1 composition; no reaction list is needed for route (c)",
+ "species": [
+  "H2",
+  "H",
+  "O",
+  "O2",
+  "OH",
+  "H2O",
+  "HO2",
+  "H2O2",
+  "AR",
+  "N2"
+ ],
+ "feed_Y_in": [
+  0.028522387527567396,
+  0.0,
+  0.0,
+  0.22635400697100735,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.7451236055014253
+ ],
+ "b_in": [
+  0.028522387527567396,
+  0.22635400697100735,
+  0.0,
+  0.7451236055014253
+ ],
+ "unique_carriers": {
+  "H": [
+   "H2",
+   "H",
+   "OH",
+   "H2O",
+   "HO2",
+   "H2O2"
+  ],
+  "O": [
+   "O",
+   "O2",
+   "OH",
+   "H2O",
+   "HO2",
+   "H2O2"
+  ],
+  "Ar": [
+   "AR"
+  ],
+  "N": [
+   "N2"
+  ]
+ },
+ "structural_constant": {
+  "AR": {
+   "reason": "unique carrier of Ar; b_Ar = 0",
+   "value": 0.0,
+   "kind": "absent"
+  },
+  "N2": {
+   "reason": "unique carrier of N; b_N = 0.745124",
+   "value": 0.7451236055009126,
+   "kind": "fixed",
+   "spread_max_minus_min": 3.4416913763379853e-15
+  }
+ },
+ "direction": {
+  "revision7_AR": 1.172467885411612e-18,
+  "corrected_AR": 0.0,
+  "revision7_N2": 1.239695153096409e-18,
+  "corrected_N2": 0.0,
+  "max_abs_difference": 1.7580168820263004e-18
+ },
+ "feasible_interval": {
+  "one_sided_a_lo_zero_before_repair": 25,
+  "of_n_cases": 25,
+  "example_after_repair": {
+   "a_lo": -0.6578,
+   "a_hi": 2.668
+  },
+  "note": "the negative side of the correction was entirely unavailable in revision 7; the bimodal oracle coefficient reported there (zero or positive) is at least partly this truncation, not a second residual mode"
+ },
+ "conclusion": "the defect and the repair are verified on the real committed data without Cantera; the full classification of the remaining species requires the reaction list and is run on the server"
+}
